@@ -4,7 +4,7 @@ A full-stack personal finance management application built with Node.js, Express
 
 ## Project Overview
 
-The Money Tracker allows users to track their expenses, manage categories, and set budgets. It features a secure authentication system with email verification, data visualization, and recurring expense management to help users understand their spending habits.
+The Money Tracker allows users to track their expenses, manage categories, and set budgets. It features a secure authentication system with email verification, data visualization, recurring expense management, and CSV import/export capabilities to help users understand their spending habits.
 
 ### Architecture & Tech Stack
 
@@ -25,7 +25,7 @@ The Money Tracker allows users to track their expenses, manage categories, and s
 - **Budgeting:** Set monthly and yearly budget targets.
 - **Data Visualization:** Interactive charts (Pie/Bar) to visualize spending patterns.
 - **Dark Mode:** Built-in dark/light theme toggle.
-- **Data Export:** Export expense data to CSV.
+- **Data Import/Export:** Import expense data from CSV files and export data to CSV.
 
 ## Getting Started
 

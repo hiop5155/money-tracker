@@ -174,6 +174,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             onAddCategory={data.handleAddCategory}
                             onDeleteCategory={data.handleDeleteCategory}
                             onExport={data.exportToCSV}
+                            onImport={data.handleImportCSV}
                             onLogout={onLogout}
                         />
                     )}

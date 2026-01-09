@@ -178,7 +178,7 @@ export const useBudgetData = (token, onLogout) => {
         }
     };
 
-    // CSV
+    // CSV Export
     const exportToCSV = () => {
         const headers = ['日期', '分類', '金額', '備註'];
         const rows = expenses.map((e) => [e.date, e.category, e.amount, `"${e.note || ''}"`]);
@@ -190,6 +190,40 @@ export const useBudgetData = (token, onLogout) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    // CSV Import
+    const handleImportCSV = async (file) => {
+        if (!file) return false;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const baseUrl = import.meta.env.VITE_API_URL || '/api';
+            const res = await fetch(`${baseUrl}/import/csv`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                alert(result.message);
+                await refreshData();
+                return true;
+            } else {
+                const err = await res.json();
+                alert('Import Failed: ' + (err.error || 'Unknown error'));
+                return false;
+            }
+        } catch (error) {
+            console.error('Import error:', error);
+            alert('An error occurred during import.');
+            return false;
+        }
     };
 
     return {
@@ -219,5 +253,6 @@ export const useBudgetData = (token, onLogout) => {
         handleDeleteCategory,
         handleUpdateBudget,
         exportToCSV,
+        handleImportCSV,
     };
 };

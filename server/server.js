@@ -20,6 +20,7 @@ mongoose
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api', require('./routes/data'));
 app.use('/api/recurring', require('./routes/recurring'));
+app.use('/api/import', require('./routes/import'));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

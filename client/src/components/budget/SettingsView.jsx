@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Wallet, FileText, X, Power, Download, LogOut, Save } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Wallet, FileText, X, Power, Download, LogOut, Save, Upload } from 'lucide-react';
 
-const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onLogout }) => {
+const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onImport, onLogout }) => {
     const [newCategory, setNewCategory] = useState('');
 
     const [localBudgets, setLocalBudgets] = useState({ monthly: '', yearly: '' });
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (budgets) {
@@ -29,19 +30,36 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
         const MAX_VAL = 100000000;
 
         if (isNaN(monthlyVal) || monthlyVal < MIN_VAL || monthlyVal > MAX_VAL) {
-            alert(`月預算輸入錯誤：請輸入 ${MIN_VAL} 至 ${MAX_VAL} 之間的數字`);
+            alert(`Monthly budget input error: Please enter a number between ${MIN_VAL} and ${MAX_VAL}`);
             return;
         }
         if (isNaN(yearlyVal) || yearlyVal < MIN_VAL || yearlyVal > MAX_VAL) {
-            alert(`年預算輸入錯誤：請輸入 ${MIN_VAL} 至 ${MAX_VAL} 之間的數字`);
+            alert(`Yearly budget input error: Please enter a number between ${MIN_VAL} and ${MAX_VAL}`);
             return;
         }
 
         onUpdateBudget({ monthly: monthlyVal, yearly: yearlyVal });
+        // Format display
         setLocalBudgets({
             monthly: String(monthlyVal),
             yearly: String(yearlyVal),
         });
+        alert('Budget settings updated');
+    };
+
+    // Handle file selection
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (window.confirm(`Are you sure you want to import ${file.name}?\nThis will add data to your account.`)) {
+                onImport(file);
+            }
+            e.target.value = null; // Reset input to allow re-selecting the same file
+        }
+    };
+
+    const triggerImport = () => {
+        fileInputRef.current.click();
     };
 
     return (
@@ -131,6 +149,17 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                     <Power className="w-5 h-5" /> 系統選項
                 </h3>
                 <div className="flex flex-col gap-3">
+                    {/* Hidden file input */}
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".csv" className="hidden" />
+
+                    {/* Import Button */}
+                    <button
+                        onClick={triggerImport}
+                        className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                    >
+                        <Upload className="w-5 h-5" /> 匯入天天記帳資料 (CSV)
+                    </button>
+
                     <button
                         onClick={onExport}
                         className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"

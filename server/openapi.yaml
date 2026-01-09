@@ -2,10 +2,12 @@ openapi: 3.0.0
 info:
     title: Money Tracker API
     description: Money Tracker Backend API Documentation (Node.js + Express + MongoDB)
-    version: 1.1.0 # Updated version
+    version: 1.2.0 # Updated version to reflect Import feature
 servers:
     - url: http://localhost:5000
       description: Local Development Server
+    - url: https://money-tracker.xyz
+      description: Production Server
 
 components:
     securitySchemes:
@@ -366,7 +368,47 @@ paths:
                     description: Deleted successfully
 
     # ===========================
-    # Recurring Expenses Endpoints (New)
+    # Import Endpoints
+    # ===========================
+    /api/import/csv:
+        post:
+            summary: Import expenses from CSV file
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                file:
+                                    type: string
+                                    format: binary
+                                    description: CSV file upload
+            responses:
+                '200':
+                    description: Import successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    count:
+                                        type: number
+                                        example: 15
+                                    message:
+                                        type: string
+                                        example: '成功匯入 15 筆資料'
+                '400':
+                    description: No file uploaded or invalid format
+
+    # ===========================
+    # Recurring Expenses Endpoints
     # ===========================
     /api/recurring:
         get:
