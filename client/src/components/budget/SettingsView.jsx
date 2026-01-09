@@ -4,13 +4,14 @@ import { Wallet, FileText, X, Power, Download, LogOut, Save } from 'lucide-react
 const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onLogout }) => {
     const [newCategory, setNewCategory] = useState('');
 
-    // Local state for budget settings (default to 0 to avoid errors)
-    const [localBudgets, setLocalBudgets] = useState({ monthly: 0, yearly: 0 });
+    const [localBudgets, setLocalBudgets] = useState({ monthly: '', yearly: '' });
 
-    // Sync with local state when external budgets data arrives
     useEffect(() => {
         if (budgets) {
-            setLocalBudgets(budgets);
+            setLocalBudgets({
+                monthly: String(budgets.monthly),
+                yearly: String(budgets.yearly),
+            });
         }
     }, [budgets]);
 
@@ -20,10 +21,27 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
         setNewCategory('');
     };
 
-    // Handle save button click
     const handleSaveBudget = () => {
-        onUpdateBudget(localBudgets);
-        alert('預算設定已更新');
+        const monthlyVal = parseInt(localBudgets.monthly, 10);
+        const yearlyVal = parseInt(localBudgets.yearly, 10);
+
+        const MIN_VAL = 1;
+        const MAX_VAL = 100000000;
+
+        if (isNaN(monthlyVal) || monthlyVal < MIN_VAL || monthlyVal > MAX_VAL) {
+            alert(`月預算輸入錯誤：請輸入 ${MIN_VAL} 至 ${MAX_VAL} 之間的數字`);
+            return;
+        }
+        if (isNaN(yearlyVal) || yearlyVal < MIN_VAL || yearlyVal > MAX_VAL) {
+            alert(`年預算輸入錯誤：請輸入 ${MIN_VAL} 至 ${MAX_VAL} 之間的數字`);
+            return;
+        }
+
+        onUpdateBudget({ monthly: monthlyVal, yearly: yearlyVal });
+        setLocalBudgets({
+            monthly: String(monthlyVal),
+            yearly: String(yearlyVal),
+        });
     };
 
     return (
@@ -48,8 +66,11 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                         <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>月預算目標</label>
                         <input
                             type="number"
+                            min="1"
+                            max="100000000"
                             value={localBudgets.monthly}
-                            onChange={(e) => setLocalBudgets({ ...localBudgets, monthly: Number(e.target.value) })}
+                            onChange={(e) => setLocalBudgets({ ...localBudgets, monthly: e.target.value })}
+                            placeholder="請輸入金額"
                             className={`w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200'}`}
                         />
                     </div>
@@ -57,8 +78,11 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                         <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>年預算目標</label>
                         <input
                             type="number"
+                            min="1"
+                            max="100000000"
                             value={localBudgets.yearly}
-                            onChange={(e) => setLocalBudgets({ ...localBudgets, yearly: Number(e.target.value) })}
+                            onChange={(e) => setLocalBudgets({ ...localBudgets, yearly: e.target.value })}
+                            placeholder="請輸入金額"
                             className={`w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200'}`}
                         />
                     </div>
