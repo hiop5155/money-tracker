@@ -1,0 +1,521 @@
+openapi: 3.0.0
+info:
+    title: Money Tracker API
+    description: Money Tracker Backend API Documentation (Node.js + Express + MongoDB)
+    version: 1.1.0 # Updated version
+servers:
+    - url: http://localhost:5000
+      description: Local Development Server
+
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+
+    schemas:
+        # --- Auth Schemas ---
+        RegisterRequest:
+            type: object
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    format: email
+                    example: user@example.com
+                password:
+                    type: string
+                    format: password
+                    example: password123
+
+        LoginRequest:
+            type: object
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    format: email
+                    example: user@example.com
+                password:
+                    type: string
+                    format: password
+                    example: password123
+
+        VerifyEmailRequest:
+            type: object
+            required:
+                - email
+                - code
+            properties:
+                email:
+                    type: string
+                    format: email
+                code:
+                    type: string
+                    description: 6-digit verification code
+                    example: '123456'
+
+        ForgotPasswordRequest:
+            type: object
+            required:
+                - email
+            properties:
+                email:
+                    type: string
+                    format: email
+
+        VerifyResetOtpRequest:
+            type: object
+            required:
+                - email
+                - otp
+            properties:
+                email:
+                    type: string
+                    format: email
+                otp:
+                    type: string
+                    description: OTP for password reset
+
+        ResetPasswordRequest:
+            type: object
+            required:
+                - email
+                - otp
+                - newPassword
+            properties:
+                email:
+                    type: string
+                    format: email
+                otp:
+                    type: string
+                newPassword:
+                    type: string
+                    example: newPassword888
+
+        # --- Data Schemas ---
+        Expense:
+            type: object
+            properties:
+                id:
+                    type: string
+                date:
+                    type: string
+                    format: date
+                    example: '2026-01-06'
+                category:
+                    type: string
+                    example: '午餐'
+                amount:
+                    type: number
+                    example: 150
+                note:
+                    type: string
+                    example: '雞腿便當'
+                recurringId:
+                    type: string
+                    description: Associated Recurring Rule ID (if auto-generated)
+                    nullable: true
+
+        RecurringExpense:
+            type: object
+            properties:
+                _id:
+                    type: string
+                title:
+                    type: string
+                    example: '房租'
+                amount:
+                    type: number
+                    example: 15000
+                category:
+                    type: string
+                    example: '居住'
+                frequency:
+                    type: string
+                    enum: ['monthly', 'yearly']
+                    example: 'monthly'
+                startDate:
+                    type: string
+                    format: date
+                    example: '2026-01-01'
+                endDate:
+                    type: string
+                    format: date
+                    example: '2027-01-01'
+                note:
+                    type: string
+                    example: '銀行自動扣款'
+
+        Budget:
+            type: object
+            properties:
+                monthly:
+                    type: number
+                    example: 10000
+                yearly:
+                    type: number
+                    example: 120000
+
+# --- API Paths ---
+paths:
+    # ===========================
+    # Authentication Endpoints
+    # ===========================
+    /api/auth/register:
+        post:
+            summary: Register new user
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RegisterRequest'
+            responses:
+                '200':
+                    description: Registration successful, verification email sent
+                '400':
+                    description: Email already exists or format error
+
+    /api/auth/verify:
+        post:
+            summary: Verify Email (Activate account)
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyEmailRequest'
+            responses:
+                '200':
+                    description: Verification successful
+                '400':
+                    description: Verification code incorrect
+
+    /api/auth/login:
+        post:
+            summary: User Login
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
+            responses:
+                '200':
+                    description: Login successful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    token:
+                                        type: string
+                                        description: JWT Token
+                                    email:
+                                        type: string
+                '403':
+                    description: Account not verified
+
+    /api/auth/forgot-password:
+        post:
+            summary: Forgot Password (Send OTP)
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ForgotPasswordRequest'
+            responses:
+                '200':
+                    description: OTP sent to Email
+
+    /api/auth/verify-reset-otp:
+        post:
+            summary: Verify if reset password OTP is correct
+            description: Used for frontend check before redirecting to "Set New Password Page"
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyResetOtpRequest'
+            responses:
+                '200':
+                    description: Verification code correct
+                '400':
+                    description: Verification code incorrect or expired
+
+    /api/auth/reset-password:
+        post:
+            summary: Set new password
+            tags: [Auth]
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ResetPasswordRequest'
+            responses:
+                '200':
+                    description: Password reset successful
+
+    # ===========================
+    # Data Endpoints (Protected)
+    # ===========================
+    /api/data:
+        get:
+            summary: Get all data for this user (Expenses, Categories, Budget)
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: Data retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    expenses:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Expense'
+                                    categories:
+                                        type: array
+                                        items:
+                                            type: string
+                                    budget:
+                                        $ref: '#/components/schemas/Budget'
+
+    /api/expenses:
+        post:
+            summary: Add a new expense
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                date:
+                                    type: string
+                                category:
+                                    type: string
+                                amount:
+                                    type: number
+                                note:
+                                    type: string
+            responses:
+                '200':
+                    description: Added successfully
+
+    /api/expenses/{id}:
+        put:
+            summary: Modify expense record
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                      type: string
+                  required: true
+                  description: Expense ID
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                date: { type: string }
+                                category: { type: string }
+                                amount: { type: number }
+                                note: { type: string }
+            responses:
+                '200':
+                    description: Modified successfully
+        delete:
+            summary: Delete expense record
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Deleted successfully
+
+    # ===========================
+    # Recurring Expenses Endpoints (New)
+    # ===========================
+    /api/recurring:
+        get:
+            summary: Get all recurring expense rules
+            tags: [Recurring]
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: List of recurring rules
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/RecurringExpense'
+        post:
+            summary: Create a new recurring rule (and generate expenses)
+            tags: [Recurring]
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - title
+                                - amount
+                                - category
+                                - frequency
+                                - startDate
+                                - endDate
+                            properties:
+                                title: { type: string }
+                                amount: { type: number }
+                                category: { type: string }
+                                frequency: { type: string, enum: ['monthly', 'yearly'] }
+                                startDate: { type: string, format: date }
+                                endDate: { type: string, format: date }
+                                note: { type: string }
+            responses:
+                '200':
+                    description: Created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RecurringExpense'
+
+    /api/recurring/{id}:
+        put:
+            summary: Update a recurring rule (Regenerates expenses)
+            tags: [Recurring]
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                      type: string
+                  required: true
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                title: { type: string }
+                                amount: { type: number }
+                                category: { type: string }
+                                frequency: { type: string, enum: ['monthly', 'yearly'] }
+                                startDate: { type: string, format: date }
+                                endDate: { type: string, format: date }
+                                note: { type: string }
+            responses:
+                '200':
+                    description: Updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RecurringExpense'
+        delete:
+            summary: Delete a recurring rule (and associated expenses)
+            tags: [Recurring]
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Deleted successfully
+
+    # ===========================
+    # Other Endpoints
+    # ===========================
+    /api/categories:
+        post:
+            summary: Add category
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+            responses:
+                '200':
+                    description: Added successfully
+
+    /api/categories/{name}:
+        delete:
+            summary: Delete category
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            parameters:
+                - in: path
+                  name: name
+                  schema:
+                      type: string
+                  required: true
+                  description: Category name (e.g., Lunch)
+            responses:
+                '200':
+                    description: Deleted successfully
+
+    /api/budget:
+        put:
+            summary: Update budget settings
+            tags: [Data]
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Budget'
+            responses:
+                '200':
+                    description: Updated successfully

@@ -1,0 +1,10 @@
+{
+    "name": "money-tracker-root",
+    "private": true,
+    "scripts": {
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "prettier": "^3.4.2"
+    }
+}
