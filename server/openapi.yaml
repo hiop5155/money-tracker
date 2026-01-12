@@ -163,6 +163,20 @@ components:
                 yearly:
                     type: number
                     example: 120000
+                categoryLimits:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                                example: '午餐'
+                            monthly:
+                                type: number
+                                example: 3000
+                            yearly:
+                                type: number
+                                example: 36000
 
 # --- API Paths ---
 paths:

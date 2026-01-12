@@ -1,20 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Wallet, FileText, X, Power, Download, LogOut, Save, Upload } from 'lucide-react';
+import { Wallet, FileText, X, Power, Download, LogOut, Save, Upload, ChevronDown, ChevronUp } from 'lucide-react';
 
 const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onImport, onLogout }) => {
     const [newCategory, setNewCategory] = useState('');
-
-    const [localBudgets, setLocalBudgets] = useState({ monthly: '', yearly: '' });
+    // State to hold local changes before saving
+    const [localBudgets, setLocalBudgets] = useState({ monthly: '', yearly: '', categoryLimits: [] });
+    // State to track which category is expanded for editing
+    const [expandedCategory, setExpandedCategory] = useState(null);
     const fileInputRef = useRef(null);
 
+    // Initialize local state when data is loaded
     useEffect(() => {
         if (budgets) {
+            const currentLimits = budgets.categoryLimits || [];
+
+            // Merge existing categories with saved limits
+            const mergedLimits = categories.map((catName) => {
+                const saved = currentLimits.find((l) => l.name === catName);
+                return {
+                    name: catName,
+                    monthly: saved ? String(saved.monthly) : '',
+                    yearly: saved ? String(saved.yearly) : '',
+                };
+            });
+
             setLocalBudgets({
-                monthly: String(budgets.monthly),
-                yearly: String(budgets.yearly),
+                monthly: String(budgets.monthly || ''),
+                yearly: String(budgets.yearly || ''),
+                categoryLimits: mergedLimits,
             });
         }
-    }, [budgets]);
+    }, [budgets, categories]);
 
     const handleAdd = () => {
         if (!newCategory) return;
@@ -22,39 +38,58 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
         setNewCategory('');
     };
 
-    const handleSaveBudget = () => {
-        const monthlyVal = parseInt(localBudgets.monthly, 10);
-        const yearlyVal = parseInt(localBudgets.yearly, 10);
+    // Handle changes in category limit inputs
+    const handleCategoryLimitChange = (index, field, value) => {
+        const newLimits = [...localBudgets.categoryLimits];
+        newLimits[index] = { ...newLimits[index], [field]: value };
+        setLocalBudgets({ ...localBudgets, categoryLimits: newLimits });
+    };
 
-        const MIN_VAL = 1;
+    // Save all budget settings
+    const handleSaveBudget = () => {
+        // 使用 || 0 確保空字串轉為 0
+        const monthlyVal = parseInt(localBudgets.monthly || 0, 10);
+        const yearlyVal = parseInt(localBudgets.yearly || 0, 10);
+
+        // --- 修正點 1: 允許 0 (代表不設限/無限額) ---
+        const MIN_VAL = 0;
         const MAX_VAL = 100000000;
 
         if (isNaN(monthlyVal) || monthlyVal < MIN_VAL || monthlyVal > MAX_VAL) {
-            alert(`Monthly budget input error: Please enter a number between ${MIN_VAL} and ${MAX_VAL}`);
+            alert('總月預算輸入錯誤：請輸入有效的數字');
             return;
         }
         if (isNaN(yearlyVal) || yearlyVal < MIN_VAL || yearlyVal > MAX_VAL) {
-            alert(`Yearly budget input error: Please enter a number between ${MIN_VAL} and ${MAX_VAL}`);
+            alert('總年預算輸入錯誤：請輸入有效的數字');
             return;
         }
 
-        onUpdateBudget({ monthly: monthlyVal, yearly: yearlyVal });
-        // Format display
-        setLocalBudgets({
-            monthly: String(monthlyVal),
-            yearly: String(yearlyVal),
+        // Convert strings back to numbers for the API
+        const cleanLimits = localBudgets.categoryLimits.map((item) => {
+            const m = parseInt(item.monthly || 0, 10);
+            const y = parseInt(item.yearly || 0, 10);
+            return {
+                name: item.name,
+                monthly: isNaN(m) ? 0 : m, // --- 修正點 2: 確保不會送出 NaN ---
+                yearly: isNaN(y) ? 0 : y,
+            };
         });
-        alert('Budget settings updated');
+
+        onUpdateBudget({
+            monthly: monthlyVal,
+            yearly: yearlyVal,
+            categoryLimits: cleanLimits,
+        });
     };
 
-    // Handle file selection
+    // Handle CSV file import
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             if (window.confirm(`Are you sure you want to import ${file.name}?\nThis will add data to your account.`)) {
                 onImport(file);
             }
-            e.target.value = null; // Reset input to allow re-selecting the same file
+            e.target.value = null;
         }
     };
 
@@ -64,27 +99,27 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
 
     return (
         <div className="space-y-6">
-            {/* Budget Settings */}
+            {/* 1. Global Budget Settings */}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
                     <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                        <Wallet className="w-5 h-5" /> 預算設定
+                        <Wallet className="w-5 h-5" /> 總預算設定
                     </h3>
                     {/* Save button */}
                     <button
                         onClick={handleSaveBudget}
                         className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-1"
                     >
-                        <Save className="w-4 h-4" /> 儲存
+                        <Save className="w-4 h-4" /> 儲存全部
                     </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>月預算目標</label>
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>月總預算</label>
                         <input
                             type="number"
-                            min="1"
+                            min="0"
                             max="100000000"
                             value={localBudgets.monthly}
                             onChange={(e) => setLocalBudgets({ ...localBudgets, monthly: e.target.value })}
@@ -93,10 +128,10 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                         />
                     </div>
                     <div>
-                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>年預算目標</label>
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>年總預算</label>
                         <input
                             type="number"
-                            min="1"
+                            min="0"
                             max="100000000"
                             value={localBudgets.yearly}
                             onChange={(e) => setLocalBudgets({ ...localBudgets, yearly: e.target.value })}
@@ -107,11 +142,75 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                 </div>
             </div>
 
-            {/* Category Settings */}
+            {/* 2. Category Budget Settings */}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                    <FileText className="w-5 h-5" /> 分類管理
-                </h3>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                        <FileText className="w-5 h-5" /> 分類預算詳情
+                    </h3>
+                    {/* --- 修正點 3: 這裡也加上儲存按鈕，方便操作 --- */}
+                    <button
+                        onClick={handleSaveBudget}
+                        className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-1"
+                    >
+                        <Save className="w-4 h-4" /> 儲存設定
+                    </button>
+                </div>
+
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {localBudgets.categoryLimits.map((item, index) => (
+                        <div
+                            key={item.name}
+                            className={`border rounded-lg p-3 ${isDark ? 'border-slate-600 bg-slate-700/50' : 'border-gray-200 bg-gray-50'}`}
+                        >
+                            {/* Header row - Click to expand */}
+                            <div
+                                className="flex justify-between items-center cursor-pointer select-none"
+                                onClick={() => setExpandedCategory(expandedCategory === index ? null : index)}
+                            >
+                                <span className="font-medium">{item.name}</span>
+                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span>
+                                        月: {item.monthly || 0} / 年: {item.yearly || 0}
+                                    </span>
+                                    {expandedCategory === index ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                </div>
+                            </div>
+
+                            {/* Expandable edit area */}
+                            {expandedCategory === index && (
+                                <div className="mt-3 grid grid-cols-2 gap-3 pt-3 border-t border-dashed border-gray-300 dark:border-slate-500 animate-in fade-in slide-in-from-top-1">
+                                    <div>
+                                        <label className="text-xs text-gray-500 mb-1 block">月限額</label>
+                                        <input
+                                            type="number"
+                                            value={item.monthly}
+                                            onChange={(e) => handleCategoryLimitChange(index, 'monthly', e.target.value)}
+                                            placeholder="無限制"
+                                            className={`w-full text-sm border rounded p-1.5 outline-none focus:ring-1 focus:ring-blue-500 ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'bg-white border-gray-300'}`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 mb-1 block">年限額</label>
+                                        <input
+                                            type="number"
+                                            value={item.yearly}
+                                            onChange={(e) => handleCategoryLimitChange(index, 'yearly', e.target.value)}
+                                            placeholder="無限制"
+                                            className={`w-full text-sm border rounded p-1.5 outline-none focus:ring-1 focus:ring-blue-500 ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'bg-white border-gray-300'}`}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                    {localBudgets.categoryLimits.length === 0 && <p className="text-sm text-gray-400 text-center py-4">尚無分類，請先新增分類</p>}
+                </div>
+            </div>
+
+            {/* 3. Category Management */}
+            <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                <h3 className="font-bold mb-4 text-sm text-gray-500 uppercase tracking-wider">新增/刪除分類</h3>
                 <div className="flex gap-2 mb-4">
                     <input
                         type="text"
@@ -143,7 +242,7 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                 </div>
             </div>
 
-            {/* System Options */}
+            {/* 4. System Options */}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                     <Power className="w-5 h-5" /> 系統選項

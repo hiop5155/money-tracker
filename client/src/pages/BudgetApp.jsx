@@ -143,10 +143,12 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             monthlyTotal={data.monthlyTotal}
                             yearlyTotal={data.yearlyTotal}
                             budgets={data.budgets}
+                            // Pass expenses data
                             monthlyExpenses={data.monthlyExpenses}
+                            yearlyExpenses={data.yearlyExpenses}
+                            categories={data.categories}
                             currentYear={data.currentYear}
                             currentMonth={data.currentMonth}
-                            // Pass date navigation props
                             currentDate={data.currentDate}
                             onPrevMonth={handlePrevMonth}
                             onNextMonth={handleNextMonth}

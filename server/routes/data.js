@@ -91,13 +91,19 @@ router.delete('/categories/:name', auth, async (req, res) => {
 
 // Budget
 router.put('/budget', auth, async (req, res) => {
+    const { monthly, yearly, categoryLimits } = req.body;
+
     try {
         let budget = await Budget.findOne({ userId: req.user.id });
         if (!budget) {
-            budget = new Budget({ ...req.body, userId: req.user.id });
-        } else {
-            budget.monthly = req.body.monthly;
-            budget.yearly = req.body.yearly;
+            budget = new Budget({ userId: req.user.id });
+        }
+
+        budget.monthly = monthly;
+        budget.yearly = yearly;
+
+        if (categoryLimits) {
+            budget.categoryLimits = categoryLimits;
         }
         await budget.save();
         res.json(budget);
