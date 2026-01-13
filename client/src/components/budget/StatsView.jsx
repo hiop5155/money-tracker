@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { PieChart, Pie, Cell, Tooltip } from 'recharts'; // 移除 ResponsiveContainer
-import { X, Calendar, FileText, Loader2 } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { X, Calendar, FileText, Loader2, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import MonthSelector from './MonthSelector';
 
 // Chart Colors
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#64748B', '#84CC16', '#0EA5E9', '#D946EF'];
 
 // --- Sub-component: Budget Progress Bar ---
-const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick }) => {
-    const percentage = total > 0 ? Math.min(100, Math.max(0, (current / total) * 100)) : 0;
+const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick, isIncomeMode }) => {
 
-    const isOver = total > 0 && current > total;
+    const percentage = total > 0 ? Math.min(100, Math.max(0, (current / total) * 100)) : 0;
+    const isOver = !isIncomeMode && total > 0 && current > total;
 
     return (
         <div className="mb-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50 p-2 rounded-lg transition-colors group" onClick={onClick}>
@@ -21,9 +21,9 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
                         查看詳情
                     </span>
                 </span>
-                <span className={isOver ? 'text-red-500 font-bold' : 'text-gray-500 dark:text-gray-400'}>
+                <span className={isOver ? 'text-red-500 font-bold' : isIncomeMode ? 'text-green-600 font-bold' : 'text-gray-500 dark:text-gray-400'}>
                     ${current.toLocaleString()}
-                    {total > 0 && (
+                    {!isIncomeMode && total > 0 && (
                         <>
                             {' '}
                             / <span className="text-xs text-gray-400">${total.toLocaleString()}</span>
@@ -32,32 +32,33 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
                 </span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden pointer-events-none">
-                {total > 0 ? (
-                    <div
-                        className={`h-2.5 rounded-full transition-all duration-500 ${isOver ? 'bg-red-500' : colorClass}`}
-                        style={{ width: `${percentage}%` }}
-                    ></div>
-                ) : (
-                    <div className="h-2.5 rounded-full bg-gray-400/30 w-full"></div>
-                )}
+                <div
+                    className={`h-2.5 rounded-full transition-all duration-500 ${isOver ? 'bg-red-500' : isIncomeMode ? 'bg-green-500' : colorClass}`}
+                    style={{ width: isIncomeMode ? '100%' : total > 0 ? `${percentage}%` : '0%' }}
+                ></div>
             </div>
         </div>
     );
 };
 
 // --- Sub-component: Donut Chart (Fixed size, no ResponsiveContainer) ---
-const BudgetDonut = ({ title, spent, budget, isDark }) => {
+const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode }) => {
     const safeBudget = budget || 0;
     const remaining = Math.max(0, safeBudget - spent);
-
-    const data = [
+    const incomeData = [{ name: '總收入', value: spent }];
+    const expenseData = [
         { name: '已花費', value: spent },
         { name: '剩餘', value: remaining },
     ];
 
-    const chartColors = safeBudget > 0 && spent > safeBudget ? ['#EF4444', '#EF4444'] : ['#3B82F6', isDark ? '#374151' : '#E5E7EB'];
+    const data = isIncomeMode ? incomeData : expenseData;
 
-    if (safeBudget === 0) {
+    let chartColors = ['#3B82F6', isDark ? '#374151' : '#E5E7EB'];
+    if (isIncomeMode) {
+        chartColors = ['#10B981'];
+    } else if (safeBudget > 0 && spent > safeBudget) {
+        chartColors = ['#EF4444', '#EF4444'];
+    } else if (safeBudget === 0) {
         chartColors[0] = '#3B82F6';
         chartColors[1] = isDark ? '#1e293b' : '#fff';
     }
@@ -75,7 +76,7 @@ const BudgetDonut = ({ title, spent, budget, isDark }) => {
                         innerRadius={60}
                         outerRadius={80}
                         fill="#8884d8"
-                        paddingAngle={safeBudget > 0 ? 5 : 0}
+                        paddingAngle={!isIncomeMode && safeBudget > 0 ? 5 : 0}
                         dataKey="value"
                         startAngle={90}
                         endAngle={-270}
@@ -83,7 +84,7 @@ const BudgetDonut = ({ title, spent, budget, isDark }) => {
                         isAnimationActive={false}
                     >
                         {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={chartColors[index]} />
+                            <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
                         ))}
                     </Pie>
                     <Tooltip
@@ -98,25 +99,29 @@ const BudgetDonut = ({ title, spent, budget, isDark }) => {
                 </PieChart>
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-xs text-gray-500">{safeBudget > 0 ? '總預算' : '無預算上限'}</span>
+                    <span className="text-xs text-gray-500">{isIncomeMode ? '總收入' : safeBudget > 0 ? '總預算' : '無預算上限'}</span>
                     <span className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        {safeBudget > 0 ? `$${safeBudget.toLocaleString()}` : '∞'}
+                        {isIncomeMode ? `$${spent.toLocaleString()}` : safeBudget > 0 ? `$${safeBudget.toLocaleString()}` : '∞'}
                     </span>
                 </div>
             </div>
 
             <div className="mt-2 text-center">
-                <p className={`text-sm ${safeBudget > 0 && spent > safeBudget ? 'text-red-500 font-bold' : 'text-gray-500'}`}>
-                    已用: ${spent.toLocaleString()}
-                    {safeBudget > 0 && ` (${Math.round((spent / safeBudget) * 100)}%)`}
-                </p>
+                {isIncomeMode ? (
+                    <p className="text-sm text-green-500 font-bold">本期收入: ${spent.toLocaleString()}</p>
+                ) : (
+                    <p className={`text-sm ${safeBudget > 0 && spent > safeBudget ? 'text-red-500 font-bold' : 'text-gray-500'}`}>
+                        已用: ${spent.toLocaleString()}
+                        {safeBudget > 0 && ` (${Math.round((spent / safeBudget) * 100)}%)`}
+                    </p>
+                )}
             </div>
         </div>
     );
 };
 
 // --- Sub-component: Category Detail Modal ---
-const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark }) => {
+const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIncomeMode }) => {
     if (!isOpen) return null;
 
     return (
@@ -126,8 +131,8 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark }) =>
             >
                 <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-slate-700">
                     <h3 className="font-bold text-lg flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-blue-500" />
-                        {category} - 支出明細
+                        <FileText className={`w-5 h-5 ${isIncomeMode ? 'text-green-500' : 'text-blue-500'}`} />
+                        {category} - {isIncomeMode ? '收入明細' : '支出明細'}
                     </h3>
                     <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
                         <X className="w-5 h-5" />
@@ -148,11 +153,13 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark }) =>
                                     </div>
                                     <span className="font-medium">{expense.note || '無備註'}</span>
                                 </div>
-                                <span className="font-bold text-lg text-blue-600 dark:text-blue-400">${Number(expense.amount).toLocaleString()}</span>
+                                <span className={`font-bold text-lg ${isIncomeMode ? 'text-green-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                                    ${Number(expense.amount).toLocaleString()}
+                                </span>
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500 py-8">無支出紀錄</p>
+                        <p className="text-center text-gray-500 py-8">無紀錄</p>
                     )}
                 </div>
 
@@ -170,6 +177,8 @@ const StatsView = ({
     isDark,
     monthlyTotal,
     yearlyTotal,
+    monthlyIncome,    
+    yearlyIncome,
     budgets,
     monthlyExpenses = [],
     yearlyExpenses = [],
@@ -181,10 +190,13 @@ const StatsView = ({
     onNextMonth,
     onDateChange,
 }) => {
+    // State for Time Range (Monthly / Yearly)
     const [viewMode, setViewMode] = useState('monthly');
+    // State for Type (Expense / Income)
+    const [viewType, setViewType] = useState('expense'); // 'expense' | 'income'
+
     const [selectedCategory, setSelectedCategory] = useState(null);
 
-    // Don't use ResponsiveContainer, use logic to measure div size
     const chartContainerRef = useRef(null);
     const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
@@ -193,10 +205,8 @@ const StatsView = ({
         if (!observeTarget) return;
 
         const resizeObserver = new ResizeObserver((entries) => {
-            // Update chartSize when container size changes
             for (let entry of entries) {
                 const { width, height } = entry.contentRect;
-                // Only update if width > 0 to avoid -1 or 0 errors
                 if (width > 0 && height > 0) {
                     setChartSize({ width, height });
                 }
@@ -211,7 +221,12 @@ const StatsView = ({
         const stats = {};
         const safeExpenses = Array.isArray(expensesList) ? expensesList : [];
 
-        safeExpenses.forEach((e) => {
+        const filteredList = safeExpenses.filter((e) => {
+            if (viewType === 'income') return e.type === 'income';
+            return e.type === 'expense' || !e.type;
+        });
+
+        filteredList.forEach((e) => {
             const catName = e.category ? e.category.trim() : '未分類';
             stats[catName] = (stats[catName] || 0) + Number(e.amount);
         });
@@ -221,7 +236,7 @@ const StatsView = ({
         return Object.keys(stats)
             .map((cat) => {
                 const limitObj = limits.find((l) => l.name === cat);
-                const limit = limitObj && limitObj[timeScale] > 0 ? limitObj[timeScale] : 0;
+                const limit = viewType === 'expense' && limitObj && limitObj[timeScale] > 0 ? limitObj[timeScale] : 0;
 
                 return {
                     name: cat,
@@ -232,13 +247,17 @@ const StatsView = ({
             .sort((a, b) => b.value - a.value);
     };
 
-    const monthlyStats = useMemo(() => processStatsData(monthlyExpenses, budgets?.categoryLimits, 'monthly'), [monthlyExpenses, budgets]);
-
-    const yearlyStats = useMemo(() => processStatsData(yearlyExpenses, budgets?.categoryLimits, 'yearly'), [yearlyExpenses, budgets]);
+    const monthlyStats = useMemo(() => processStatsData(monthlyExpenses, budgets?.categoryLimits, 'monthly'), [monthlyExpenses, budgets, viewType]);
+    const yearlyStats = useMemo(() => processStatsData(yearlyExpenses, budgets?.categoryLimits, 'yearly'), [yearlyExpenses, budgets, viewType]);
 
     const currentStats = viewMode === 'monthly' ? monthlyStats : yearlyStats;
-    const currentTotal = viewMode === 'monthly' ? monthlyTotal : yearlyTotal;
+
+    const currentTotalExpense = viewMode === 'monthly' ? monthlyTotal : yearlyTotal;
+    const currentTotalIncome = viewMode === 'monthly' ? monthlyIncome : yearlyIncome;
+    const currentTotal = viewType === 'income' ? currentTotalIncome : currentTotalExpense;
+
     const currentBudget = viewMode === 'monthly' ? budgets.monthly || 0 : budgets.yearly || 0;
+
     const currentRawExpenses = viewMode === 'monthly' ? monthlyExpenses : yearlyExpenses;
 
     const titlePrefix = viewMode === 'monthly' ? `${currentYear}年 ${currentMonth + 1}月` : `${currentYear} 年度`;
@@ -248,15 +267,16 @@ const StatsView = ({
         const sourceData = Array.isArray(currentRawExpenses) ? currentRawExpenses : [];
         return sourceData
             .filter((e) => {
+                const typeMatch = viewType === 'income' ? e.type === 'income' : e.type === 'expense' || !e.type;
                 const cat = e.category ? e.category.trim() : '未分類';
-                return cat === selectedCategory;
+                return typeMatch && cat === selectedCategory;
             })
             .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }, [selectedCategory, currentRawExpenses]);
+    }, [selectedCategory, currentRawExpenses, viewType]);
 
     return (
         <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-            {/* 1. Header */}
+            {/* Header */}
             <div className="flex flex-col gap-4">
                 <MonthSelector
                     currentDate={currentDate}
@@ -266,33 +286,67 @@ const StatsView = ({
                     isDark={isDark}
                 />
 
-                <div className={`flex p-1 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gray-200'} self-center`}>
-                    {['monthly', 'yearly'].map((mode) => (
+                {/* control panel */}
+                <div className={`p-2 rounded-lg flex flex-col gap-2 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
+                    {/* year/month */}
+                    <div className="flex bg-white/50 dark:bg-slate-700/50 rounded p-1">
+                        {['monthly', 'yearly'].map((mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${
+                                    viewMode === mode
+                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                }`}
+                            >
+                                {mode === 'monthly' ? '月統計' : '年統計'}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* expense / income */}
+                    <div className="flex gap-2">
                         <button
-                            key={mode}
-                            onClick={() => setViewMode(mode)}
-                            className={`px-6 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                viewMode === mode
-                                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                            onClick={() => setViewType('expense')}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                viewType === 'expense'
+                                    ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
                             }`}
                         >
-                            {mode === 'monthly' ? '月統計' : '年統計'}
+                            <TrendingDown className="w-4 h-4" /> 支出
                         </button>
-                    ))}
+                        <button
+                            onClick={() => setViewType('income')}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                viewType === 'income'
+                                    ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
+                            }`}
+                        >
+                            <TrendingUp className="w-4 h-4" /> 收入
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* 2. Overview Donut Charts */}
+            {/* Overview Donut Charts */}
             <div className="grid grid-cols-1 gap-4">
-                <BudgetDonut title={`${titlePrefix} 總預算概覽`} spent={currentTotal} budget={currentBudget} isDark={isDark} />
+                <BudgetDonut
+                    title={`${titlePrefix} ${viewType === 'expense' ? '總預算概覽' : '總收入概覽'}`}
+                    spent={currentTotal}
+                    budget={currentBudget}
+                    isDark={isDark}
+                    isIncomeMode={viewType === 'income'}
+                />
             </div>
 
-            {/* 3. Category List */}
+            {/* Category List*/}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <h3 className={`font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                    {titlePrefix} 分類花費列表
-                    <span className="text-xs font-normal text-gray-500 ml-2">(點擊分類查看明細)</span>
+                    {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
+                    <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
                 </h3>
 
                 {currentStats.length > 0 ? (
@@ -305,17 +359,22 @@ const StatsView = ({
                                 total={item.limit}
                                 colorClass={COLORS[index % COLORS.length] ? `bg-[${COLORS[index % COLORS.length]}]` : 'bg-blue-500'}
                                 onClick={() => setSelectedCategory(item.name)}
+                                isIncomeMode={viewType === 'income'}
                             />
                         ))}
                     </div>
                 ) : (
-                    <div className="h-40 flex items-center justify-center text-gray-400">{titlePrefix} 尚無支出資料</div>
+                    <div className="h-40 flex items-center justify-center text-gray-400">
+                        {titlePrefix} 尚無{viewType === 'expense' ? '支出' : '收入'}資料
+                    </div>
                 )}
             </div>
 
             {/* 4. Distribution Pie Chart */}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <h3 className={`font-bold mb-4 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>{titlePrefix} 花費比例分佈</h3>
+                <h3 className={`font-bold mb-4 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                    {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
+                </h3>
 
                 {/* Use ref for Observer to listen.
                     Only render PieChart when chartSize.width > 0.
@@ -331,7 +390,6 @@ const StatsView = ({
                                 outerRadius={80}
                                 fill="#8884d8"
                                 dataKey="value"
-                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                 onClick={(data) => setSelectedCategory(data.name)}
                                 cursor="pointer"
                             >
@@ -342,7 +400,6 @@ const StatsView = ({
                             <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
                         </PieChart>
                     ) : (
-                        // Loading state
                         <div className="w-full h-full flex items-center justify-center">
                             <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
                         </div>
@@ -357,6 +414,7 @@ const StatsView = ({
                 category={selectedCategory}
                 expenses={detailExpenses}
                 isDark={isDark}
+                isIncomeMode={viewType === 'income'}
             />
         </div>
     );

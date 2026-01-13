@@ -16,7 +16,7 @@ router.get('/data', auth, async (req, res) => {
         // Initialize default categories
         let categoryList = categories.map((c) => c.name);
         if (categoryList.length === 0) {
-            const defaults = ['早餐', '午餐', '晚餐', '飲料', '日用品', '娛樂', '稅金', '保險'];
+            const defaults = ['早餐', '午餐', '晚餐', '飲料', '日用品', '娛樂', '稅金', '保險', '薪水', '交通'];
             await Category.insertMany(defaults.map((name) => ({ userId, name })));
             categoryList = defaults;
         }
@@ -57,10 +57,10 @@ router.delete('/expenses/:id', auth, async (req, res) => {
 
 router.put('/expenses/:id', auth, async (req, res) => {
     try {
-        const { category, amount, note, date } = req.body;
+        const { category, amount, note, date, type } = req.body;
         const updatedExpense = await Expense.findOneAndUpdate(
             { _id: req.params.id, userId: req.user.id },
-            { category, amount, note, date },
+            { category, amount, note, date, type },
             { new: true }
         );
         if (!updatedExpense) return res.status(404).json({ error: 'Expense not found' });

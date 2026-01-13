@@ -38,6 +38,26 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
         setNewCategory('');
     };
 
+    // Monthly budget input linkage logic ---
+    const handleGlobalMonthlyChange = (e) => {
+        const valStr = e.target.value;
+        const valNum = parseInt(valStr || 0, 10);
+
+        let newYearly = localBudgets.yearly;
+        const currentYearlyNum = parseInt(localBudgets.yearly || 0, 10);
+
+        // Budget check
+        if (currentYearlyNum < valNum * 12) {
+            newYearly = String(valNum * 12);
+        }
+
+        setLocalBudgets({
+            ...localBudgets,
+            monthly: valStr,
+            yearly: newYearly,
+        });
+    };
+
     // Handle changes in category limit inputs
     const handleCategoryLimitChange = (index, field, value) => {
         const newLimits = [...localBudgets.categoryLimits];
@@ -47,11 +67,10 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
 
     // Save all budget settings
     const handleSaveBudget = () => {
-        // 使用 || 0 確保空字串轉為 0
+        // Use || 0 to ensure empty string converts to 0
         const monthlyVal = parseInt(localBudgets.monthly || 0, 10);
         const yearlyVal = parseInt(localBudgets.yearly || 0, 10);
 
-        // --- 修正點 1: 允許 0 (代表不設限/無限額) ---
         const MIN_VAL = 0;
         const MAX_VAL = 100000000;
 
@@ -70,7 +89,7 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
             const y = parseInt(item.yearly || 0, 10);
             return {
                 name: item.name,
-                monthly: isNaN(m) ? 0 : m, // --- 修正點 2: 確保不會送出 NaN ---
+                monthly: isNaN(m) ? 0 : m,
                 yearly: isNaN(y) ? 0 : y,
             };
         });
@@ -97,6 +116,10 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
         fileInputRef.current.click();
     };
 
+    // Calculate category sums (for display)
+    const totalCatMonthly = localBudgets.categoryLimits.reduce((sum, item) => sum + parseInt(item.monthly || 0, 10), 0);
+    const totalCatYearly = localBudgets.categoryLimits.reduce((sum, item) => sum + parseInt(item.yearly || 0, 10), 0);
+
     return (
         <div className="space-y-6">
             {/* 1. Global Budget Settings */}
@@ -122,7 +145,7 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                             min="0"
                             max="100000000"
                             value={localBudgets.monthly}
-                            onChange={(e) => setLocalBudgets({ ...localBudgets, monthly: e.target.value })}
+                            onChange={handleGlobalMonthlyChange}
                             placeholder="請輸入金額"
                             className={`w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200'}`}
                         />
@@ -148,7 +171,6 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                     <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                         <FileText className="w-5 h-5" /> 分類預算詳情
                     </h3>
-                    {/* --- 修正點 3: 這裡也加上儲存按鈕，方便操作 --- */}
                     <button
                         onClick={handleSaveBudget}
                         className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-1"
@@ -157,7 +179,8 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                     </button>
                 </div>
 
-                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                {/* Category list area */}
+                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar mb-4">
                     {localBudgets.categoryLimits.map((item, index) => (
                         <div
                             key={item.name}
@@ -205,6 +228,35 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                         </div>
                     ))}
                     {localBudgets.categoryLimits.length === 0 && <p className="text-sm text-gray-400 text-center py-4">尚無分類，請先新增分類</p>}
+                </div>
+
+                {/* Summary row (displayed below the list) */}
+                <div className={`mt-2 p-3 rounded-lg border-t-2 ${isDark ? 'bg-slate-700/80 border-slate-500' : 'bg-gray-100 border-gray-300'}`}>
+                    <div className="flex justify-between items-center">
+                        <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>分類總計 (Total)</span>
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm font-mono text-right">
+                            <span
+                                className={
+                                    totalCatMonthly > parseInt(localBudgets.monthly || 0) ? 'text-red-500 font-bold' : 'text-green-600 font-bold'
+                                }
+                            >
+                                月: {totalCatMonthly.toLocaleString()}
+                                <span className="text-xs font-normal text-gray-400 ml-1">
+                                    / {parseInt(localBudgets.monthly || 0).toLocaleString()}
+                                </span>
+                            </span>
+                            <span
+                                className={
+                                    totalCatYearly > parseInt(localBudgets.yearly || 0) ? 'text-red-500 font-bold' : 'text-green-600 font-bold'
+                                }
+                            >
+                                年: {totalCatYearly.toLocaleString()}
+                                <span className="text-xs font-normal text-gray-400 ml-1">
+                                    / {parseInt(localBudgets.yearly || 0).toLocaleString()}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

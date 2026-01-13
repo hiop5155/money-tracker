@@ -9,6 +9,7 @@ const RecurringExpenseSchema = new mongoose.Schema({
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     note: { type: String },
+    type: { type: String, enum: ['expense', 'income'], default: 'expense', required: true },
     createdAt: { type: Date, default: Date.now },
 });
 

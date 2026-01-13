@@ -62,15 +62,53 @@ export const useBudgetData = (token, onLogout) => {
         return expenses.filter((e) => e.date === dateStr);
     }, [expenses, selectedDate]);
 
-    const monthlyTotal = monthlyExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-    const yearlyTotal = yearlyExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    // Separate Income and Expenses
+    const monthlyStats = useMemo(() => {
+        return monthlyExpenses.reduce(
+            (acc, curr) => {
+                const amount = Number(curr.amount);
+                if (curr.type === 'income') {
+                    acc.income += amount;
+                } else {
+                    acc.expense += amount;
+                }
+                return acc;
+            },
+            { income: 0, expense: 0 }
+        );
+    }, [monthlyExpenses]);
 
-    // --- Handlers (Actions) ---
+    const yearlyStats = useMemo(() => {
+        return yearlyExpenses.reduce(
+            (acc, curr) => {
+                const amount = Number(curr.amount);
+                if (curr.type === 'income') {
+                    acc.income += amount;
+                } else {
+                    acc.expense += amount;
+                }
+                return acc;
+            },
+            { income: 0, expense: 0 }
+        );
+    }, [yearlyExpenses]);
+
+    const monthlyTotal = monthlyStats.expense;
+    const monthlyIncome = monthlyStats.income;
+    const yearlyTotal = yearlyStats.expense;
+    const yearlyIncome = yearlyStats.income;
 
     // Expenses
     const handleSaveExpense = async (formData, editingId) => {
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        const payload = { date: dateStr, category: formData.category, amount: Number(formData.amount), note: formData.note };
+        // --- Ensure type is sent ---
+        const payload = {
+            date: formData.date || dateStr, // Support date selection in Modal
+            category: formData.category,
+            amount: Number(formData.amount),
+            note: formData.note,
+            type: formData.type || 'expense',
+        };
 
         try {
             if (editingId) {
@@ -180,8 +218,8 @@ export const useBudgetData = (token, onLogout) => {
 
     // CSV Export
     const exportToCSV = () => {
-        const headers = ['日期', '分類', '金額', '備註'];
-        const rows = expenses.map((e) => [e.date, e.category, e.amount, `"${e.note || ''}"`]);
+        const headers = ['日期', '分類', '金額', '備註', '類型'];
+        const rows = expenses.map((e) => [e.date, e.category, e.amount, `"${e.note || ''}"`, e.type || 'expense']);
         const csvContent = ['\uFEFF' + headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
@@ -243,6 +281,8 @@ export const useBudgetData = (token, onLogout) => {
         selectedDateExpenses,
         monthlyTotal,
         yearlyTotal,
+        monthlyIncome,
+        yearlyIncome,
         setCurrentDate,
         setSelectedDate,
         handleSaveExpense,

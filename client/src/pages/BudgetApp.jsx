@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2 } from 'lucide-react';
+import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2, Search } from 'lucide-react';
 
 // Hooks & Components
 import { useBudgetData } from '../hooks/useBudgetData';
@@ -10,6 +10,7 @@ import CalendarView from '../components/budget/CalendarView';
 import StatsView from '../components/budget/StatsView';
 import RecurringView from '../components/budget/RecurringView';
 import SettingsView from '../components/budget/SettingsView';
+import SearchView from '../components/budget/SearchView';
 
 // Modals
 import ExpenseModal from '../components/budget/ExpenseModal';
@@ -103,6 +104,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
                         {[
                             { id: 'calendar', icon: Calendar, label: '月曆' },
                             { id: 'stats', icon: PieIcon, label: '統計' },
+                            { id: 'search', icon: Search, label: '搜尋' },
                             { id: 'recurring', icon: Repeat, label: '固定' },
                             { id: 'settings', icon: Settings, label: '設定' },
                         ].map((tab) => (
@@ -125,6 +127,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             selectedDateExpenses={data.selectedDateExpenses}
                             monthlyTotal={data.monthlyTotal}
                             yearlyTotal={data.yearlyTotal}
+                            monthlyIncome={data.monthlyIncome}
+                            yearlyIncome={data.yearlyIncome}
                             budgets={data.budgets}
                             onPrevMonth={handlePrevMonth}
                             onNextMonth={handleNextMonth}
@@ -142,6 +146,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             isDark={isDarkMode}
                             monthlyTotal={data.monthlyTotal}
                             yearlyTotal={data.yearlyTotal}
+                            monthlyIncome={data.monthlyIncome}
+                            yearlyIncome={data.yearlyIncome}
                             budgets={data.budgets}
                             // Pass expenses data
                             monthlyExpenses={data.monthlyExpenses}
@@ -155,6 +161,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             onDateChange={handleDateChange}
                         />
                     )}
+
+                    {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} />}
 
                     {currentView === 'recurring' && (
                         <RecurringView

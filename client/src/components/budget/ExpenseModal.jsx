@@ -1,88 +1,216 @@
 import React, { useState, useEffect } from 'react';
+import { X, Calendar as CalendarIcon, Tag, FileText, Check } from 'lucide-react';
+import CalculatorKeypad from './CalculatorKeypad';
 
 const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, categories, isDark }) => {
-    const [formData, setFormData] = useState({ amount: '', category: '', note: '' });
+    const [formData, setFormData] = useState({
+        type: 'expense',
+        amountStr: '', // Store expression as string (e.g., "100+50")
+        category: '',
+        note: '',
+        date: '',
+    });
 
+    // Initialize Data
     useEffect(() => {
-        if (initialData) {
-            setFormData({
-                amount: initialData.amount,
-                category: initialData.category,
-                note: initialData.note || '',
-            });
-        } else {
-            setFormData({
-                amount: '',
-                category: categories[0] || '',
-                note: '',
-            });
-        }
-    }, [initialData, categories, isOpen]);
+        if (isOpen) {
+            if (initialData) {
+                setFormData({
+                    type: initialData.type || 'expense',
+                    amountStr: String(initialData.amount || ''),
+                    category: initialData.category || categories[0] || '',
+                    note: initialData.note || '',
+                    date: initialData.date || new Date().toISOString().split('T')[0],
+                });
+            } else {
+                // New Entry Mode
+                const defaultDate = selectedDate
+                    ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+                    : new Date().toISOString().split('T')[0];
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave(formData);
-    };
+                setFormData({
+                    type: 'expense',
+                    amountStr: '',
+                    category: categories[0] || '',
+                    note: '',
+                    date: defaultDate,
+                });
+            }
+        }
+    }, [isOpen, initialData, selectedDate, categories]);
 
     if (!isOpen) return null;
 
+    // Calculate result of current expression
+    const calculateResult = (expression) => {
+        try {
+            if (!expression) return 0;
+            // Safe calculation (only allow numbers and operators)
+            // eslint-disable-next-line no-new-func
+            const result = new Function('return ' + expression)();
+            // Handle infinity or non-numbers
+            if (!isFinite(result) || isNaN(result)) return 0;
+            return result;
+        } catch (e) {
+            return 0;
+        }
+    };
+
+    const handleSubmit = () => {
+        // 1. Calculate final amount
+        const finalAmount = calculateResult(formData.amountStr);
+
+        if (finalAmount <= 0) {
+            alert('Please enter a valid amount');
+            return;
+        }
+
+        // 2. Validate category
+        if (!formData.category) {
+            alert('Please select a category');
+            return;
+        }
+
+        onSave({
+            ...formData,
+            amount: finalAmount, // Return number
+        });
+    };
+
+    // Get preview amount (show realtime result if operators exist)
+    const previewAmount = calculateResult(formData.amountStr);
+
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end md:items-center justify-center animate-in fade-in duration-200">
+            {/* Modal Container */}
             <div
-                className={`rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200 ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-800'}`}
+                className={`w-full md:w-[400px] md:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[90vh] ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-slate-800'}`}
             >
-                <h2 className="text-xl font-bold mb-4">{initialData ? '編輯支出' : '新增支出'}</h2>
-                <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>日期: {selectedDate.toLocaleDateString()}</p>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>金額</label>
-                        <input
-                            type="number"
-                            required
-                            autoFocus
-                            placeholder="0"
-                            value={formData.amount}
-                            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                            className={`w-full border rounded-lg p-2 text-lg font-bold outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200 text-gray-800'}`}
-                        />
-                    </div>
-                    <div>
-                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>分類</label>
-                        <select
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                            className={`w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200'}`}
-                        >
-                            {categories.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>備註 (選填)</label>
-                        <input
-                            type="text"
-                            placeholder="例如: 牛肉麵"
-                            value={formData.note}
-                            onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                            className={`w-full border rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400' : 'bg-white border-gray-200'}`}
-                        />
-                    </div>
-                    <div className="flex gap-3 pt-2">
+                {/* Header: Type Switcher & Close */}
+                <div className={`flex justify-between items-center p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+                    <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
                         <button
-                            type="button"
-                            onClick={onClose}
-                            className={`flex-1 py-2 rounded-lg border ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                            onClick={() => setFormData({ ...formData, type: 'expense' })}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                formData.type === 'expense'
+                                    ? 'bg-white dark:bg-slate-600 text-red-500 shadow-sm'
+                                    : 'text-gray-500 dark:text-slate-400'
+                            }`}
                         >
-                            取消
+                            Expense
                         </button>
-                        <button type="submit" className="flex-1 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                            儲存
+                        <button
+                            onClick={() => setFormData({ ...formData, type: 'income' })}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                formData.type === 'income'
+                                    ? 'bg-white dark:bg-slate-600 text-green-500 shadow-sm'
+                                    : 'text-gray-500 dark:text-slate-400'
+                            }`}
+                        >
+                            Income
                         </button>
                     </div>
-                </form>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Amount Display Area */}
+                <div className={`px-6 py-4 flex flex-col items-end justify-center h-24 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                    {/* Display expression (e.g. 100 + 50) */}
+                    <div className={`text-sm h-5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{formData.amountStr || '0'}</div>
+                    {/* Display result (e.g. 150) */}
+                    <div
+                        className={`text-4xl font-mono font-bold tracking-tight flex items-center gap-2 ${
+                            formData.type === 'expense' ? 'text-red-500' : 'text-green-500'
+                        }`}
+                    >
+                        <span>$</span>
+                        {/* Show preview if calculating */}
+                        <span>{formData.amountStr ? previewAmount.toLocaleString() : '0'}</span>
+                    </div>
+                </div>
+
+                {/* Input Fields Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    {/* Date & Category Selection Row */}
+                    <div className={`p-4 space-y-4 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                        {/* Date Picker */}
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-full ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                <CalendarIcon className="w-5 h-5" />
+                            </div>
+                            <input
+                                type="date"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                className={`flex-1 bg-transparent text-lg font-medium outline-none ${isDark ? 'text-white' : 'text-gray-800'}`}
+                            />
+                        </div>
+
+                        {/* Category Selector (Horizontal Scroll) */}
+                        <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+                            <div className={`shrink-0 p-2 rounded-full ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                <Tag className="w-5 h-5" />
+                            </div>
+                            <div className="flex gap-2">
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setFormData({ ...formData, category: cat })}
+                                        className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${
+                                            formData.category === cat
+                                                ? isDark
+                                                    ? 'bg-blue-900/50 border-blue-500 text-blue-400'
+                                                    : 'bg-blue-50 border-blue-500 text-blue-600'
+                                                : isDark
+                                                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Note Input */}
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-full ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
+                                <FileText className="w-5 h-5" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Add a note..."
+                                value={formData.note}
+                                onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                                className={`flex-1 bg-transparent border-b outline-none py-1 ${isDark ? 'border-slate-700 text-white placeholder-slate-500' : 'border-gray-200 text-gray-800 placeholder-gray-400'} focus:border-blue-500 transition-colors`}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom: Calculator + Complete Button */}
+                <div className={`border-t ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50'}`}>
+                    {/* Toolbar */}
+                    <div className="flex justify-between items-center px-4 py-2 text-xs text-gray-400">
+                        <span>Calculator Mode</span>
+                        <button
+                            onClick={handleSubmit}
+                            className="bg-blue-600 text-white px-6 py-1.5 rounded-full flex items-center gap-1 font-bold shadow hover:bg-blue-700 active:scale-95 transition-all"
+                        >
+                            <Check className="w-4 h-4" /> Done
+                        </button>
+                    </div>
+
+                    {/* Calculator Keypad */}
+                    <CalculatorKeypad
+                        value={formData.amountStr}
+                        onChange={(val) => setFormData({ ...formData, amountStr: val })}
+                        onSubmit={handleSubmit}
+                        isDark={isDark}
+                    />
+                </div>
             </div>
         </div>
     );
