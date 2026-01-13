@@ -106,7 +106,7 @@ const CalendarView = ({
                 >
                     {/* Row 1: Monthly Income vs Expense */}
                     <div className="flex justify-between items-center pr-2 border-r border-gray-300 dark:border-slate-600">
-                        <span className="text-gray-500 dark:text-slate-400">本月預算:</span>
+                        <span className="text-gray-500 dark:text-slate-400">本月收入:</span>
                         <span className="font-bold text-green-500">{formatCurrency(monthlyIncome || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center pl-2">
