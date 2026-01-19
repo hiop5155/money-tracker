@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
             password: hashedPassword,
             verificationToken: verificationCode,
             isVerified: false,
+            lastVerificationEmailSentAt: Date.now(),
         });
 
         // Send verification email
@@ -96,11 +97,21 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(404).json({ error: '找不到此 Email 的使用者' });
         }
 
+        // Check cooldown (1 minute)
+        if (user.lastResetPasswordEmailSentAt) {
+            const timeSinceLastSend = Date.now() - new Date(user.lastResetPasswordEmailSentAt).getTime();
+            if (timeSinceLastSend < 60000) {
+                const remainingSeconds = Math.ceil((60000 - timeSinceLastSend) / 1000);
+                return res.status(429).json({ error: `請等待 ${remainingSeconds} 秒後再試` });
+            }
+        }
+
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Set OTP and expiration time (current time + 10 minutes)
         user.resetPasswordToken = otp;
         user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+        user.lastResetPasswordEmailSentAt = Date.now();
 
         await user.save();
 
@@ -140,6 +151,42 @@ router.post('/verify-reset-otp', async (req, res) => {
     }
 });
 
+// Resend Verification Code
+router.post('/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) return res.status(404).json({ error: '找不到此 Email 的使用者' });
+        if (user.isVerified) return res.status(400).json({ error: '此帳號已驗證，請直接登入' });
+
+        // Check cooldown (1 minute)
+        if (user.lastVerificationEmailSentAt) {
+            const timeSinceLastSend = Date.now() - new Date(user.lastVerificationEmailSentAt).getTime();
+            if (timeSinceLastSend < 60000) {
+                const remainingSeconds = Math.ceil((60000 - timeSinceLastSend) / 1000);
+                return res.status(429).json({ error: `請等待 ${remainingSeconds} 秒後再試` });
+            }
+        }
+
+        // Generate new verification code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verificationToken = verificationCode;
+        user.lastVerificationEmailSentAt = Date.now();
+        await user.save();
+
+        // Send email
+        const subject = 'Money Tracker - 帳號驗證碼';
+        const text = `您的新驗證碼是：${verificationCode}`;
+        await sendEmail(email, subject, text);
+
+        res.json({ message: '驗證碼已重新發送，請檢查您的 Email' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 router.post('/reset-password', async (req, res) => {
     try {
         // Frontend note: Even if verified in previous step, OTP is still required here for identity proof
@@ -162,6 +209,10 @@ router.post('/reset-password', async (req, res) => {
         // Clear reset password related fields
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
+
+        // Auto-verify user on successful password reset
+        user.isVerified = true;
+        user.verificationToken = undefined;
 
         await user.save();
 

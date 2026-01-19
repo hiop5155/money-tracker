@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: Money Tracker API
     description: Money Tracker Backend API Documentation (Node.js + Express + MongoDB)
-    version: 1.2.0 # Updated version to reflect Import feature
+    version: 1.3.0 # Updated to include Income/Expense type distinction
 servers:
     - url: http://localhost:5000
       description: Local Development Server
@@ -119,6 +119,11 @@ components:
                 note:
                     type: string
                     example: '雞腿便當'
+                type: # Added type field
+                    type: string
+                    enum: ['expense', 'income']
+                    default: 'expense'
+                    example: 'expense'
                 recurringId:
                     type: string
                     description: Associated Recurring Rule ID (if auto-generated)
@@ -153,6 +158,11 @@ components:
                 note:
                     type: string
                     example: '銀行自動扣款'
+                type: # Added type field
+                    type: string
+                    enum: ['expense', 'income']
+                    default: 'expense'
+                    example: 'expense'
 
         Budget:
             type: object
@@ -316,7 +326,7 @@ paths:
 
     /api/expenses:
         post:
-            summary: Add a new expense
+            summary: Add a new expense or income
             tags: [Data]
             security:
                 - bearerAuth: []
@@ -335,6 +345,10 @@ paths:
                                     type: number
                                 note:
                                     type: string
+                                type: # Added type field
+                                    type: string
+                                    enum: ['expense', 'income']
+                                    default: 'expense'
             responses:
                 '200':
                     description: Added successfully
@@ -363,6 +377,9 @@ paths:
                                 category: { type: string }
                                 amount: { type: number }
                                 note: { type: string }
+                                type: # Added type field
+                                    type: string
+                                    enum: ['expense', 'income']
             responses:
                 '200':
                     description: Modified successfully
@@ -465,6 +482,10 @@ paths:
                                 startDate: { type: string, format: date }
                                 endDate: { type: string, format: date }
                                 note: { type: string }
+                                type: # Added type field
+                                    type: string
+                                    enum: ['expense', 'income']
+                                    default: 'expense'
             responses:
                 '200':
                     description: Created successfully
@@ -499,6 +520,9 @@ paths:
                                 startDate: { type: string, format: date }
                                 endDate: { type: string, format: date }
                                 note: { type: string }
+                                type: # Added type field
+                                    type: string
+                                    enum: ['expense', 'income']
             responses:
                 '200':
                     description: Updated successfully

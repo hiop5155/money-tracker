@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { API_URL } from '../config';
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [step, setStep] = useState(1);
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(location.state?.email || '');
     const [otp, setOtp] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+
+    // Countdown state for resend
+    const [countdown, setCountdown] = useState(0);
+
+    useEffect(() => {
+        let timer;
+        if (countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
     const callApi = async (endpoint, body) => {
         setLoading(true);
         setError('');
+        setMessage('');
         try {
             const res = await fetch(`${API_URL}/auth/${endpoint}`, {
                 method: 'POST',
@@ -34,11 +48,22 @@ const ForgotPassword = () => {
     };
 
     const handleSendOtp = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const data = await callApi('forgot-password', { email });
         if (data) {
-            alert('驗證碼已寄出，請檢查您的 Email');
+            setMessage('驗證碼已寄出，請檢查您的 Email');
             setStep(2);
+            setCountdown(60); // Start cooldown
+        }
+    };
+
+    const handleResendOtp = async () => {
+        if (countdown > 0) return;
+        // Reuse handleSendOtp logic but without event default prevention if triggered directly
+        const data = await callApi('forgot-password', { email });
+        if (data) {
+            setMessage('驗證碼已重新寄出');
+            setCountdown(60);
         }
     };
 
@@ -47,6 +72,7 @@ const ForgotPassword = () => {
         const data = await callApi('verify-reset-otp', { email, otp });
         if (data) {
             setStep(3);
+            setMessage('');
         }
     };
 
@@ -61,7 +87,7 @@ const ForgotPassword = () => {
         const data = await callApi('reset-password', { email, otp, newPassword });
         if (data) {
             alert('密碼重設成功！請使用新密碼登入。');
-            navigate('/login');
+            navigate('/login', { state: { email } });
         }
     };
 
@@ -93,17 +119,38 @@ const ForgotPassword = () => {
                         <button type="submit" disabled={loading}>
                             {loading ? '驗證中...' : '驗證'}
                         </button>
-                        <button
-                            type="button"
-                            onClick={() => setStep(1)}
-                            style={{
-                                background: 'transparent',
-                                color: '#666',
-                                marginTop: '0',
-                            }}
-                        >
-                            回上一步
-                        </button>
+
+                        {/* Resend & Back Buttons */}
+                        <div className="flex justify-between mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setStep(1)}
+                                style={{
+                                    background: 'transparent',
+                                    color: '#666',
+                                    marginTop: '0',
+                                    width: 'auto',
+                                    padding: '0 5px',
+                                }}
+                            >
+                                回上一步
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleResendOtp}
+                                disabled={countdown > 0}
+                                style={{
+                                    background: 'transparent',
+                                    color: countdown > 0 ? '#999' : '#3B82F6',
+                                    marginTop: '0',
+                                    width: 'auto',
+                                    padding: '0 5px',
+                                    cursor: countdown > 0 ? 'not-allowed' : 'pointer',
+                                }}
+                            >
+                                {countdown > 0 ? `重發 (${countdown}s)` : '重新發送'}
+                            </button>
+                        </div>
                     </form>
                 )}
 
@@ -132,6 +179,7 @@ const ForgotPassword = () => {
                     </form>
                 )}
 
+                {message && <p className="success-msg mt-2 text-green-600 text-sm text-center">{message}</p>}
                 {error && <p className="error-msg">{error}</p>}
 
                 {step === 1 && (

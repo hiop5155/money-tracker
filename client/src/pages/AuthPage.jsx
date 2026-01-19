@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { API_URL } from '../config';
 
 // Receive props: isDarkMode, toggleTheme
 function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const [isLogin, setIsLogin] = useState(true);
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(location.state?.email || '');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
 
     const toggleMode = () => {
         setIsLogin(!isLogin);
@@ -41,6 +43,12 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
             });
 
             const data = await res.json();
+
+            if (res.status === 403) {
+                alert('帳號尚未驗證，請先驗證 Email');
+                navigate('/verify', { state: { email } });
+                return;
+            }
 
             if (!res.ok) throw new Error(data.error || '操作失敗');
 
@@ -96,7 +104,21 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                         <button type="submit">{isLogin ? '登入' : '註冊'}</button>
                     </form>
 
-                    {error && <p className="error-msg">{error}</p>}
+                    {error && (
+                        <div className="error-msg">
+                            {error}
+                            {error.includes('尚未驗證') && (
+                                <div className="mt-2">
+                                    <span
+                                        className="text-blue-500 underline cursor-pointer hover:text-blue-600"
+                                        onClick={() => navigate('/verify', { state: { email } })}
+                                    >
+                                        👉 前往驗證頁面
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <div className="auth-links">
                         <p>
@@ -108,9 +130,22 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
 
                         {isLogin && (
                             <p>
-                                <Link to="/forgot-password">忘記密碼？</Link>
+                                <span
+                                    onClick={() => navigate('/forgot-password', { state: { email } })}
+                                    className="cursor-pointer hover:text-blue-600"
+                                >
+                                    忘記密碼？
+                                </span>
                             </p>
                         )}
+                        <p style={{ marginTop: '0.5rem' }}>
+                            <span
+                                onClick={() => navigate('/verify', { state: { email } })}
+                                className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
+                            >
+                                已有驗證碼？前往驗證
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>

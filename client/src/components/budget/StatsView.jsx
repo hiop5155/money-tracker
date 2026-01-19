@@ -8,7 +8,6 @@ const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'
 
 // --- Sub-component: Budget Progress Bar ---
 const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick, isIncomeMode }) => {
-
     const percentage = total > 0 ? Math.min(100, Math.max(0, (current / total) * 100)) : 0;
     const isOver = !isIncomeMode && total > 0 && current > total;
 
@@ -177,7 +176,7 @@ const StatsView = ({
     isDark,
     monthlyTotal,
     yearlyTotal,
-    monthlyIncome,    
+    monthlyIncome,
     yearlyIncome,
     budgets,
     monthlyExpenses = [],
