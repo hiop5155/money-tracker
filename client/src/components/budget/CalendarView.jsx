@@ -127,6 +127,37 @@ const CalendarView = ({
                             {formatCurrency(yearlyTotal)}
                         </span>
                     </div>
+
+                    {/* Row 3: Daily Stats (NEW) */}
+                    {(() => {
+                        const daysInCurrentMonth = getDaysInMonth(currentYear, currentMonth);
+                        // Logic: if looking at past months, days passed = total days. If future, 0?
+                        // Assuming logic is relevant for "Current Viewing Month"
+                        // But usually "Remaining Days" implies relation to TODAY.
+
+                        // Check if viewing current actual month
+                        const today = new Date();
+                        const isCurrentRealMonth = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
+
+                        if (!isCurrentRealMonth) return null; // Only show for current month
+
+                        const dayOfMonth = today.getDate();
+                        const remainingDays = daysInCurrentMonth - dayOfMonth;
+                        const remainingBudget = (budgets.monthly || 0) - monthlyTotal;
+
+                        const dailyAvgSpent = dayOfMonth > 0 ? Math.round(monthlyTotal / dayOfMonth) : 0;
+                        const dailyAvailable = remainingDays > 0 ? Math.round(Math.max(0, remainingBudget) / remainingDays) : 0;
+
+                        return (
+                            <>
+                                <div className="col-span-2 pt-2 mt-2 border-t border-gray-300 dark:border-slate-700 flex justify-between text-xs text-gray-500 dark:text-slate-400">
+                                    <span>剩餘天數: <strong className={isDark ? 'text-slate-200' : 'text-gray-700'}>{remainingDays} 天</strong></span>
+                                    <span>日均花費: <strong className="text-orange-500">${dailyAvgSpent}</strong></span>
+                                    <span>日均可用: <strong className="text-blue-500">${dailyAvailable}</strong></span>
+                                </div>
+                            </>
+                        );
+                    })()}
                 </div>
                 {/* --------------------------- */}
             </div>

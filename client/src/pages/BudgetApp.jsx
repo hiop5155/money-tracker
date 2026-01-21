@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2, Search } from 'lucide-react';
+import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2, Search, TrendingUp } from 'lucide-react';
 
 // Hooks & Components
 import { useBudgetData } from '../hooks/useBudgetData';
@@ -11,6 +11,8 @@ import StatsView from '../components/budget/StatsView';
 import RecurringView from '../components/budget/RecurringView';
 import SettingsView from '../components/budget/SettingsView';
 import SearchView from '../components/budget/SearchView';
+import TrendView from '../components/budget/TrendView.jsx';
+import InsightCard from '../components/budget/InsightCard.jsx'; // [NEW]
 
 // Modals
 import ExpenseModal from '../components/budget/ExpenseModal';
@@ -100,10 +102,21 @@ const BudgetApp = ({ token, onLogout, username }) => {
                 </header>
 
                 <main className="max-w-4xl mx-auto p-4">
+                    {/* AI Insights - Only show on Calendar/Stats view to avoid clutter */}
+                    {(currentView === 'calendar' || currentView === 'stats') && (
+                        <InsightCard
+                            expenses={data.expenses}
+                            budgets={data.budgets}
+                            categories={data.categories}
+                            isDark={isDarkMode}
+                        />
+                    )}
+
                     <div className={`flex rounded-lg shadow-sm mb-6 p-1 transition-colors ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
                         {[
                             { id: 'calendar', icon: Calendar, label: '月曆' },
                             { id: 'stats', icon: PieIcon, label: '統計' },
+                            { id: 'trend', icon: TrendingUp, label: '趨勢' },
                             { id: 'search', icon: Search, label: '搜尋' },
                             { id: 'recurring', icon: Repeat, label: '固定' },
                             { id: 'settings', icon: Settings, label: '設定' },
@@ -161,6 +174,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             onDateChange={handleDateChange}
                         />
                     )}
+
+                    {currentView === 'trend' && <TrendView isDark={isDarkMode} expenses={data.expenses || []} />}
 
                     {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} />}
 

@@ -23,6 +23,7 @@ export const useBudgetData = (token, onLogout) => {
             const data = await res.json();
             setExpenses(data.expenses || []);
             setCategories(data.categories || []);
+            setCategories(data.categories || []);
             if (data.budget) setBudgets(data.budget);
             return data;
         }
