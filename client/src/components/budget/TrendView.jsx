@@ -165,8 +165,8 @@ const TrendView = ({ expenses = [], isDark }) => {
                                 }}
                                 formatter={(value) => `$${value.toLocaleString()}`}
                             />
-                            <Bar dataKey="income" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                            <Bar dataKey="expense" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                            <Bar dataKey="income" name="收入" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                            <Bar dataKey="expense" name="支出" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
                         </BarChart>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
