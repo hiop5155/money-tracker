@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar as CalendarIcon, Tag, FileText, Check } from 'lucide-react';
 import CalculatorKeypad from './CalculatorKeypad';
 
-const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, categories, isDark }) => {
+const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, categories, expenses, budgets, isDark }) => {
     const [formData, setFormData] = useState({
         type: 'expense',
         amountStr: '', // Store expression as string (e.g., "100+50")
@@ -91,23 +91,21 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                     <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
                         <button
                             onClick={() => setFormData({ ...formData, type: 'expense' })}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                formData.type === 'expense'
-                                    ? 'bg-white dark:bg-slate-600 text-red-500 shadow-sm'
-                                    : 'text-gray-500 dark:text-slate-400'
-                            }`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'expense'
+                                ? 'bg-white dark:bg-slate-600 text-red-500 shadow-sm'
+                                : 'text-gray-500 dark:text-slate-400'
+                                }`}
                         >
-                            Expense
+                            支出
                         </button>
                         <button
                             onClick={() => setFormData({ ...formData, type: 'income' })}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                formData.type === 'income'
-                                    ? 'bg-white dark:bg-slate-600 text-green-500 shadow-sm'
-                                    : 'text-gray-500 dark:text-slate-400'
-                            }`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'income'
+                                ? 'bg-white dark:bg-slate-600 text-green-500 shadow-sm'
+                                : 'text-gray-500 dark:text-slate-400'
+                                }`}
                         >
-                            Income
+                            收入
                         </button>
                     </div>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
@@ -121,9 +119,8 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                     <div className={`text-sm h-5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{formData.amountStr || '0'}</div>
                     {/* Display result (e.g. 150) */}
                     <div
-                        className={`text-4xl font-mono font-bold tracking-tight flex items-center gap-2 ${
-                            formData.type === 'expense' ? 'text-red-500' : 'text-green-500'
-                        }`}
+                        className={`text-4xl font-mono font-bold tracking-tight flex items-center gap-2 ${formData.type === 'expense' ? 'text-red-500' : 'text-green-500'
+                            }`}
                     >
                         <span>$</span>
                         {/* Show preview if calculating */}
@@ -158,21 +155,31 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                     <button
                                         key={cat}
                                         onClick={() => setFormData({ ...formData, category: cat })}
-                                        className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${
-                                            formData.category === cat
-                                                ? isDark
-                                                    ? 'bg-blue-900/50 border-blue-500 text-blue-400'
-                                                    : 'bg-blue-50 border-blue-500 text-blue-600'
-                                                : isDark
-                                                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                                                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
+                                        className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${formData.category === cat
+                                            ? isDark
+                                                ? 'bg-blue-900/50 border-blue-500 text-blue-400'
+                                                : 'bg-blue-50 border-blue-500 text-blue-600'
+                                            : isDark
+                                                ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
                                     >
                                         {cat}
                                     </button>
                                 ))}
                             </div>
                         </div>
+
+                        {/* Category Budget Info - Only show if expense type */}
+                        {formData.type === 'expense' && formData.category && (
+                            <CategoryBudgetInfo
+                                category={formData.category}
+                                date={formData.date}
+                                expenses={expenses}
+                                budgets={budgets}
+                                isDark={isDark}
+                            />
+                        )}
 
                         {/* Note Input */}
                         <div className="flex items-center gap-3">
@@ -181,7 +188,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                             </div>
                             <input
                                 type="text"
-                                placeholder="Add a note..."
+                                placeholder="備註..."
                                 value={formData.note}
                                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                                 className={`flex-1 bg-transparent border-b outline-none py-1 ${isDark ? 'border-slate-700 text-white placeholder-slate-500' : 'border-gray-200 text-gray-800 placeholder-gray-400'} focus:border-blue-500 transition-colors`}
@@ -194,12 +201,12 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                 <div className={`border-t ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-200 bg-gray-50'}`}>
                     {/* Toolbar */}
                     <div className="flex justify-between items-center px-4 py-2 text-xs text-gray-400">
-                        <span>Calculator Mode</span>
+                        <span></span>
                         <button
                             onClick={handleSubmit}
                             className="bg-blue-600 text-white px-6 py-1.5 rounded-full flex items-center gap-1 font-bold shadow hover:bg-blue-700 active:scale-95 transition-all"
                         >
-                            <Check className="w-4 h-4" /> Done
+                            <Check className="w-4 h-4" /> 完成
                         </button>
                     </div>
 
@@ -212,6 +219,41 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                     />
                 </div>
             </div>
+        </div>
+    );
+};
+
+const CategoryBudgetInfo = ({ category, date, expenses, budgets, isDark }) => {
+    // 1. Get Monthly Limit
+    const categoryLimit = budgets?.categoryLimits?.find((c) => c.name === category)?.monthly || 0;
+
+    if (!categoryLimit) return null; // No limit set
+
+    // 2. Calculate Spent this month
+    const targetDate = new Date(date);
+    const targetYear = targetDate.getFullYear();
+    const targetMonth = targetDate.getMonth(); // 0-11
+
+    const spent = expenses
+        .filter((e) => {
+            if (e.category !== category || e.type !== 'expense') return false;
+            if (!e.date) return false;
+            const eDate = new Date(e.date);
+            return eDate.getFullYear() === targetYear && eDate.getMonth() === targetMonth;
+        })
+        .reduce((sum, e) => sum + Number(e.amount), 0);
+
+    const remaining = categoryLimit - spent;
+    const isOverBudget = remaining < 0;
+
+    return (
+        <div className={`mx-4 px-3 py-2 rounded-lg text-sm flex justify-between items-center ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+            <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>
+                預算: {categoryLimit.toLocaleString()} / 已用: {spent.toLocaleString()}
+            </span>
+            <span className={`font-medium ${isOverBudget ? 'text-red-500' : 'text-green-500'}`}>
+                剩餘: {remaining.toLocaleString()}
+            </span>
         </div>
     );
 };

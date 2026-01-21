@@ -88,16 +88,35 @@ router.put('/:id', auth, async (req, res) => {
         if (!updatedRecurring) {
             return res.status(404).json({ error: 'Recurring expense not found' });
         }
-        await Expense.deleteMany({ recurringId: id, userId });
-        const dates = generateDates(startDate, endDate, frequency);
-        const expensesToInsert = dates.map((dateObj) => ({
-            userId,
-            date: dateObj.toISOString().split('T')[0],
-            category,
-            amount,
-            note: `(固定) ${note || title}`,
+
+        const now = new Date();
+        const localDate = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+        const todayStr = localDate.toISOString().split('T')[0];
+
+        // 1. Delete only FUTURE existing expenses
+        await Expense.deleteMany({
             recurringId: id,
-        }));
+            userId,
+            date: { $gt: todayStr }
+        });
+
+        // 2. Generate new dates
+        const dates = generateDates(startDate, endDate, frequency);
+
+        // 3. Filter for FUTURE dates only and create objects
+        const expensesToInsert = dates
+            .filter(dateObj => {
+                const dStr = dateObj.toISOString().split('T')[0];
+                return dStr > todayStr;
+            })
+            .map((dateObj) => ({
+                userId,
+                date: dateObj.toISOString().split('T')[0],
+                category,
+                amount,
+                note: `(固定) ${note || title}`,
+                recurringId: id,
+            }));
 
         if (expensesToInsert.length > 0) {
             await Expense.insertMany(expensesToInsert);
@@ -119,7 +138,23 @@ router.delete('/:id', auth, async (req, res) => {
             return res.status(404).json({ error: 'Recurring expense not found' });
         }
 
-        await Expense.deleteMany({ recurringId: req.params.id, userId });
+        // Only delete FUTURE expenses associated with this rule
+        // Past expenses should remain as history
+        // Use local time (UTC+8 for Taiwan) to determine "today"
+        // 1. Get current time
+        const now = new Date();
+        // 2. Add 8 hours for TW timezone
+        const localDate = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+        const todayStr = localDate.toISOString().split('T')[0];
+        console.log(`[DELETE Recurring] ID: ${req.params.id}, Today(UTC): ${todayStr}`);
+
+        const deleted = await Expense.deleteMany({
+            recurringId: req.params.id,
+            userId,
+            date: { $gt: todayStr }
+        });
+        console.log(`[DELETE Recurring] Deleted count: ${deleted.deletedCount}`);
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });

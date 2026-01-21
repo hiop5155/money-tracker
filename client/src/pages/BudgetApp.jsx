@@ -197,6 +197,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                     initialData={editingExpense}
                     selectedDate={data.selectedDate}
                     categories={data.categories}
+                    expenses={data.expenses}
+                    budgets={data.budgets}
                     isDark={isDarkMode}
                 />
 

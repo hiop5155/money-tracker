@@ -496,7 +496,7 @@ paths:
 
     /api/recurring/{id}:
         put:
-            summary: Update a recurring rule (Regenerates expenses)
+            summary: Update a recurring rule (Regenerates expenses for FUTURE dates only, preserving history)
             tags: [Recurring]
             security:
                 - bearerAuth: []
@@ -531,7 +531,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/RecurringExpense'
         delete:
-            summary: Delete a recurring rule (and associated expenses)
+            summary: Delete a recurring rule (Removes only FUTURE associated expenses, preserving history)
             tags: [Recurring]
             security:
                 - bearerAuth: []
