@@ -13,8 +13,8 @@ describe('Insight Engine', () => {
                 date: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`,
                 amount: 8000,
                 type: 'expense',
-                category: 'Food'
-            }
+                category: 'Food',
+            },
         ];
 
         // This test might fail if running on day 28+, so we need to mock date in a real scenario
@@ -23,7 +23,7 @@ describe('Insight Engine', () => {
 
         // If today is early in month, it should trigger warning
         // Note: generateInsights uses `new Date()` internally so it relies on system time.
-        // For robust testing we should inject date or mock system time, 
+        // For robust testing we should inject date or mock system time,
         // but let's just check structure return for now.
         expect(Array.isArray(insights)).toBe(true);
     });

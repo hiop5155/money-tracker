@@ -151,9 +151,15 @@ const CalendarView = ({
                         return (
                             <>
                                 <div className="col-span-2 pt-2 mt-2 border-t border-gray-300 dark:border-slate-700 flex justify-between text-xs text-gray-500 dark:text-slate-400">
-                                    <span>剩餘天數: <strong className={isDark ? 'text-slate-200' : 'text-gray-700'}>{remainingDays} 天</strong></span>
-                                    <span>日均花費: <strong className="text-orange-500">${dailyAvgSpent}</strong></span>
-                                    <span>日均可用: <strong className="text-blue-500">${dailyAvailable}</strong></span>
+                                    <span>
+                                        剩餘天數: <strong className={isDark ? 'text-slate-200' : 'text-gray-700'}>{remainingDays} 天</strong>
+                                    </span>
+                                    <span>
+                                        日均花費: <strong className="text-orange-500">${dailyAvgSpent}</strong>
+                                    </span>
+                                    <span>
+                                        日均可用: <strong className="text-blue-500">${dailyAvailable}</strong>
+                                    </span>
                                 </div>
                             </>
                         );

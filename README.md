@@ -24,13 +24,26 @@ The Money Tracker allows users to track their expenses and income, manage catego
     - Calendar interface for daily overview.
     - **Calculator Keypad** for easy amount input.
 - **Advanced Search:** Filter transactions by keyword, date, category, and amount.
-- **Recurring Transactions:** Set up automatic monthly or yearly records.
+- **Recurring Transactions:** Set up automatic monthly or yearly records (Smart overlap handling).
 - **Budgeting:**
     - Set monthly and yearly total budgets.
     - **Category Limits:** Set specific spending limits for individual categories.
+    - **Remain Budget:** Real-time calculation of remaining budget while adding expenses.
+- **Smart Analytics:**
+    - **Trend Analysis:** Historical view with Year and Period (H1/H2) selection.
+    - **AI Insights:** Local statistical engine for anomaly detection and burn rate warnings with actionable advice.
 - **Data Visualization:** Interactive charts (Pie/Bar) to visualize spending and income patterns.
 - **Dark Mode:** Built-in dark/light theme toggle.
 - **Data Import/Export:** Import/Export data via CSV.
+
+## Testing & Quality Assurance
+
+Comprehensive testing suite included:
+
+- **Frontend:** Vitest + React Testing Library (Component & Logic tests)
+- **Backend:** Jest + Supertest (API & Logic integration tests)
+
+See [TESTING.md](./TESTING.md) for full documentation.
 
 ## Getting Started
 

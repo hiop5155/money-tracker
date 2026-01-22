@@ -28,40 +28,38 @@ const InsightCard = ({ expenses, budgets, categories, isDark }) => {
             border: isDark ? 'border-amber-700/50' : 'border-amber-200',
             iconColor: 'text-amber-500',
             textColor: isDark ? 'text-amber-200' : 'text-amber-800',
-            Icon: AlertTriangle
+            Icon: AlertTriangle,
         },
         danger: {
             bg: isDark ? 'bg-red-900/30' : 'bg-red-50',
             border: isDark ? 'border-red-700/50' : 'border-red-200',
             iconColor: 'text-red-500',
             textColor: isDark ? 'text-red-200' : 'text-red-800',
-            Icon: TrendingUp
+            Icon: TrendingUp,
         },
         success: {
             bg: isDark ? 'bg-emerald-900/30' : 'bg-emerald-50',
             border: isDark ? 'border-emerald-700/50' : 'border-emerald-200',
             iconColor: 'text-emerald-500',
             textColor: isDark ? 'text-emerald-200' : 'text-emerald-800',
-            Icon: Lightbulb // or TrendingDown for cost reduction
-        }
+            Icon: Lightbulb, // or TrendingDown for cost reduction
+        },
     };
 
     const config = styles[topInsight.type] || styles.warning;
     const Icon = config.Icon;
 
     return (
-        <div className={`mb-6 rounded-xl border p-4 flex items-start gap-4 shadow-sm animate-in slide-in-from-top-2 duration-300 ${config.bg} ${config.border}`}>
+        <div
+            className={`mb-6 rounded-xl border p-4 flex items-start gap-4 shadow-sm animate-in slide-in-from-top-2 duration-300 ${config.bg} ${config.border}`}
+        >
             <div className={`p-2 rounded-full bg-white/50 dark:bg-black/20 shrink-0 ${config.iconColor}`}>
                 <Icon className="w-5 h-5" />
             </div>
 
             <div className="flex-1">
-                <h4 className={`font-bold text-sm mb-1 ${config.textColor}`}>
-                    {topInsight.title}
-                </h4>
-                <p className={`text-sm opacity-90 ${config.textColor}`}>
-                    {topInsight.message}
-                </p>
+                <h4 className={`font-bold text-sm mb-1 ${config.textColor}`}>{topInsight.title}</h4>
+                <p className={`text-sm opacity-90 ${config.textColor}`}>{topInsight.message}</p>
             </div>
 
             <button

@@ -97,7 +97,7 @@ router.put('/:id', auth, async (req, res) => {
         await Expense.deleteMany({
             recurringId: id,
             userId,
-            date: { $gt: todayStr }
+            date: { $gt: todayStr },
         });
 
         // 2. Generate new dates
@@ -105,7 +105,7 @@ router.put('/:id', auth, async (req, res) => {
 
         // 3. Filter for FUTURE dates only and create objects
         const expensesToInsert = dates
-            .filter(dateObj => {
+            .filter((dateObj) => {
                 const dStr = dateObj.toISOString().split('T')[0];
                 return dStr > todayStr;
             })
@@ -151,7 +151,7 @@ router.delete('/:id', auth, async (req, res) => {
         const deleted = await Expense.deleteMany({
             recurringId: req.params.id,
             userId,
-            date: { $gt: todayStr }
+            date: { $gt: todayStr },
         });
         console.log(`[DELETE Recurring] Deleted count: ${deleted.deletedCount}`);
 

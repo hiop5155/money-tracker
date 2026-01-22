@@ -27,15 +27,7 @@ describe('ExpenseModal', () => {
     const mockCategories = ['Food', 'Transport'];
 
     it('renders correctly when open', () => {
-        render(
-            <ExpenseModal
-                isOpen={true}
-                onClose={mockOnClose}
-                onSave={mockOnSave}
-                categories={mockCategories}
-                isDark={false}
-            />
-        );
+        render(<ExpenseModal isOpen={true} onClose={mockOnClose} onSave={mockOnSave} categories={mockCategories} isDark={false} />);
         // Header buttons should be present
         expect(screen.getByText('支出')).toBeInTheDocument();
         expect(screen.getByText('收入')).toBeInTheDocument();
@@ -44,14 +36,7 @@ describe('ExpenseModal', () => {
     });
 
     it('does not render when closed', () => {
-        render(
-            <ExpenseModal
-                isOpen={false}
-                onClose={mockOnClose}
-                onSave={mockOnSave}
-                categories={mockCategories}
-            />
-        );
+        render(<ExpenseModal isOpen={false} onClose={mockOnClose} onSave={mockOnSave} categories={mockCategories} isDark={false} />);
         expect(screen.queryByText('新增款項')).not.toBeInTheDocument();
     });
 });
@@ -63,12 +48,29 @@ describe('InsightCard', () => {
     });
 
     it('renders warning if anomaly detected', () => {
-        // Insight logic is tested in unit test, here we test rendering component given "high spending"
-        // But generatesInsights runs inside the component, so we need to provide data that triggers it.
-        // Or mock the utility.
+        // Insight logic is tested in unit test
+    });
+});
 
-        // Let's provide an obvious anomaly:
-        // 6 months of low spending vs High spending this month
-        // But easier to mock the utility for Component Test
+describe('TrendView', () => {
+    it('renders with current year and default period', () => {
+        const currentYear = new Date().getFullYear();
+        render(<TrendView expenses={[]} isDark={false} />);
+
+        // Use strict matching for the description text to avoid matching buttons
+        // Description format: "{year}年 全年度"
+        expect(screen.getByText(`${currentYear}年 全年度`)).toBeInTheDocument();
+    });
+
+    it('changes period on click', () => {
+        render(<TrendView expenses={[]} isDark={false} />);
+
+        // Click the H1 button
+        const h1Button = screen.getByRole('button', { name: '上半年' });
+        fireEvent.click(h1Button);
+
+        // Verify description changed to "YYYY年 上半年"
+        const currentYear = new Date().getFullYear();
+        expect(screen.getByText(`${currentYear}年 上半年`)).toBeInTheDocument();
     });
 });

@@ -104,12 +104,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
                 <main className="max-w-4xl mx-auto p-4">
                     {/* AI Insights - Only show on Calendar/Stats view to avoid clutter */}
                     {(currentView === 'calendar' || currentView === 'stats') && (
-                        <InsightCard
-                            expenses={data.expenses}
-                            budgets={data.budgets}
-                            categories={data.categories}
-                            isDark={isDarkMode}
-                        />
+                        <InsightCard expenses={data.expenses} budgets={data.budgets} categories={data.categories} isDark={isDarkMode} />
                     )}
 
                     <div className={`flex rounded-lg shadow-sm mb-6 p-1 transition-colors ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>

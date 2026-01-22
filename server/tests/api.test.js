@@ -20,7 +20,7 @@ jest.mock('../middleware/auth', () => (req, res, next) => {
 
 // Suppress console logs during tests, but allow error for debugging
 beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => { });
+    jest.spyOn(console, 'log').mockImplementation(() => {});
     // jest.spyOn(console, 'error').mockImplementation(() => { });
 });
 
@@ -30,15 +30,13 @@ describe('Auth Routes', () => {
         User.create.mockResolvedValue({
             _id: 'new_user_id',
             email: 'test@example.com',
-            isVerified: false
+            isVerified: false,
         });
 
-        const res = await request(app)
-            .post('/api/auth/register')
-            .send({
-                email: 'test@example.com',
-                password: 'password123'
-            });
+        const res = await request(app).post('/api/auth/register').send({
+            email: 'test@example.com',
+            password: 'password123',
+        });
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('message');
@@ -53,26 +51,20 @@ describe('Data Routes (Mocked Auth)', () => {
     it('GET /api/data should return expenses', async () => {
         const mockExpense = { amount: 100, category: 'Food', date: '2025-01-01' };
         Expense.find.mockReturnValue({
-            sort: jest.fn().mockResolvedValue([
-                { _id: 'exp1', _doc: mockExpense, ...mockExpense }
-            ])
+            sort: jest.fn().mockResolvedValue([{ _id: 'exp1', _doc: mockExpense, ...mockExpense }]),
         });
 
-
         // Mock Category.find to return empty or populated array
-        require('../models/Category').find.mockResolvedValue([
-            { name: 'Food' }, { name: 'Transport' }
-        ]);
+        require('../models/Category').find.mockResolvedValue([{ name: 'Food' }, { name: 'Transport' }]);
 
         // Mock Budget.findOne to return a default budget
         require('../models/Budget').findOne.mockResolvedValue({
             monthly: 10000,
-            yearly: 120000
+            yearly: 120000,
         });
 
         const res = await request(app).get('/api/data');
         if (res.statusCode !== 200) console.error('API Error:', res.body);
-
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('expenses');
@@ -82,12 +74,12 @@ describe('Data Routes (Mocked Auth)', () => {
     it('POST /api/expenses should create expense', async () => {
         const newExp = { amount: 50, category: 'Transport' };
         Expense.prototype.save = jest.fn().mockResolvedValue({
-            _id: 'exp_new', ...newExp, _doc: newExp
+            _id: 'exp_new',
+            ...newExp,
+            _doc: newExp,
         });
 
-        const res = await request(app)
-            .post('/api/expenses')
-            .send(newExp);
+        const res = await request(app).post('/api/expenses').send(newExp);
 
         expect(res.statusCode).toEqual(200);
         expect(res.body.amount).toBe(50);
