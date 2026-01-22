@@ -109,10 +109,10 @@ const TrendView = ({ expenses = [], isDark }) => {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-            {/* Controls Header */}
+        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
+            {/* Controls Header (Fixed) */}
             <div
-                className={`p-4 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 ${isDark ? 'bg-slate-800' : 'bg-white'}`}
+                className={`flex-none p-4 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}
             >
                 {/* Title & Icon */}
                 <div className="flex items-center gap-2 self-start md:self-center">
@@ -139,11 +139,10 @@ const TrendView = ({ expenses = [], isDark }) => {
                             <button
                                 key={p.id}
                                 onClick={() => setPeriod(p.id)}
-                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-                                    period === p.id
-                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                }`}
+                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${period === p.id
+                                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                    }`}
                             >
                                 {p.label}
                             </button>
@@ -169,81 +168,84 @@ const TrendView = ({ expenses = [], isDark }) => {
                 </div>
             </div>
 
-            {/* Main Chart */}
-            <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <div className="mb-6 flex items-center justify-between">
-                    <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>月收支對比</h3>
-                    <div className="flex gap-4 text-sm">
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                            <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>收入</span>
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                            <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>支出</span>
-                        </span>
-                    </div>
-                </div>
-
-                {/* Manual ResizeObserver Pattern */}
-                <div ref={chartContainerRef} className="w-full h-[300px] min-h-[300px] relative">
-                    {chartSize.width > 0 ? (
-                        <BarChart width={chartSize.width} height={chartSize.height} data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e5e7eb'} />
-                            <XAxis
-                                dataKey="name"
-                                axisLine={false}
-                                tickLine={false}
-                                tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 12 }}
-                                dy={10}
-                                tickFormatter={(val) => {
-                                    // Show simplified month name or number if needed, current key is YYYY-MM
-                                    return val.split('-')[1]; // Just show '01', '02' etc.
-                                }}
-                            />
-                            <YAxis
-                                axisLine={false}
-                                tickLine={false}
-                                tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 12 }}
-                                tickFormatter={(value) => `$${value / 1000}k`}
-                            />
-                            <Tooltip
-                                cursor={{ fill: isDark ? '#334155' : '#f3f4f6', opacity: 0.4 }}
-                                contentStyle={{
-                                    backgroundColor: isDark ? '#1e293b' : '#fff',
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                                    color: isDark ? '#f8fafc' : '#0f172a',
-                                }}
-                                formatter={(value) => `$${value.toLocaleString()}`}
-                            />
-                            <Bar dataKey="income" name="收入" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                            <Bar dataKey="expense" name="支出" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                        </BarChart>
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pb-2 custom-scrollbar">
+                {/* Main Chart */}
+                <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                    <div className="mb-6 flex items-center justify-between">
+                        <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>月收支對比</h3>
+                        <div className="flex gap-4 text-sm">
+                            <span className="flex items-center gap-1.5">
+                                <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>收入</span>
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>支出</span>
+                            </span>
                         </div>
-                    )}
-                </div>
-            </div>
+                    </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <div className="text-sm text-gray-500 mb-1">期間總結餘</div>
-                    <div className={`text-2xl font-bold ${totals.balance >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {totals.balance >= 0 ? '+' : ''}${totals.balance.toLocaleString()}
+                    {/* Manual ResizeObserver Pattern */}
+                    <div ref={chartContainerRef} className="w-full h-[300px] min-h-[300px] relative">
+                        {chartSize.width > 0 ? (
+                            <BarChart width={chartSize.width} height={chartSize.height} data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e5e7eb'} />
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 12 }}
+                                    dy={10}
+                                    tickFormatter={(val) => {
+                                        // Show simplified month name or number if needed, current key is YYYY-MM
+                                        return val.split('-')[1]; // Just show '01', '02' etc.
+                                    }}
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: isDark ? '#94a3b8' : '#64748b', fontSize: 12 }}
+                                    tickFormatter={(value) => `$${value / 1000}k`}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: isDark ? '#334155' : '#f3f4f6', opacity: 0.4 }}
+                                    contentStyle={{
+                                        backgroundColor: isDark ? '#1e293b' : '#fff',
+                                        borderRadius: '8px',
+                                        border: 'none',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                        color: isDark ? '#f8fafc' : '#0f172a',
+                                    }}
+                                    formatter={(value) => `$${value.toLocaleString()}`}
+                                />
+                                <Bar dataKey="income" name="收入" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                                <Bar dataKey="expense" name="支出" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                            </BarChart>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <div className="text-sm text-gray-500 mb-1">月平均總收入</div>
-                    <div className="text-2xl font-bold text-emerald-500">${avg.income.toLocaleString()}</div>
-                </div>
-                <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <div className="text-sm text-gray-500 mb-1">月平均總支出</div>
-                    <div className="text-2xl font-bold text-red-500">${avg.expense.toLocaleString()}</div>
+
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                        <div className="text-sm text-gray-500 mb-1">期間總結餘</div>
+                        <div className={`text-2xl font-bold ${totals.balance >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {totals.balance >= 0 ? '+' : ''}${totals.balance.toLocaleString()}
+                        </div>
+                    </div>
+                    <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                        <div className="text-sm text-gray-500 mb-1">月平均總收入</div>
+                        <div className="text-2xl font-bold text-emerald-500">${avg.income.toLocaleString()}</div>
+                    </div>
+                    <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                        <div className="text-sm text-gray-500 mb-1">月平均總支出</div>
+                        <div className="text-2xl font-bold text-red-500">${avg.expense.toLocaleString()}</div>
+                    </div>
                 </div>
             </div>
         </div>

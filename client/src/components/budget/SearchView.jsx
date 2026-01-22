@@ -20,7 +20,7 @@ const SearchView = ({ isDark, expenses, categories }) => {
             // If no keyword is entered, consider it a match (true)
             const matchTerm = searchTerm
                 ? (item.note || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (item.category || '').toLowerCase().includes(searchTerm.toLowerCase())
+                (item.category || '').toLowerCase().includes(searchTerm.toLowerCase())
                 : true;
 
             // 2. Category Filtering
@@ -70,9 +70,9 @@ const SearchView = ({ isDark, expenses, categories }) => {
     const totalAmount = filteredExpenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            {/* Search Control Panel */}
-            <div className={`p-6 rounded-lg shadow-sm transition-colors ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className="h-full flex flex-col gap-4 animate-fade-in overflow-hidden">
+            {/* Fixed Search Control Panel */}
+            <div className={`flex-none p-4 rounded-lg shadow-sm transition-colors shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
                     <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                         <Search className="w-5 h-5" /> 搜尋
@@ -95,9 +95,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="搜尋備註(例如：牛肉)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
@@ -110,9 +109,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none appearance-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none appearance-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             >
                                 <option value="">所有分類</option>
                                 {categories.map((cat) => (
@@ -132,9 +130,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="最小值"
                                 value={minAmount}
                                 onChange={(e) => setMinAmount(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                         <div className="flex-1">
@@ -143,9 +140,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="最大值"
                                 value={maxAmount}
                                 onChange={(e) => setMaxAmount(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
@@ -158,9 +154,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                         <div className="flex-1">
@@ -169,18 +164,17 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Search Results List */}
-            <div className={`p-6 rounded-lg shadow-sm transition-colors ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200 dark:border-slate-700">
+            {/* Scrollable Results List */}
+            <div className={`flex-1 overflow-y-auto p-4 rounded-lg shadow-sm transition-colors min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200 dark:border-slate-700 shrink-0 sticky top-0 bg-inherit z-10">
                     <h4 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>結果 ({filteredExpenses.length})</h4>
                     <span className="font-mono font-bold text-blue-600 dark:text-blue-400">總計: ${totalAmount.toLocaleString()}</span>
                 </div>
@@ -211,9 +205,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                         </td>
                                         <td className={`p-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{item.note}</td>
                                         <td
-                                            className={`p-2 text-right font-mono font-medium ${
-                                                item.type === 'income' ? 'text-green-500' : 'text-red-500'
-                                            }`}
+                                            className={`p-2 text-right font-mono font-medium ${item.type === 'income' ? 'text-green-500' : 'text-red-500'
+                                                }`}
                                         >
                                             {item.type === 'income' ? '+' : '-'}
                                             {Number(item.amount).toLocaleString()}

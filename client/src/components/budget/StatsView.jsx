@@ -274,9 +274,9 @@ const StatsView = ({
     }, [selectedCategory, currentRawExpenses, viewType]);
 
     return (
-        <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-            {/* Header */}
-            <div className="flex flex-col gap-4">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
+            {/* Fixed Header Section */}
+            <div className="flex-none flex flex-col gap-4 shrink-0">
                 <MonthSelector
                     currentDate={currentDate}
                     onPrevMonth={onPrevMonth}
@@ -293,11 +293,10 @@ const StatsView = ({
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${
-                                    viewMode === mode
-                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                }`}
+                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${viewMode === mode
+                                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
+                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                    }`}
                             >
                                 {mode === 'monthly' ? '月統計' : '年統計'}
                             </button>
@@ -308,21 +307,19 @@ const StatsView = ({
                     <div className="flex gap-2">
                         <button
                             onClick={() => setViewType('expense')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                viewType === 'expense'
-                                    ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                            }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'expense'
+                                ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                                : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
+                                }`}
                         >
                             <TrendingDown className="w-4 h-4" /> 支出
                         </button>
                         <button
                             onClick={() => setViewType('income')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                viewType === 'income'
-                                    ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                            }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'income'
+                                ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                                : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
+                                }`}
                         >
                             <TrendingUp className="w-4 h-4" /> 收入
                         </button>
@@ -330,79 +327,82 @@ const StatsView = ({
                 </div>
             </div>
 
-            {/* Overview Donut Charts */}
-            <div className="grid grid-cols-1 gap-4">
-                <BudgetDonut
-                    title={`${titlePrefix} ${viewType === 'expense' ? '總預算概覽' : '總收入概覽'}`}
-                    spent={currentTotal}
-                    budget={currentBudget}
-                    isDark={isDark}
-                    isIncomeMode={viewType === 'income'}
-                />
-            </div>
+            {/* Scrollable Content Section */}
+            <div className="flex-1 overflow-y-auto space-y-4 min-h-0 pb-2 custom-scrollbar">
+                {/* Overview Donut Charts */}
+                <div className="grid grid-cols-1 gap-4">
+                    <BudgetDonut
+                        title={`${titlePrefix} ${viewType === 'expense' ? '總預算概覽' : '總收入概覽'}`}
+                        spent={currentTotal}
+                        budget={currentBudget}
+                        isDark={isDark}
+                        isIncomeMode={viewType === 'income'}
+                    />
+                </div>
 
-            {/* Category List*/}
-            <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <h3 className={`font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                    {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
-                    <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
-                </h3>
+                {/* Category List*/}
+                <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                    <h3 className={`font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                        {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
+                        <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
+                    </h3>
 
-                {currentStats.length > 0 ? (
-                    <div className="space-y-2">
-                        {currentStats.map((item, index) => (
-                            <BudgetProgressBar
-                                key={item.name}
-                                label={item.name}
-                                current={item.value}
-                                total={item.limit}
-                                colorClass={COLORS[index % COLORS.length] ? `bg-[${COLORS[index % COLORS.length]}]` : 'bg-blue-500'}
-                                onClick={() => setSelectedCategory(item.name)}
-                                isIncomeMode={viewType === 'income'}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="h-40 flex items-center justify-center text-gray-400">
-                        {titlePrefix} 尚無{viewType === 'expense' ? '支出' : '收入'}資料
-                    </div>
-                )}
-            </div>
-
-            {/* 4. Distribution Pie Chart */}
-            <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                <h3 className={`font-bold mb-4 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                    {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
-                </h3>
-
-                {/* Use ref for Observer to listen.
-                    Only render PieChart when chartSize.width > 0.
-                    This resolves initialization errors with ResponsiveContainer.
-                */}
-                <div ref={chartContainerRef} style={{ width: '100%', height: 300, minHeight: 300, position: 'relative' }}>
-                    {chartSize.width > 0 ? (
-                        <PieChart width={chartSize.width} height={chartSize.height}>
-                            <Pie
-                                data={currentStats}
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={80}
-                                fill="#8884d8"
-                                dataKey="value"
-                                onClick={(data) => setSelectedCategory(data.name)}
-                                cursor="pointer"
-                            >
-                                {currentStats.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
-                        </PieChart>
+                    {currentStats.length > 0 ? (
+                        <div className="space-y-2">
+                            {currentStats.map((item, index) => (
+                                <BudgetProgressBar
+                                    key={item.name}
+                                    label={item.name}
+                                    current={item.value}
+                                    total={item.limit}
+                                    colorClass={COLORS[index % COLORS.length] ? `bg-[${COLORS[index % COLORS.length]}]` : 'bg-blue-500'}
+                                    onClick={() => setSelectedCategory(item.name)}
+                                    isIncomeMode={viewType === 'income'}
+                                />
+                            ))}
+                        </div>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                        <div className="h-40 flex items-center justify-center text-gray-400">
+                            {titlePrefix} 尚無{viewType === 'expense' ? '支出' : '收入'}資料
                         </div>
                     )}
+                </div>
+
+                {/* 4. Distribution Pie Chart */}
+                <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                    <h3 className={`font-bold mb-4 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                        {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
+                    </h3>
+
+                    {/* Use ref for Observer to listen.
+                        Only render PieChart when chartSize.width > 0.
+                        This resolves initialization errors with ResponsiveContainer.
+                    */}
+                    <div ref={chartContainerRef} style={{ width: '100%', height: 300, minHeight: 300, position: 'relative' }}>
+                        {chartSize.width > 0 ? (
+                            <PieChart width={chartSize.width} height={chartSize.height}>
+                                <Pie
+                                    data={currentStats}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                    onClick={(data) => setSelectedCategory(data.name)}
+                                    cursor="pointer"
+                                >
+                                    {currentStats.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                            </PieChart>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

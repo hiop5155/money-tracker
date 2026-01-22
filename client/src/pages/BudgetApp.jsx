@@ -82,11 +82,13 @@ const BudgetApp = ({ token, onLogout, username }) => {
     return (
         <>
             <LoadingOverlay isVisible={data.isApiLoading} />
+            {/* Main App Container - Full Height, No Global Scroll */}
             <div
-                className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
+                className={`flex flex-col h-screen fixed inset-0 font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
             >
+                {/* 1. Header (Fixed Top) */}
                 <header
-                    className={`shadow-sm p-4 sticky top-0 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
+                    className={`flex-none shadow-sm p-4 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
                 >
                     <div className="max-w-4xl mx-auto flex justify-between items-center">
                         <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
@@ -101,15 +103,94 @@ const BudgetApp = ({ token, onLogout, username }) => {
                     </div>
                 </header>
 
-                <main className="max-w-4xl mx-auto p-4">
-                    {/* AI Insights - Only show on Calendar/Stats view to avoid clutter */}
-                    {(currentView === 'calendar' || currentView === 'stats') && (
-                        <InsightCard expenses={data.expenses} budgets={data.budgets} categories={data.categories} isDark={isDarkMode} />
-                    )}
+                {/* 2. Main Content Area (View-controlled Scroll) */}
+                <main className="flex-1 overflow-hidden relative max-w-4xl mx-auto w-full">
+                    <div className="absolute inset-0 p-4 pb-24 md:pb-4 w-full h-full">
+                        {/* AI Insights - Only show on Calendar/Stats view */}
+                        {(currentView === 'calendar' || currentView === 'stats') && (
+                            <InsightCard expenses={data.expenses} budgets={data.budgets} categories={data.categories} isDark={isDarkMode} />
+                        )}
 
-                    <div className={`flex rounded-lg shadow-sm mb-6 p-1 transition-colors ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}>
+                        {/* View Rendering */}
+                        {currentView === 'calendar' && (
+                            <CalendarView
+                                isDark={isDarkMode}
+                                currentDate={data.currentDate}
+                                selectedDate={data.selectedDate}
+                                monthlyExpenses={data.monthlyExpenses}
+                                selectedDateExpenses={data.selectedDateExpenses}
+                                monthlyTotal={data.monthlyTotal}
+                                yearlyTotal={data.yearlyTotal}
+                                monthlyIncome={data.monthlyIncome}
+                                yearlyIncome={data.yearlyIncome}
+                                budgets={data.budgets}
+                                onPrevMonth={handlePrevMonth}
+                                onNextMonth={handleNextMonth}
+                                onDateChange={handleDateChange}
+                                onDateClick={(day) => data.setSelectedDate(new Date(data.currentYear, data.currentMonth, day))}
+                                onAddExpense={openAddExpense}
+                                onEditExpense={openEditExpense}
+                                onDeleteExpense={data.handleDeleteExpense}
+                                deletingId={data.deletingId}
+                            />
+                        )}
+
+                        {currentView === 'stats' && (
+                            <StatsView
+                                isDark={isDarkMode}
+                                monthlyTotal={data.monthlyTotal}
+                                yearlyTotal={data.yearlyTotal}
+                                monthlyIncome={data.monthlyIncome}
+                                yearlyIncome={data.yearlyIncome}
+                                budgets={data.budgets}
+                                monthlyExpenses={data.monthlyExpenses}
+                                yearlyExpenses={data.yearlyExpenses}
+                                categories={data.categories}
+                                currentYear={data.currentYear}
+                                currentMonth={data.currentMonth}
+                                currentDate={data.currentDate}
+                                onPrevMonth={handlePrevMonth}
+                                onNextMonth={handleNextMonth}
+                                onDateChange={handleDateChange}
+                            />
+                        )}
+
+                        {currentView === 'trend' && <TrendView isDark={isDarkMode} expenses={data.expenses || []} />}
+
+                        {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} />}
+
+                        {currentView === 'recurring' && (
+                            <RecurringView
+                                isDark={isDarkMode}
+                                recurringRules={data.recurringRules}
+                                onAddRule={openAddRecurring}
+                                onEditRule={openEditRecurring}
+                                onDeleteRule={data.handleDeleteRecurring}
+                                deletingId={data.deletingId}
+                            />
+                        )}
+
+                        {currentView === 'settings' && (
+                            <SettingsView
+                                isDark={isDarkMode}
+                                budgets={data.budgets}
+                                categories={data.categories}
+                                onUpdateBudget={data.handleUpdateBudget}
+                                onAddCategory={data.handleAddCategory}
+                                onDeleteCategory={data.handleDeleteCategory}
+                                onExport={data.exportToCSV}
+                                onImport={data.handleImportCSV}
+                                onLogout={onLogout}
+                            />
+                        )}
+                    </div>
+                </main>
+
+                {/* 3. Bottom Navigation Bar (Fixed Bottom) */}
+                <nav className={`flex-none fixed bottom-0 w-full h-[72px] pb-[safe-area-inset-bottom] border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}>
+                    <div className="max-w-4xl mx-auto h-full flex justify-around items-center px-2">
                         {[
-                            { id: 'calendar', icon: Calendar, label: '月曆' },
+                            { id: 'calendar', icon: Calendar, label: '記帳' },
                             { id: 'stats', icon: PieIcon, label: '統計' },
                             { id: 'trend', icon: TrendingUp, label: '趨勢' },
                             { id: 'search', icon: Search, label: '搜尋' },
@@ -119,86 +200,19 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             <button
                                 key={tab.id}
                                 onClick={() => setCurrentView(tab.id)}
-                                className={`flex-1 py-2 text-sm font-medium rounded-md flex items-center justify-center gap-2 transition-colors ${currentView === tab.id ? (isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700') : isDarkMode ? 'text-slate-400 hover:bg-slate-700' : 'text-gray-500 hover:bg-gray-50'}`}
+                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${currentView === tab.id
+                                    ? (isDarkMode ? 'text-blue-400' : 'text-blue-600')
+                                    : (isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600')
+                                    }`}
                             >
-                                <tab.icon className="w-4 h-4" /> {tab.label}
+                                <div className={`p-1 rounded-xl transition-all ${currentView === tab.id ? (isDarkMode ? 'bg-slate-700' : 'bg-blue-50') : ''}`}>
+                                    <tab.icon className={`w-6 h-6 ${currentView === tab.id ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+                                </div>
+                                <span className="text-[10px] font-medium">{tab.label}</span>
                             </button>
                         ))}
                     </div>
-
-                    {currentView === 'calendar' && (
-                        <CalendarView
-                            isDark={isDarkMode}
-                            currentDate={data.currentDate}
-                            selectedDate={data.selectedDate}
-                            monthlyExpenses={data.monthlyExpenses}
-                            selectedDateExpenses={data.selectedDateExpenses}
-                            monthlyTotal={data.monthlyTotal}
-                            yearlyTotal={data.yearlyTotal}
-                            monthlyIncome={data.monthlyIncome}
-                            yearlyIncome={data.yearlyIncome}
-                            budgets={data.budgets}
-                            onPrevMonth={handlePrevMonth}
-                            onNextMonth={handleNextMonth}
-                            onDateChange={handleDateChange}
-                            onDateClick={(day) => data.setSelectedDate(new Date(data.currentYear, data.currentMonth, day))}
-                            onAddExpense={openAddExpense}
-                            onEditExpense={openEditExpense}
-                            onDeleteExpense={data.handleDeleteExpense}
-                            deletingId={data.deletingId}
-                        />
-                    )}
-
-                    {currentView === 'stats' && (
-                        <StatsView
-                            isDark={isDarkMode}
-                            monthlyTotal={data.monthlyTotal}
-                            yearlyTotal={data.yearlyTotal}
-                            monthlyIncome={data.monthlyIncome}
-                            yearlyIncome={data.yearlyIncome}
-                            budgets={data.budgets}
-                            // Pass expenses data
-                            monthlyExpenses={data.monthlyExpenses}
-                            yearlyExpenses={data.yearlyExpenses}
-                            categories={data.categories}
-                            currentYear={data.currentYear}
-                            currentMonth={data.currentMonth}
-                            currentDate={data.currentDate}
-                            onPrevMonth={handlePrevMonth}
-                            onNextMonth={handleNextMonth}
-                            onDateChange={handleDateChange}
-                        />
-                    )}
-
-                    {currentView === 'trend' && <TrendView isDark={isDarkMode} expenses={data.expenses || []} />}
-
-                    {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} />}
-
-                    {currentView === 'recurring' && (
-                        <RecurringView
-                            isDark={isDarkMode}
-                            recurringRules={data.recurringRules}
-                            onAddRule={openAddRecurring}
-                            onEditRule={openEditRecurring}
-                            onDeleteRule={data.handleDeleteRecurring}
-                            deletingId={data.deletingId}
-                        />
-                    )}
-
-                    {currentView === 'settings' && (
-                        <SettingsView
-                            isDark={isDarkMode}
-                            budgets={data.budgets}
-                            categories={data.categories}
-                            onUpdateBudget={data.handleUpdateBudget}
-                            onAddCategory={data.handleAddCategory}
-                            onDeleteCategory={data.handleDeleteCategory}
-                            onExport={data.exportToCSV}
-                            onImport={data.handleImportCSV}
-                            onLogout={onLogout}
-                        />
-                    )}
-                </main>
+                </nav>
 
                 <ExpenseModal
                     isOpen={isExpenseModalOpen}
