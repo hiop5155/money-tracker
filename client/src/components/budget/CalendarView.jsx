@@ -156,7 +156,7 @@ const CalendarView = ({
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
                     {selectedDateExpenses.length === 0 ? (
                         <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>
                     ) : (

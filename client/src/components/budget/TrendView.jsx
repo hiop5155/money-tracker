@@ -169,7 +169,7 @@ const TrendView = ({ expenses = [], isDark }) => {
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pb-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pb-32 custom-scrollbar">
                 {/* Main Chart */}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className="mb-6 flex items-center justify-between">

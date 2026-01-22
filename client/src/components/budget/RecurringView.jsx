@@ -18,7 +18,7 @@ const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDelete
             </div>
 
             {/* Scrollable List */}
-            <div className={`flex-1 overflow-y-auto p-4 rounded-xl shadow-sm min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+            <div className={`flex-1 overflow-y-auto p-4 pb-32 rounded-xl shadow-sm min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="space-y-4">
                     {recurringRules.length === 0 ? (
                         <p className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>目前沒有固定支出設定</p>

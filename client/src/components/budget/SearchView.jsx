@@ -173,7 +173,7 @@ const SearchView = ({ isDark, expenses, categories }) => {
             </div>
 
             {/* Scrollable Results List */}
-            <div className={`flex-1 overflow-y-auto p-4 rounded-lg shadow-sm transition-colors min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+            <div className={`flex-1 overflow-y-auto p-4 pb-32 rounded-lg shadow-sm transition-colors min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200 dark:border-slate-700 shrink-0 sticky top-0 bg-inherit z-10">
                     <h4 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>結果 ({filteredExpenses.length})</h4>
                     <span className="font-mono font-bold text-blue-600 dark:text-blue-400">總計: ${totalAmount.toLocaleString()}</span>

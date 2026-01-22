@@ -328,7 +328,7 @@ const StatsView = ({
             </div>
 
             {/* Scrollable Content Section */}
-            <div className="flex-1 overflow-y-auto space-y-4 min-h-0 pb-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto space-y-4 min-h-0 pb-32 custom-scrollbar">
                 {/* Overview Donut Charts */}
                 <div className="grid grid-cols-1 gap-4">
                     <BudgetDonut

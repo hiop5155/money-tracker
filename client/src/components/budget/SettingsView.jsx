@@ -121,7 +121,7 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
     const totalCatYearly = localBudgets.categoryLimits.reduce((sum, item) => sum + parseInt(item.yearly || 0, 10), 0);
 
     return (
-        <div className="h-full overflow-y-auto space-y-6 animate-in fade-in zoom-in-95 duration-300 custom-scrollbar pb-2">
+        <div className="h-full overflow-y-auto space-y-6 animate-in fade-in zoom-in-95 duration-300 custom-scrollbar pb-32">
             {/* 1. Global Budget Settings */}
             <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
