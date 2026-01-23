@@ -35,7 +35,7 @@ const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, is
         <div
             className={`p-4 border-b flex justify-between items-center ${isDark ? 'bg-slate-700/50 border-slate-700' : 'bg-gray-50 border-gray-100'}`}
         >
-            <button onClick={onPrevMonth} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-full transition-colors">
+            <button onClick={onPrevMonth} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}>
                 <ChevronLeft className="w-5 h-5" />
             </button>
 
@@ -57,7 +57,7 @@ const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, is
                 />
             </div>
 
-            <button onClick={onNextMonth} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-full transition-colors">
+            <button onClick={onNextMonth} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}>
                 <ChevronRight className="w-5 h-5" />
             </button>
         </div>

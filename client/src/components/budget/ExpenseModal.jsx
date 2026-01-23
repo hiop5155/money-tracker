@@ -88,24 +88,22 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
             >
                 {/* Header: Type Switcher & Close */}
                 <div className={`flex justify-between items-center p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-                    <div className="flex bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
+                    <div className={`flex rounded-lg p-1 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                         <button
                             onClick={() => setFormData({ ...formData, type: 'expense' })}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                formData.type === 'expense'
-                                    ? 'bg-white dark:bg-slate-600 text-red-500 shadow-sm'
-                                    : 'text-gray-500 dark:text-slate-400'
-                            }`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'expense'
+                                    ? `shadow-sm text-red-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
+                                    : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
+                                }`}
                         >
                             支出
                         </button>
                         <button
                             onClick={() => setFormData({ ...formData, type: 'income' })}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                formData.type === 'income'
-                                    ? 'bg-white dark:bg-slate-600 text-green-500 shadow-sm'
-                                    : 'text-gray-500 dark:text-slate-400'
-                            }`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'income'
+                                    ? `shadow-sm text-green-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
+                                    : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
+                                }`}
                         >
                             收入
                         </button>
@@ -121,9 +119,8 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                     <div className={`text-sm h-5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{formData.amountStr || '0'}</div>
                     {/* Display result (e.g. 150) */}
                     <div
-                        className={`text-4xl font-mono font-bold tracking-tight flex items-center gap-2 ${
-                            formData.type === 'expense' ? 'text-red-500' : 'text-green-500'
-                        }`}
+                        className={`text-4xl font-mono font-bold tracking-tight flex items-center gap-2 ${formData.type === 'expense' ? 'text-red-500' : 'text-green-500'
+                            }`}
                     >
                         <span>$</span>
                         {/* Show preview if calculating */}
@@ -158,15 +155,14 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                     <button
                                         key={cat}
                                         onClick={() => setFormData({ ...formData, category: cat })}
-                                        className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${
-                                            formData.category === cat
+                                        className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${formData.category === cat
                                                 ? isDark
                                                     ? 'bg-blue-900/50 border-blue-500 text-blue-400'
                                                     : 'bg-blue-50 border-blue-500 text-blue-600'
                                                 : isDark
-                                                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                                                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
+                                                    ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
                                     >
                                         {cat}
                                     </button>

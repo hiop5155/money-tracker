@@ -1,7 +1,6 @@
 import React from 'react';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import MonthSelector from './MonthSelector';
-import InsightCard from './InsightCard';
 
 const formatCurrency = (amount) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(amount);
 
@@ -41,7 +40,7 @@ const CalendarView = ({
             days.push(
                 <div
                     key={`empty-${i}`}
-                    className="min-h-[50px] md:h-24 bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700"
+                    className={`min-h-[50px] md:h-24 border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-gray-50 border-gray-100'}`}
                 ></div>
             );
         }
@@ -57,15 +56,22 @@ const CalendarView = ({
                 <div
                     key={day}
                     onClick={() => onDateClick(day)}
-                    className={`min-h-[50px] md:h-24 border p-0.5 md:p-1 cursor-pointer transition-colors relative flex flex-col justify-between ${isSelected ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 ring-1 ring-blue-500' : 'bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'}`}
+                    className={`min-h-[50px] md:h-24 border p-0.5 md:p-1 cursor-pointer transition-colors relative flex flex-col justify-between ${isSelected
+                        ? `border-blue-500 ring-1 ring-blue-500 ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`
+                        : `${isDark ? 'bg-slate-800 border-slate-700 hover:bg-slate-700' : 'bg-white border-gray-100 hover:bg-gray-50'}`
+                        }`}
                 >
-                    <span className={`text-xs font-medium ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                    <span
+                        className={`text-xs font-medium ${isSelected ? (isDark ? 'text-blue-400' : 'text-blue-600') : isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                    >
                         {day}
                     </span>
 
                     {/* Expense Total (Compact) */}
                     {dayExpenseTotal > 0 && (
-                        <div className="text-[10px] text-right font-bold text-red-500 dark:text-red-400 truncate w-full leading-tight">
+                        <div
+                            className={`text-[10px] text-right font-bold truncate w-full leading-tight ${isDark ? 'text-red-400' : 'text-red-500'}`}
+                        >
                             ${dayExpenseTotal}
                         </div>
                     )}
@@ -117,12 +123,12 @@ const CalendarView = ({
                 <div
                     className={`px-3 py-2 text-xs grid grid-cols-2 gap-y-1 ${isDark ? 'bg-slate-900/50 border-t border-slate-700' : 'bg-blue-50/50 border-t border-blue-100'}`}
                 >
-                    <div className="flex justify-between items-center pr-2 border-r border-gray-300 dark:border-slate-600">
-                        <span className="text-gray-500 dark:text-slate-400">本月收入:</span>
+                    <div className={`flex justify-between items-center pr-2 border-r ${isDark ? 'border-slate-600' : 'border-gray-300'}`}>
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>本月收入:</span>
                         <span className="font-bold text-green-500">{formatCurrency(monthlyIncome || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center pl-2">
-                        <span className="text-gray-500 dark:text-slate-400">本月支出:</span>
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>本月支出:</span>
                         <span className={`font-bold ${monthlyTotal > budgets.monthly ? 'text-red-600' : 'text-red-500'}`}>
                             {formatCurrency(monthlyTotal)}
                         </span>
@@ -135,12 +141,19 @@ const CalendarView = ({
                             const remainingDays = getDaysInMonth(currentYear, currentMonth) - today.getDate();
                             const remainingBudget = (budgets.monthly || 0) - monthlyTotal;
                             const dailyAvailable = remainingDays > 0 ? Math.round(Math.max(0, remainingBudget) / remainingDays) : 0;
+                            const daysPassed = today.getDate();
+                            const dailySpent = daysPassed > 0 ? Math.round(monthlyTotal / daysPassed) : 0;
 
                             return (
-                                <div className="col-span-2 pt-1 mt-1 border-t border-gray-300 dark:border-slate-700 flex justify-between text-[10px] text-gray-500 dark:text-slate-400">
+                                <div
+                                    className={`col-span-2 pt-1 mt-1 border-t flex justify-between text-[10px] ${isDark ? 'border-slate-700 text-slate-400' : 'border-gray-300 text-gray-500'}`}
+                                >
                                     <span>剩: {remainingDays}天</span>
+                                    <span className="flex items-center gap-1">
+                                        每日平均花費: <strong className={isDark ? 'text-slate-300' : 'text-gray-600'}>${dailySpent}</strong>
+                                    </span>
                                     <span>
-                                        可用: <strong className="text-blue-500">${dailyAvailable}/日</strong>
+                                        剩下每日可用: <strong className="text-blue-500">${dailyAvailable}</strong>
                                     </span>
                                 </div>
                             );
@@ -152,7 +165,7 @@ const CalendarView = ({
 
             {/* Right/Bottom: Selected Date Details (Scrollable) */}
             <div className={`flex flex-col min-h-0 flex-1 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'} overflow-hidden`}>
-                <div className="flex justify-between items-center p-3 border-b border-gray-100 dark:border-slate-700 shrink-0">
+                <div className={`flex justify-between items-center p-3 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
                     <h3 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
                         {selectedDate.getMonth() + 1}/{selectedDate.getDate()} 詳情
                     </h3>
@@ -162,7 +175,7 @@ const CalendarView = ({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
-                    <InsightCard expenses={expenses} budgets={budgets} categories={categories} isDark={isDark} />
+                    {/* InsightCard removed: Moved to Header in BudgetApp */}
 
                     {selectedDateExpenses.length === 0 ? (
                         <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>

@@ -130,7 +130,7 @@ const TrendView = ({ expenses = [], isDark }) => {
                 {/* Filters Group */}
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                     {/* Period Tabs */}
-                    <div className="flex bg-gray-100 dark:bg-slate-700 p-1 rounded-lg w-full sm:w-auto">
+                    <div className={`flex p-1 rounded-lg w-full sm:w-auto ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                         {[
                             { id: 'H1', label: '上半年' },
                             { id: 'H2', label: '下半年' },
@@ -139,11 +139,10 @@ const TrendView = ({ expenses = [], isDark }) => {
                             <button
                                 key={p.id}
                                 onClick={() => setPeriod(p.id)}
-                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-                                    period === p.id
-                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                }`}
+                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${period === p.id
+                                        ? `shadow-sm ${isDark ? 'bg-slate-600 text-blue-300' : 'bg-white text-blue-600'}`
+                                        : `hover:text-gray-700 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
+                                    }`}
                             >
                                 {p.label}
                             </button>
@@ -151,17 +150,17 @@ const TrendView = ({ expenses = [], isDark }) => {
                     </div>
 
                     {/* Year Navigation */}
-                    <div className="flex items-center bg-gray-100 dark:bg-slate-700 p-1 rounded-lg">
+                    <div className={`flex items-center p-1 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                         <button
                             onClick={() => setSelectedYear((prev) => prev - 1)}
-                            className="p-1.5 hover:bg-white dark:hover:bg-slate-600 rounded-md transition-colors text-gray-500 dark:text-slate-400"
+                            className={`p-1.5 rounded-md transition-colors ${isDark ? 'hover:bg-slate-600 text-slate-400' : 'hover:bg-white text-gray-500'}`}
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <span className={`px-4 font-mono font-bold ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{selectedYear}</span>
                         <button
                             onClick={() => setSelectedYear((prev) => prev + 1)}
-                            className="p-1.5 hover:bg-white dark:hover:bg-slate-600 rounded-md transition-colors text-gray-500 dark:text-slate-400"
+                            className={`p-1.5 rounded-md transition-colors ${isDark ? 'hover:bg-slate-600 text-slate-400' : 'hover:bg-white text-gray-500'}`}
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>

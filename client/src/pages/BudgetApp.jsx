@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2, Search, TrendingUp } from 'lucide-react';
+import { Calendar, PieChart as PieIcon, Settings, Wallet, Moon, Sun, Repeat, Loader2, Search, TrendingUp, AlertTriangle, Lightbulb, TrendingDown, X } from 'lucide-react';
 
 // Hooks & Components
 import { useBudgetData } from '../hooks/useBudgetData';
 import LoadingOverlay from '../components/LoadingOverlay';
+import { generateInsights } from '../utils/insightEngine';
 
 // Views
 import CalendarView from '../components/budget/CalendarView';
@@ -28,6 +29,43 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
     const [editingRecurring, setEditingRecurring] = useState(null);
+
+    // Smart Insight State
+    const [currentInsight, setCurrentInsight] = useState(null);
+    const [isInsightVisible, setIsInsightVisible] = useState(true);
+
+    useEffect(() => {
+        if (data.expenses.length > 0) {
+            const insights = generateInsights(data.expenses, data.budgets, data.categories);
+            if (insights.length > 0) {
+                setCurrentInsight(insights[0]);
+                setIsInsightVisible(true);
+            } else {
+                setCurrentInsight(null);
+            }
+        }
+    }, [data.expenses, data.budgets, data.categories]);
+
+    const insightStyles = {
+        warning: {
+            bg: isDarkMode ? 'bg-amber-900/30' : 'bg-amber-50',
+            border: isDarkMode ? 'border-amber-700/50' : 'border-amber-200',
+            text: isDarkMode ? 'text-amber-200' : 'text-amber-800',
+            icon: AlertTriangle,
+        },
+        danger: {
+            bg: isDarkMode ? 'bg-red-900/30' : 'bg-red-50',
+            border: isDarkMode ? 'border-red-700/50' : 'border-red-200',
+            text: isDarkMode ? 'text-red-200' : 'text-red-800',
+            icon: TrendingUp,
+        },
+        success: {
+            bg: isDarkMode ? 'bg-emerald-900/30' : 'bg-emerald-50',
+            border: isDarkMode ? 'border-emerald-700/50' : 'border-emerald-200',
+            text: isDarkMode ? 'text-emerald-200' : 'text-emerald-800',
+            icon: Lightbulb,
+        },
+    };
 
     useEffect(() => {
         if (isDarkMode) {
@@ -89,10 +127,32 @@ const BudgetApp = ({ token, onLogout, username }) => {
                 <header
                     className={`flex-none shadow-sm p-4 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
                 >
-                    <div className="max-w-4xl mx-auto flex justify-between items-center">
-                        <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                            <Wallet className="w-6 h-6" /> 記帳 ({username})
-                        </h1>
+                    <div className="max-w-4xl mx-auto flex justify-between items-center gap-4">
+                        {currentInsight && isInsightVisible ? (
+                            <div
+                                className={`flex-1 flex items-center justify-between p-2 rounded-lg border animate-in slide-in-from-top-2 fade-in duration-300 ${insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
+                                    } ${insightStyles[currentInsight.type]?.border || insightStyles.warning.border} ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    {React.createElement(insightStyles[currentInsight.type]?.icon || AlertTriangle, { className: 'w-4 h-4 shrink-0' })}
+                                    <span className="text-sm font-bold truncate">
+                                        {currentInsight.message}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setIsInsightVisible(false)}
+                                    className={`p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ml-2 shrink-0 ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text
+                                        }`}
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 shrink-0">
+                                <Wallet className="w-6 h-6" /> 記帳 ({username})
+                            </h1>
+                        )}
                         <button
                             onClick={() => setIsDarkMode(!isDarkMode)}
                             className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-slate-700 text-yellow-400' : 'bg-gray-100 text-slate-600'}`}
@@ -198,15 +258,14 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             <button
                                 key={tab.id}
                                 onClick={() => setCurrentView(tab.id)}
-                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${
-                                    currentView === tab.id
+                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${currentView === tab.id
                                         ? isDarkMode
                                             ? 'text-blue-400'
                                             : 'text-blue-600'
                                         : isDarkMode
-                                          ? 'text-slate-500 hover:text-slate-300'
-                                          : 'text-gray-400 hover:text-gray-600'
-                                }`}
+                                            ? 'text-slate-500 hover:text-slate-300'
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }`}
                             >
                                 <div
                                     className={`p-1 rounded-xl transition-all ${currentView === tab.id ? (isDarkMode ? 'bg-slate-700' : 'bg-blue-50') : ''}`}

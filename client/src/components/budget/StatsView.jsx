@@ -7,20 +7,23 @@ import MonthSelector from './MonthSelector';
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#64748B', '#84CC16', '#0EA5E9', '#D946EF'];
 
 // --- Sub-component: Budget Progress Bar ---
-const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick, isIncomeMode }) => {
+const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick, isIncomeMode, isDark }) => {
     const percentage = total > 0 ? Math.min(100, Math.max(0, (current / total) * 100)) : 0;
     const isOver = !isIncomeMode && total > 0 && current > total;
 
     return (
-        <div className="mb-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50 p-2 rounded-lg transition-colors group" onClick={onClick}>
+        <div
+            className={`mb-4 cursor-pointer p-2 rounded-lg transition-colors group ${isDark ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'}`}
+            onClick={onClick}
+        >
             <div className="flex justify-between text-sm mb-1 pointer-events-none">
                 <span className="font-medium truncate pr-2 flex items-center gap-2">
                     {label}
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-blue-500 bg-blue-100 dark:bg-blue-900 px-1.5 py-0.5 rounded-full">
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity text-xs px-1.5 py-0.5 rounded-full ${isDark ? 'text-blue-500 bg-blue-900' : 'text-blue-500 bg-blue-100'}`}>
                         查看詳情
                     </span>
                 </span>
-                <span className={isOver ? 'text-red-500 font-bold' : isIncomeMode ? 'text-green-600 font-bold' : 'text-gray-500 dark:text-gray-400'}>
+                <span className={isOver ? 'text-red-500 font-bold' : isIncomeMode ? 'text-green-600 font-bold' : isDark ? 'text-gray-400' : 'text-gray-500'}>
                     ${current.toLocaleString()}
                     {!isIncomeMode && total > 0 && (
                         <>
@@ -30,7 +33,7 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
                     )}
                 </span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden pointer-events-none">
+            <div className={`w-full rounded-full h-2.5 overflow-hidden pointer-events-none ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
                 <div
                     className={`h-2.5 rounded-full transition-all duration-500 ${isOver ? 'bg-red-500' : isIncomeMode ? 'bg-green-500' : colorClass}`}
                     style={{ width: isIncomeMode ? '100%' : total > 0 ? `${percentage}%` : '0%' }}
@@ -128,12 +131,12 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
             <div
                 className={`w-full max-w-md rounded-xl shadow-2xl max-h-[80vh] flex flex-col ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-800'}`}
             >
-                <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-slate-700">
+                <div className={`flex justify-between items-center p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
                     <h3 className="font-bold text-lg flex items-center gap-2">
                         <FileText className={`w-5 h-5 ${isIncomeMode ? 'text-green-500' : 'text-blue-500'}`} />
                         {category} - {isIncomeMode ? '收入明細' : '支出明細'}
                     </h3>
-                    <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                    <button onClick={onClose} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-200'}`}>
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -146,13 +149,13 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
                                 className={`flex justify-between items-center p-3 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}
                             >
                                 <div className="flex flex-col">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-0.5">
+                                    <div className={`flex items-center gap-2 text-sm mb-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                         <Calendar className="w-3 h-3" />
                                         {expense.date}
                                     </div>
                                     <span className="font-medium">{expense.note || '無備註'}</span>
                                 </div>
-                                <span className={`font-bold text-lg ${isIncomeMode ? 'text-green-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                                <span className={`font-bold text-lg ${isIncomeMode ? 'text-green-500' : isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                                     ${Number(expense.amount).toLocaleString()}
                                 </span>
                             </div>
@@ -162,7 +165,7 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
                     )}
                 </div>
 
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 rounded-b-xl flex justify-between items-center">
+                <div className={`p-4 border-t rounded-b-xl flex justify-between items-center ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
                     <span className="text-sm text-gray-500">總筆數: {expenses.length}</span>
                     <span className="font-bold text-lg">總計: ${expenses.reduce((sum, e) => sum + Number(e.amount), 0).toLocaleString()}</span>
                 </div>
@@ -288,16 +291,15 @@ const StatsView = ({
                 {/* control panel */}
                 <div className={`p-2 rounded-lg flex flex-col gap-2 ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
                     {/* year/month */}
-                    <div className="flex bg-white/50 dark:bg-slate-700/50 rounded p-1">
+                    <div className={`flex rounded p-1 ${isDark ? 'bg-slate-700/50' : 'bg-white/50'}`}>
                         {['monthly', 'yearly'].map((mode) => (
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${
-                                    viewMode === mode
-                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                }`}
+                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${viewMode === mode
+                                    ? `shadow-sm ${isDark ? 'bg-slate-600 text-blue-300' : 'bg-white text-blue-600'}`
+                                    : `hover:text-gray-700 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
+                                    }`}
                             >
                                 {mode === 'monthly' ? '月統計' : '年統計'}
                             </button>
@@ -308,21 +310,19 @@ const StatsView = ({
                     <div className="flex gap-2">
                         <button
                             onClick={() => setViewType('expense')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                viewType === 'expense'
-                                    ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                            }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'expense'
+                                ? `border-red-500 ${isDark ? 'bg-red-900/20 text-red-400' : 'bg-red-50 text-red-600'}`
+                                : `border-transparent ${isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`
+                                }`}
                         >
                             <TrendingDown className="w-4 h-4" /> 支出
                         </button>
                         <button
                             onClick={() => setViewType('income')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                viewType === 'income'
-                                    ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                            }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'income'
+                                ? `border-green-500 ${isDark ? 'bg-green-900/20 text-green-400' : 'bg-green-50 text-green-600'}`
+                                : `border-transparent ${isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`
+                                }`}
                         >
                             <TrendingUp className="w-4 h-4" /> 收入
                         </button>
@@ -361,6 +361,7 @@ const StatsView = ({
                                     colorClass={COLORS[index % COLORS.length] ? `bg-[${COLORS[index % COLORS.length]}]` : 'bg-blue-500'}
                                     onClick={() => setSelectedCategory(item.name)}
                                     isIncomeMode={viewType === 'income'}
+                                    isDark={isDark}
                                 />
                             ))}
                         </div>

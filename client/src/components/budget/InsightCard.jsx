@@ -53,7 +53,7 @@ const InsightCard = ({ expenses, budgets, categories, isDark }) => {
         <div
             className={`mb-6 rounded-xl border p-4 flex items-start gap-4 shadow-sm animate-in slide-in-from-top-2 duration-300 ${config.bg} ${config.border}`}
         >
-            <div className={`p-2 rounded-full bg-white/50 dark:bg-black/20 shrink-0 ${config.iconColor}`}>
+            <div className={`p-2 rounded-full shrink-0 ${isDark ? 'bg-black/20' : 'bg-white/50'} ${config.iconColor}`}>
                 <Icon className="w-5 h-5" />
             </div>
 
@@ -64,7 +64,7 @@ const InsightCard = ({ expenses, budgets, categories, isDark }) => {
 
             <button
                 onClick={() => setIsVisible(false)}
-                className={`p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${config.textColor}`}
+                className={`p-1 rounded-full transition-colors ${config.textColor} ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
             >
                 <X className="w-4 h-4" />
             </button>
