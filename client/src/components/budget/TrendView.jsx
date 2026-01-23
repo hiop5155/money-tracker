@@ -139,10 +139,11 @@ const TrendView = ({ expenses = [], isDark }) => {
                             <button
                                 key={p.id}
                                 onClick={() => setPeriod(p.id)}
-                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${period === p.id
-                                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                    }`}
+                                className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                                    period === p.id
+                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                }`}
                             >
                                 {p.label}
                             </button>
@@ -189,7 +190,12 @@ const TrendView = ({ expenses = [], isDark }) => {
                     {/* Manual ResizeObserver Pattern */}
                     <div ref={chartContainerRef} className="w-full h-[300px] min-h-[300px] relative">
                         {chartSize.width > 0 ? (
-                            <BarChart width={chartSize.width} height={chartSize.height} data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <BarChart
+                                width={chartSize.width}
+                                height={chartSize.height}
+                                data={data}
+                                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                            >
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e5e7eb'} />
                                 <XAxis
                                     dataKey="name"

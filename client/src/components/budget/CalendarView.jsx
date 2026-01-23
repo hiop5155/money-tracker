@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import MonthSelector from './MonthSelector';
+import InsightCard from './InsightCard';
 
 const formatCurrency = (amount) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(amount);
 
@@ -15,6 +16,8 @@ const CalendarView = ({
     monthlyIncome,
     yearlyIncome,
     budgets,
+    expenses,
+    categories,
     onPrevMonth,
     onNextMonth,
     onDateChange,
@@ -136,7 +139,9 @@ const CalendarView = ({
                             return (
                                 <div className="col-span-2 pt-1 mt-1 border-t border-gray-300 dark:border-slate-700 flex justify-between text-[10px] text-gray-500 dark:text-slate-400">
                                     <span>剩: {remainingDays}天</span>
-                                    <span>可用: <strong className="text-blue-500">${dailyAvailable}/日</strong></span>
+                                    <span>
+                                        可用: <strong className="text-blue-500">${dailyAvailable}/日</strong>
+                                    </span>
                                 </div>
                             );
                         }
@@ -157,6 +162,8 @@ const CalendarView = ({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
+                    <InsightCard expenses={expenses} budgets={budgets} categories={categories} isDark={isDark} />
+
                     {selectedDateExpenses.length === 0 ? (
                         <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>
                     ) : (
@@ -165,7 +172,9 @@ const CalendarView = ({
                                 <div className="flex justify-between items-start">
                                     <div className="flex flex-col">
                                         <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{item.category}</span>
-                                        {item.note && <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{item.note}</span>}
+                                        {item.note && (
+                                            <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{item.note}</span>
+                                        )}
                                     </div>
 
                                     <div className="flex items-center gap-2">

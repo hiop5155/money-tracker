@@ -293,10 +293,11 @@ const StatsView = ({
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${viewMode === mode
-                                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                                    }`}
+                                className={`flex-1 py-1.5 text-sm font-medium rounded transition-all ${
+                                    viewMode === mode
+                                        ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-300'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                }`}
                             >
                                 {mode === 'monthly' ? '月統計' : '年統計'}
                             </button>
@@ -307,19 +308,21 @@ const StatsView = ({
                     <div className="flex gap-2">
                         <button
                             onClick={() => setViewType('expense')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'expense'
-                                ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                                }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                viewType === 'expense'
+                                    ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
+                            }`}
                         >
                             <TrendingDown className="w-4 h-4" /> 支出
                         </button>
                         <button
                             onClick={() => setViewType('income')}
-                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${viewType === 'income'
-                                ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                                : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
-                                }`}
+                            className={`flex-1 py-1.5 rounded border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                viewType === 'income'
+                                    ? 'border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                                    : 'border-transparent bg-gray-50 text-gray-500 dark:bg-slate-700/50 dark:text-slate-400'
+                            }`}
                         >
                             <TrendingUp className="w-4 h-4" /> 收入
                         </button>

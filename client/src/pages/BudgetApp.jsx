@@ -12,7 +12,6 @@ import RecurringView from '../components/budget/RecurringView';
 import SettingsView from '../components/budget/SettingsView';
 import SearchView from '../components/budget/SearchView';
 import TrendView from '../components/budget/TrendView.jsx';
-import InsightCard from '../components/budget/InsightCard.jsx'; // [NEW]
 
 // Modals
 import ExpenseModal from '../components/budget/ExpenseModal';
@@ -106,11 +105,6 @@ const BudgetApp = ({ token, onLogout, username }) => {
                 {/* 2. Main Content Area (View-controlled Scroll) */}
                 <main className="flex-1 overflow-hidden relative max-w-4xl mx-auto w-full">
                     <div className="absolute inset-0 p-4 pb-24 md:pb-4 w-full h-full">
-                        {/* AI Insights - Only show on Calendar/Stats view */}
-                        {(currentView === 'calendar' || currentView === 'stats') && (
-                            <InsightCard expenses={data.expenses} budgets={data.budgets} categories={data.categories} isDark={isDarkMode} />
-                        )}
-
                         {/* View Rendering */}
                         {currentView === 'calendar' && (
                             <CalendarView
@@ -124,6 +118,8 @@ const BudgetApp = ({ token, onLogout, username }) => {
                                 monthlyIncome={data.monthlyIncome}
                                 yearlyIncome={data.yearlyIncome}
                                 budgets={data.budgets}
+                                expenses={data.expenses}
+                                categories={data.categories}
                                 onPrevMonth={handlePrevMonth}
                                 onNextMonth={handleNextMonth}
                                 onDateChange={handleDateChange}
@@ -187,7 +183,9 @@ const BudgetApp = ({ token, onLogout, username }) => {
                 </main>
 
                 {/* 3. Bottom Navigation Bar (Fixed Bottom) */}
-                <nav className={`flex-none fixed bottom-0 w-full h-[72px] pb-[safe-area-inset-bottom] border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}>
+                <nav
+                    className={`flex-none fixed bottom-0 w-full h-[72px] pb-[safe-area-inset-bottom] border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}
+                >
                     <div className="max-w-4xl mx-auto h-full flex justify-around items-center px-2">
                         {[
                             { id: 'calendar', icon: Calendar, label: '記帳' },
@@ -200,12 +198,19 @@ const BudgetApp = ({ token, onLogout, username }) => {
                             <button
                                 key={tab.id}
                                 onClick={() => setCurrentView(tab.id)}
-                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${currentView === tab.id
-                                    ? (isDarkMode ? 'text-blue-400' : 'text-blue-600')
-                                    : (isDarkMode ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600')
-                                    }`}
+                                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${
+                                    currentView === tab.id
+                                        ? isDarkMode
+                                            ? 'text-blue-400'
+                                            : 'text-blue-600'
+                                        : isDarkMode
+                                          ? 'text-slate-500 hover:text-slate-300'
+                                          : 'text-gray-400 hover:text-gray-600'
+                                }`}
                             >
-                                <div className={`p-1 rounded-xl transition-all ${currentView === tab.id ? (isDarkMode ? 'bg-slate-700' : 'bg-blue-50') : ''}`}>
+                                <div
+                                    className={`p-1 rounded-xl transition-all ${currentView === tab.id ? (isDarkMode ? 'bg-slate-700' : 'bg-blue-50') : ''}`}
+                                >
                                     <tab.icon className={`w-6 h-6 ${currentView === tab.id ? 'stroke-[2.5px]' : 'stroke-2'}`} />
                                 </div>
                                 <span className="text-[10px] font-medium">{tab.label}</span>
