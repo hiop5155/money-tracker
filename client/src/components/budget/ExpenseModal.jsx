@@ -10,6 +10,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
         note: '',
         date: '',
     });
+    const [isNoteFocused, setIsNoteFocused] = useState(false);
 
     // Initialize Data
     useEffect(() => {
@@ -92,8 +93,8 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                         <button
                             onClick={() => setFormData({ ...formData, type: 'expense' })}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'expense'
-                                    ? `shadow-sm text-red-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
-                                    : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
+                                ? `shadow-sm text-red-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
+                                : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
                                 }`}
                         >
                             支出
@@ -101,8 +102,8 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                         <button
                             onClick={() => setFormData({ ...formData, type: 'income' })}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${formData.type === 'income'
-                                    ? `shadow-sm text-green-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
-                                    : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
+                                ? `shadow-sm text-green-500 ${isDark ? 'bg-slate-600' : 'bg-white'}`
+                                : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
                                 }`}
                         >
                             收入
@@ -156,12 +157,12 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                         key={cat}
                                         onClick={() => setFormData({ ...formData, category: cat })}
                                         className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap border transition-colors ${formData.category === cat
-                                                ? isDark
-                                                    ? 'bg-blue-900/50 border-blue-500 text-blue-400'
-                                                    : 'bg-blue-50 border-blue-500 text-blue-600'
-                                                : isDark
-                                                    ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            ? isDark
+                                                ? 'bg-blue-900/50 border-blue-500 text-blue-400'
+                                                : 'bg-blue-50 border-blue-500 text-blue-600'
+                                            : isDark
+                                                ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
+                                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                                             }`}
                                     >
                                         {cat}
@@ -190,6 +191,8 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 type="text"
                                 placeholder="備註..."
                                 value={formData.note}
+                                onFocus={() => setIsNoteFocused(true)}
+                                onBlur={() => setIsNoteFocused(false)}
                                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                                 className={`flex-1 bg-transparent border-b outline-none py-1 ${isDark ? 'border-slate-700 text-white placeholder-slate-500' : 'border-gray-200 text-gray-800 placeholder-gray-400'} focus:border-blue-500 transition-colors`}
                             />
@@ -210,13 +213,15 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                         </button>
                     </div>
 
-                    {/* Calculator Keypad */}
-                    <CalculatorKeypad
-                        value={formData.amountStr}
-                        onChange={(val) => setFormData({ ...formData, amountStr: val })}
-                        onSubmit={handleSubmit}
-                        isDark={isDark}
-                    />
+                    {/* Calculator Keypad - Hidden when typing note on mobile */}
+                    <div className={isNoteFocused ? 'hidden md:block' : 'block'}>
+                        <CalculatorKeypad
+                            value={formData.amountStr}
+                            onChange={(val) => setFormData({ ...formData, amountStr: val })}
+                            onSubmit={handleSubmit}
+                            isDark={isDark}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
