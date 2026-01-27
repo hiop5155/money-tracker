@@ -78,9 +78,20 @@ const BudgetApp = ({ token, onLogout, username }) => {
     }, [isDarkMode]);
 
     // Handlers for Date Navigation
-    const handlePrevMonth = () => data.setCurrentDate(new Date(data.currentYear, data.currentMonth - 1, 1));
-    const handleNextMonth = () => data.setCurrentDate(new Date(data.currentYear, data.currentMonth + 1, 1));
-    const handleDateChange = (newDate) => data.setCurrentDate(newDate);
+    const handlePrevMonth = () => {
+        const newDate = new Date(data.currentYear, data.currentMonth - 1, 1);
+        data.setCurrentDate(newDate);
+        data.setSelectedDate(newDate);
+    };
+    const handleNextMonth = () => {
+        const newDate = new Date(data.currentYear, data.currentMonth + 1, 1);
+        data.setCurrentDate(newDate);
+        data.setSelectedDate(newDate);
+    };
+    const handleDateChange = (newDate) => {
+        data.setCurrentDate(newDate);
+        data.setSelectedDate(newDate);
+    };
 
     // Modal Wrappers
     const openAddExpense = () => {
@@ -259,12 +270,12 @@ const BudgetApp = ({ token, onLogout, username }) => {
                                 key={tab.id}
                                 onClick={() => setCurrentView(tab.id)}
                                 className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 active:scale-95 ${currentView === tab.id
-                                        ? isDarkMode
-                                            ? 'text-blue-400'
-                                            : 'text-blue-600'
-                                        : isDarkMode
-                                            ? 'text-slate-500 hover:text-slate-300'
-                                            : 'text-gray-400 hover:text-gray-600'
+                                    ? isDarkMode
+                                        ? 'text-blue-400'
+                                        : 'text-blue-600'
+                                    : isDarkMode
+                                        ? 'text-slate-500 hover:text-slate-300'
+                                        : 'text-gray-400 hover:text-gray-600'
                                     }`}
                             >
                                 <div
