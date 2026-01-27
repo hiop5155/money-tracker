@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://money-tracker.example.com/blog/sitemap.xml
