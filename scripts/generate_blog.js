@@ -221,11 +221,11 @@ posts.forEach((post) => {
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://money-tracker.example.com/</loc>
+        <loc>https://money-tracker.xyz/</loc>
         <priority>1.0</priority>
     </url>
 ${posts.map(post => `    <url>
-        <loc>https://money-tracker.example.com/blog/${post.slug}.html</loc>
+        <loc>https://money-tracker.xyz/blog/${post.slug}.html</loc>
         <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
         <priority>0.8</priority>
     </url>`).join('\n')}
@@ -237,7 +237,7 @@ console.log('Generated: sitemap.xml');
 // Generate robots.txt
 const robots = `User-agent: *
 Allow: /
-Sitemap: https://money-tracker.example.com/blog/sitemap.xml
+Sitemap: https://money-tracker.xyz/blog/sitemap.xml
 `;
 fs.writeFileSync(path.join(BLOG_DIR, 'robots.txt'), robots);
 console.log('Generated: robots.txt');
