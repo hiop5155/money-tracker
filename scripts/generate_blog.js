@@ -8,6 +8,18 @@ if (!fs.existsSync(BLOG_DIR)) {
     fs.mkdirSync(BLOG_DIR, { recursive: true });
 }
 
+// === 1. 定義 Google Analytics 代碼 ===
+const GA_SCRIPT = `
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-J6Q197M3NN');
+</script>
+`;
+
 const posts = [
     // Theme 1: Engineer Finance (18)
     { id: 1, title: '竹科工程師如何合法節稅？', slug: 'hsinchu-engineer-tax-tips', category: '工程師理財' },
@@ -69,7 +81,7 @@ const posts = [
 const template = (post) => `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
+    ${GA_SCRIPT} <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${post.title} | 記帳助手 Money Tracker</title>
     <meta name="description" content="${post.title}：針對${post.category}提供的專業解析，幫助您更有效率地管理個人財務空間。">
@@ -235,9 +247,10 @@ fs.writeFileSync(path.join(BLOG_DIR, 'sitemap.xml'), sitemap);
 console.log('Generated: sitemap.xml');
 
 // Generate robots.txt
+// 修正：配合 Nginx 設定，Sitemap 指向根目錄
 const robots = `User-agent: *
 Allow: /
-Sitemap: https://money-tracker.xyz/blog/sitemap.xml
+Sitemap: https://money-tracker.xyz/sitemap.xml
 `;
 fs.writeFileSync(path.join(BLOG_DIR, 'robots.txt'), robots);
 console.log('Generated: robots.txt');
@@ -246,7 +259,7 @@ console.log('Generated: robots.txt');
 const listTemplate = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
+    ${GA_SCRIPT} <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>理財知識庫 | 記帳助手 Money Tracker</title>
     <style>
