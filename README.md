@@ -19,6 +19,7 @@ The Money Tracker allows users to track their expenses and income, manage catego
     - Secure sign-up and login using JWT.
     - Email verification for new accounts.
     - Password reset functionality via OTP.
+    - **Account Management:** Soft delete (deactivate) account capability.
 - **Transaction Tracking:**
     - Track both **Income** and **Expenses**.
     - Calendar interface for daily overview.
