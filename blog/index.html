@@ -1,286 +1,424 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
 
-gtag('config', 'G-J6Q197M3NN');
-</script>
- <meta charset="UTF-8">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-J6Q197M3NN');
+    </script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>理財知識庫 | 記帳助手 Money Tracker</title>
+    <meta name="description" content="記帳助手 Money Tracker 理財知識庫 - 提供工程師理財、資產配置、預算管理與被動收入的實用指南。">
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --card: #ffffff; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-        header { background: var(--card); padding: 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        h1 { color: #1e293b; }
-        .post-list { list-style: none; padding: 0; }
-        .post-item { background: white; margin-bottom: 12px; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .post-item a { text-decoration: none; color: var(--primary); font-weight: bold; font-size: 18px; }
-        .post-item .cat { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            background: var(--card);
+            padding: 24px 0;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .post-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 16px;
+        }
+
+        .post-item {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #f1f5f9;
+        }
+
+        .post-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-item a {
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .post-item a:hover {
+            color: var(--primary);
+        }
+
+        .post-item .cat {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            background: #eff6ff;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-light);
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
     </style>
 </head>
+
 <body>
-    <header><h1>理財知識庫</h1></header>
+    <header>
+        <a href="/" class="logo">💰 記帳助手</a>
+    </header>
+
     <div class="container">
+        <div class="hero">
+            <h1>理財知識庫</h1>
+            <p>專為現代人與工程師設計的理財指南，從預算管理、資產配置到被動收入，陪你一起達成財務自由。</p>
+        </div>
+
         <ul class="post-list">
-            
+
             <li class="post-item">
                 <span class="cat">工程師理財</span>
                 <a href="/blog/hsinchu-engineer-tax-tips.html">竹科工程師如何合法節稅？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">工程師理財</span>
+                <span class="cat">資產配置</span>
                 <a href="/blog/engineer-asset-allocation-3m.html">年薪 300 萬工程師資產配置建議 PTT</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">工程師理財</span>
+                <span class="cat">稅務規劃</span>
                 <a href="/blog/tech-rsu-tax-planning.html">科技業分紅 RSU 怎麼報稅最划算？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">工程師理財</span>
+                <span class="cat">房產投資</span>
                 <a href="/blog/engineer-buy-vs-rent.html">工程師適合買房還是租房投資？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">工程師理財</span>
+                <span class="cat">存股投資</span>
                 <a href="/blog/busy-engineer-stock-saving.html">沒時間看盤的工程師適合存股嗎？</a>
             </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/shift-worker-passive-income.html">輪班工程師如何規劃被動收入？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/single-engineer-10m-goal.html">單身工程師 35 歲前存到 1000 萬的方法</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/engineer-fire-retirement-calc.html">工程師提早退休 FIRE 需要多少錢？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/high-income-insurance-tax.html">高收入族群如何利用保險節稅？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/tech-espp-strategy.html">科技業員工認股權 (ESPP) 要賣還是留？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/busy-engineer-etf-recommendation.html">適合忙碌工程師的定期定額 ETF 推薦</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/dual-income-engineer-family-budget.html">雙薪工程師家庭理財與育兒費用規劃</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/system-vs-ic-design-finance.html">系統廠 vs. IC 設計工程師理財觀念差異</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/engineer-career-change-finance.html">工程師轉職降薪對財務規劃的影響</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/tech-layoff-emergency-fund.html">科技業裁員潮下的緊急預備金要存多少？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/engineer-house-downpayment.html">工程師買房頭期款要存多久？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/us-stock-broker-vs-sub-brokerage.html">美股券商與複委託哪個適合沒空的工程師？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">工程師理財</span>
-                <a href="/blog/engineer-avoiding-lifestyle-inflation.html">工程師如何避免生活通膨 (Lifestyle Inflation)？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/2026-auto-budget-app-taiwan.html">2026 台灣全自動記帳 APP 推薦</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/bank-sync-budget-software.html">可以同步銀行帳戶的記帳軟體有哪些？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/invoice-sync-budget-app-comparison.html">載具發票自動匯入記帳 APP 比較</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/lazy-budget-google-sheet-template.html">懶人記帳 Google Sheet 表格範本下載</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/credit-card-auto-budget-safety.html">信用卡自動記帳功能安全性如何？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/three-envelopes-budgeting-lazy.html">三信封理財法適合懶人嗎？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/how-to-stop-quitting-budgeting.html">記帳總是半途而廢怎麼辦？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/student-simple-budgeting-dcard.html">適合大學生的簡單記帳法 Dcard</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/hands-free-financial-tools.html">不用動手記帳的理財工具</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/fortune-city-vs-moneybook-review.html">記帳城市 vs. 麻布記帳 哪個好用？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/fixed-expense-budgeting-tips.html">固定支出很多的懶人記帳技巧</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/line-bot-easy-budgeting.html">如何用 LINE 機器人快速記帳？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/budget-app-easycard-sync.html">記帳軟體如何連結悠遊卡紀錄？</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/50-30-20-budget-rule-excel.html">50-30-20 理財法則 Excel 試算表</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/painless-budgeting-for-spendthrifts.html">適合月光族的無痛記帳法</a>
-            </li>
-            
-            <li class="post-item">
-                <span class="cat">懶人記帳</span>
-                <a href="/blog/why-budgeting-is-not-enough-to-save.html">只有記帳存不到錢的原因是什麼？</a>
-            </li>
-            
+
             <li class="post-item">
                 <span class="cat">被動收入</span>
+                <a href="/blog/shift-worker-passive-income.html">輪班工程師如何規劃被動收入？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">財務目標</span>
+                <a href="/blog/single-engineer-10m-goal.html">單身工程師 35 歲前存到 1000 萬的方法</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">FIRE 退休</span>
+                <a href="/blog/engineer-fire-retirement-calc.html">工程師提早退休 FIRE 需要多少錢？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">保險稅務</span>
+                <a href="/blog/high-income-insurance-tax.html">高收入族群如何利用保險節稅？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">薪資福利</span>
+                <a href="/blog/tech-espp-strategy.html">科技業員工認股權 (ESPP) 要賣還是留？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">ETF 投資</span>
+                <a href="/blog/busy-engineer-etf-recommendation.html">適合忙碌工程師的定期定額 ETF 推薦</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">家庭理財</span>
+                <a href="/blog/dual-income-engineer-family-budget.html">雙薪工程師家庭理財與育兒費用規劃</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">職涯財務</span>
+                <a href="/blog/system-vs-ic-design-finance.html">系統廠 vs. IC 設計工程師理財觀念差異</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">轉職規劃</span>
+                <a href="/blog/engineer-career-change-finance.html">工程師轉職降薪對財務規劃的影響</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">緊急預備金</span>
+                <a href="/blog/tech-layoff-emergency-fund.html">科技業裁員潮下的緊急預備金要存多少？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">購屋規劃</span>
+                <a href="/blog/engineer-house-downpayment.html">工程師買房頭期款要存多久？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">美股投資</span>
+                <a href="/blog/us-stock-broker-vs-sub-brokerage.html">美股券商與複委託哪個適合沒空的工程師？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">生活型態</span>
+                <a href="/blog/engineer-avoiding-lifestyle-inflation.html">工程師如何避免生活通膨 (Lifestyle Inflation)？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具推薦</span>
+                <a href="/blog/2026-auto-budget-app-taiwan.html">2026 台灣全自動記帳 APP 推薦</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具評比</span>
+                <a href="/blog/bank-sync-budget-software.html">可以同步銀行帳戶的記帳軟體有哪些？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具評比</span>
+                <a href="/blog/invoice-sync-budget-app-comparison.html">載具發票自動匯入記帳 APP 比較</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">表格範本</span>
+                <a href="/blog/lazy-budget-google-sheet-template.html">懶人記帳 Google Sheet 表格範本下載</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">資安知識</span>
+                <a href="/blog/credit-card-auto-budget-safety.html">信用卡自動記帳功能安全性如何？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">預算方法</span>
+                <a href="/blog/three-envelopes-budgeting-lazy.html">三信封理財法適合懶人嗎？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">心態建設</span>
+                <a href="/blog/how-to-stop-quitting-budgeting.html">記帳總是半途而廢怎麼辦？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">學生理財</span>
+                <a href="/blog/student-simple-budgeting-dcard.html">適合大學生的簡單記帳法 Dcard</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">懶人理財</span>
+                <a href="/blog/hands-free-financial-tools.html">不用動手記帳的理財工具</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具評比</span>
+                <a href="/blog/fortune-city-vs-moneybook-review.html">記帳城市 vs. 麻布記帳 哪個好用？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">預算技巧</span>
+                <a href="/blog/fixed-expense-budgeting-tips.html">固定支出很多的懶人記帳技巧</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具應用</span>
+                <a href="/blog/line-bot-easy-budgeting.html">如何用 LINE 機器人快速記帳？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">工具應用</span>
+                <a href="/blog/budget-app-easycard-sync.html">記帳軟體如何連結悠遊卡紀錄？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">理財法則</span>
+                <a href="/blog/50-30-20-budget-rule-excel.html">50-30-20 理財法則 Excel 試算表</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">無痛記帳</span>
+                <a href="/blog/painless-budgeting-for-spendthrifts.html">適合月光族的無痛記帳法</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">理財觀念</span>
+                <a href="/blog/why-budgeting-is-not-enough-to-save.html">只有記帳存不到錢的原因是什麼？</a>
+            </li>
+
+            <li class="post-item">
+                <span class="cat">投資工具</span>
                 <a href="/blog/dividend-tracking-excel-template.html">如何製作台美股股息追蹤 Excel？</a>
             </li>
-            
+
             <li class="post-item">
                 <span class="cat">被動收入</span>
                 <a href="/blog/free-passive-income-notion-dashboard.html">免費被動收入儀表板 Notion 模板</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">存股工具</span>
                 <a href="/blog/taiwan-high-dividend-etf-tracker.html">00878 0056 00919 配息追蹤工具推薦</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">現金流</span>
                 <a href="/blog/how-to-calculate-monthly-passive-cashflow.html">如何計算每月平均被動收入現金流？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">資產管理</span>
                 <a href="/blog/rent-and-dividend-income-management.html">房租與股利收入如何合併管理？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">工具推薦</span>
                 <a href="/blog/taiwan-net-worth-tracker-app.html">適合台灣人的資產淨值追蹤 APP</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">複利試算</span>
                 <a href="/blog/dividend-compounding-calculator-for-taiwan.html">存股族如何試算複利效應與現金流？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">投資記帳</span>
                 <a href="/blog/budget-app-stock-pnl-tracking.html">記帳軟體可以追蹤股票損益嗎？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">加密貨幣</span>
                 <a href="/blog/crypto-staking-income-logging.html">虛擬貨幣質押收益怎麼記錄？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">副業收入</span>
                 <a href="/blog/blog-ads-affiliate-income-report.html">部落格廣告收入與聯盟行銷報表製作</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">退休規劃</span>
                 <a href="/blog/retiree-cashflow-sufficiency-tracker.html">退休族如何追蹤每月現金流是否夠用？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">股息再投入</span>
                 <a href="/blog/dividend-reinvestment-drip-accounting.html">股息再投入 (DRIP) 如何記帳？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">投資工具</span>
                 <a href="/blog/cross-brokerage-portfolio-tracker.html">跨券商投資組合績效追蹤工具</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">財務自由</span>
                 <a href="/blog/setting-passive-income-financial-freedom-goal.html">如何設定被動收入覆蓋生活費的目標？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">稅務知識</span>
                 <a href="/blog/dividend-tax-second-generation-insurance-calc.html">領股息要繳二代健保怎麼算？</a>
             </li>
-            
+
             <li class="post-item">
-                <span class="cat">被動收入</span>
+                <span class="cat">存股工具</span>
                 <a href="/blog/high-dividend-etf-filling-days-tracker.html">高股息 ETF 填息天數追蹤網站</a>
             </li>
-            
+
         </ul>
+
+        <footer>
+            <div style="margin-bottom: 24px;">
+                <a href="/">記帳助手 App</a>
+                <a href="/blog/">理財知識庫</a>
+                <a href="/privacy.html">隱私權政策</a>
+            </div>
+            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+        </footer>
     </div>
 </body>
+
 </html>

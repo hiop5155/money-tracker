@@ -265,6 +265,22 @@ export const useBudgetData = (token, onLogout) => {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        try {
+            const res = await api('/auth/delete', { method: 'PUT' });
+            if (res.ok) {
+                onLogout(); // Logout on success
+                return true;
+            } else {
+                const err = await res.json();
+                alert('刪除失敗: ' + (err.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('刪除帳號時發生錯誤');
+        }
+    };
+
     return {
         isApiLoading,
         isInitialLoading,
@@ -295,5 +311,6 @@ export const useBudgetData = (token, onLogout) => {
         handleUpdateBudget,
         exportToCSV,
         handleImportCSV,
+        handleDeleteAccount,
     };
 };

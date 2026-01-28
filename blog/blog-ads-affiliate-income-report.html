@@ -1,152 +1,257 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
 
-gtag('config', 'G-J6Q197M3NN');
-</script>
- <meta charset="UTF-8">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-J6Q197M3NN');
+    </script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>部落格廣告收入與聯盟行銷報表製作 | 記帳助手 Money Tracker</title>
-    <meta name="description" content="部落格廣告收入與聯盟行銷報表製作：針對被動收入提供的專業解析，幫助您更有效率地管理個人財務空間。">
+    <meta name="description" content="斜槓經營部落格或自媒體，收入來源雜亂（AdSense, 聯盟行銷, 業配）怎麼辦？本文教你如何設定記帳分類，輕鬆產出你的副業損益表。">
     <meta property="og:title" content="部落格廣告收入與聯盟行銷報表製作">
-    <meta property="og:description" content="了解更多關於部落格廣告收入與聯盟行銷報表製作的詳細內容，提升您的理財智慧。">
+    <meta property="og:description" content="斜槓經營部落格或自媒體，收入來源雜亂（AdSense, 聯盟行銷, 業配）怎麼辦？本文教你如何設定記帳分類，輕鬆產出你的副業損益表。">
     <meta property="og:type" content="article">
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1e40af;
+            --primary-dark: #1d4ed8;
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
             --text-light: #64748b;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.8;
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
         }
+
         header {
             background: var(--card);
             border-bottom: 1px solid #e2e8f0;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
+
         .logo {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
             color: var(--primary);
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
         article {
             background: var(--card);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 30px;
         }
+
         .category {
             display: inline-block;
-            background: #dbeafe;
+            background: #eff6ff;
             color: var(--primary);
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: 9999px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
+
         h1 {
             font-size: 32px;
-            margin-bottom: 24px;
-            line-height: 1.2;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            color: #0f172a;
         }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 16px;
+            color: #334155;
+            font-weight: 600;
+        }
+
         .content {
             font-size: 18px;
             color: #334155;
         }
+
+        .content p {
+            margin-bottom: 24px;
+        }
+
+        .content ul,
+        .content ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+
+        .content li {
+            margin-bottom: 12px;
+        }
+
+        .content strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
         .cta {
             margin-top: 60px;
-            padding: 40px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            border-radius: 12px;
+            padding: 48px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            border-radius: 16px;
             color: white;
             text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
         }
+
         .cta h2 {
             margin-top: 0;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 16px;
         }
+
+        .cta p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .btn {
             display: inline-block;
             background: white;
             color: var(--primary);
-            padding: 12px 32px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
             text-decoration: none;
-            margin-top: 20px;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         .btn:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
+
         footer {
             text-align: center;
-            padding: 40px 0;
+            padding: 60px 0;
             color: var(--text-light);
             font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
         }
+
+        footer a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
         @media (max-width: 640px) {
-            article { padding: 20px; }
-            h1 { font-size: 24px; }
+            article {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .cta {
+                padding: 32px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <header>
         <a href="/" class="logo">💰 記帳助手</a>
     </header>
+
     <div class="container">
         <article>
-            <span class="category">被動收入</span>
+            <span class="category">副業管理</span>
             <h1>部落格廣告收入與聯盟行銷報表製作</h1>
             <div class="content">
-                <p>在當今快節奏的社會中，<strong>部落格廣告收入與聯盟行銷報表製作</strong> 已成為許多人關注的焦點。無論您是專業人士還是初學者，深入了解 被動收入 領域的知識，都能為您的財務健康帶來顯著的提升。</p>
-                <p>這篇文章將探討與此主題相關的核心概念，並提供實用的建議，幫助您優化您的個人理財策略。</p>
-                <h2>為什麼這很重要？</h2>
-                <p>有效的財務規劃不僅僅是記錄開支，更是一種生活態度的體現。透過掌握 部落格廣告收入與聯盟行銷報表製作 的技巧，您可以更清晰地掌握資產流向，減少不必要的浪費，並為未來的夢想積累資本。</p>
-                <h2>實踐建議</h2>
-                <ul>
-                    <li><strong>持之以恆：</strong> 建立規律的習慣是成功的基石。</li>
-                    <li><strong>使用工具：</strong> 選擇適合自己的記帳工具（如 Money Tracker）。</li>
-                    <li><strong>定期回顧：</strong> 每月審視自己的收支狀況並做出調整。</li>
-                </ul>
-                <p>希望這篇關於 <strong>部落格廣告收入與聯盟行銷報表製作</strong> 的簡介對您有所啟發。理財是一場馬拉松，踏出第一步就是成功的開始。</p>
+                <p>經營自媒體或部落格，雖然初期收入微薄，但如果沒有好好記帳，你可能連自己是賺是賠都不知道（別忘了你每年的主機費和網域費都是成本！）。</p>
+
+                <h2>副業收入的痛點：來源太雜、入帳時間不一</h2>
+                <p>Google AdSense 滿 100 美金才發，聯盟行銷 (Affiliate) 可能是月結或季結，業配甚至是完稿後 30 天才入帳。這導致「現金流」與「實際獲利」常有時間差。</p>
+
+                <h2>如何在 Money Tracker 中管理副業？</h2>
+                <p>我們建議將你的副業視為一家「微型公司」來記帳：</p>
+                <ol>
+                    <li><strong>建立專屬收入類別：</strong> 在收入大項下，建立「廣告收入」、「聯盟行銷」、「服務接案」等子分類。</li>
+                    <li><strong>建立專屬支出類別：</strong> 包含「網站主機」、「軟體訂閱」、「外包成本」。</li>
+                    <li><strong>善用「應收帳款」概念：</strong> 雖然 Money Tracker 是現金基礎，但你可以在備註欄位寫上「1月業配款」，方便日後搜尋對帳。</li>
+                </ol>
+
+                <h2>視覺化你的斜槓成果</h2>
+                <p>透過 <strong>Money Tracker</strong> 的「趨勢分析」功能，你可以清楚看到這條副業曲線是否隨著時間成長。看著那條收入線慢慢超過主機費用的紅線，就是經營者最大的快樂。</p>
             </div>
         </article>
 
         <div class="cta">
-            <h2>想要更智慧地管理您的金錢嗎？</h2>
-            <p>立即試用我們的「記帳助手」，體驗自動化與智能分析帶來的便利。</p>
-            <a href="/" class="btn">開始使用</a>
+            <h2>像 CEO 一樣管理你的副業</h2>
+            <p><strong>Money Tracker 記帳助手</strong> 幫您理清複雜的現金流，把副業變成本業。</p>
+            <a href="/" class="btn">開始管理副業</a>
         </div>
 
         <footer>
+            <div style="margin-bottom: 24px;">
+                <a href="/">記帳助手 App</a>
+                <a href="/blog/">理財知識庫</a>
+                <a href="/privacy.html">隱私權政策</a>
+            </div>
             &copy; 2026 記帳助手 Money Tracker. All rights reserved.
         </footer>
     </div>
 </body>
+
 </html>

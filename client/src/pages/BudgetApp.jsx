@@ -248,6 +248,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
                                 onExport={data.exportToCSV}
                                 onImport={data.handleImportCSV}
                                 onLogout={onLogout}
+                                onDeleteAccount={data.handleDeleteAccount}
                             />
                         )}
                     </div>

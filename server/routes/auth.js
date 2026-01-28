@@ -223,4 +223,22 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
+// Soft Delete Account
+// Using PUT because we are updating the resource status
+router.put('/delete', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        // Set isVerified to false as per user request (soft delete)
+        user.isVerified = false;
+        await user.save();
+
+        res.json({ message: '帳號已成功刪除' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 module.exports = router;

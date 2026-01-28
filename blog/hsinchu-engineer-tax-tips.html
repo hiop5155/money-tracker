@@ -1,152 +1,268 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
 
-gtag('config', 'G-J6Q197M3NN');
-</script>
- <meta charset="UTF-8">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-J6Q197M3NN');
+    </script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>竹科工程師如何合法節稅？ | 記帳助手 Money Tracker</title>
-    <meta name="description" content="竹科工程師如何合法節稅？：針對工程師理財提供的專業解析，幫助您更有效率地管理個人財務空間。">
-    <meta property="og:title" content="竹科工程師如何合法節稅？">
-    <meta property="og:description" content="了解更多關於竹科工程師如何合法節稅？的詳細內容，提升您的理財智慧。">
+    <title>竹科工程師如何合法節稅？善用勞退自提與扶養親屬 | 記帳助手 Money Tracker</title>
+    <meta name="description" content="年薪三百萬的竹科工程師，所得稅級距動輒 30% 起跳。本文整理三大合法節稅重點：勞退自提 6%、扶養親屬優化與股利分離課稅，幫你守住辛苦賺來的血汗錢。">
+    <meta property="og:title" content="竹科工程師如何合法節稅？善用勞退自提與扶養親屬">
+    <meta property="og:description"
+        content="年薪三百萬的竹科工程師，所得稅級距動輒 30% 起跳。本文整理三大合法節稅重點：勞退自提 6%、扶養親屬優化與股利分離課稅，幫你守住辛苦賺來的血汗錢。">
     <meta property="og:type" content="article">
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1e40af;
+            --primary-dark: #1d4ed8;
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
             --text-light: #64748b;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            line-height: 1.6;
+            line-height: 1.8;
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 40px 20px;
         }
+
         header {
             background: var(--card);
             border-bottom: 1px solid #e2e8f0;
             padding: 20px 0;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
+
         .logo {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
             color: var(--primary);
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
         article {
             background: var(--card);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 30px;
         }
+
         .category {
             display: inline-block;
-            background: #dbeafe;
+            background: #eff6ff;
             color: var(--primary);
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: 9999px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
+
         h1 {
             font-size: 32px;
-            margin-bottom: 24px;
-            line-height: 1.2;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            color: #0f172a;
         }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 16px;
+            color: #334155;
+            font-weight: 600;
+        }
+
         .content {
             font-size: 18px;
             color: #334155;
         }
+
+        .content p {
+            margin-bottom: 24px;
+        }
+
+        .content ul,
+        .content ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+
+        .content li {
+            margin-bottom: 12px;
+        }
+
+        .content strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
         .cta {
             margin-top: 60px;
-            padding: 40px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            border-radius: 12px;
+            padding: 48px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            border-radius: 16px;
             color: white;
             text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
         }
+
         .cta h2 {
             margin-top: 0;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 16px;
         }
+
+        .cta p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .btn {
             display: inline-block;
             background: white;
             color: var(--primary);
-            padding: 12px 32px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
             text-decoration: none;
-            margin-top: 20px;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+
         .btn:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
+
         footer {
             text-align: center;
-            padding: 40px 0;
+            padding: 60px 0;
             color: var(--text-light);
             font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
         }
+
+        footer a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 12px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
         @media (max-width: 640px) {
-            article { padding: 20px; }
-            h1 { font-size: 24px; }
+            article {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .cta {
+                padding: 32px 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <header>
         <a href="/" class="logo">💰 記帳助手</a>
     </header>
+
     <div class="container">
         <article>
             <span class="category">工程師理財</span>
-            <h1>竹科工程師如何合法節稅？</h1>
+            <h1>竹科工程師如何合法節稅？善用勞退自提與扶養親屬</h1>
             <div class="content">
-                <p>在當今快節奏的社會中，<strong>竹科工程師如何合法節稅？</strong> 已成為許多人關注的焦點。無論您是專業人士還是初學者，深入了解 工程師理財 領域的知識，都能為您的財務健康帶來顯著的提升。</p>
-                <p>這篇文章將探討與此主題相關的核心概念，並提供實用的建議，幫助您優化您的個人理財策略。</p>
-                <h2>為什麼這很重要？</h2>
-                <p>有效的財務規劃不僅僅是記錄開支，更是一種生活態度的體現。透過掌握 竹科工程師如何合法節稅？ 的技巧，您可以更清晰地掌握資產流向，減少不必要的浪費，並為未來的夢想積累資本。</p>
-                <h2>實踐建議</h2>
+                <p>在竹科，年薪 300 萬往往伴隨著令人心痛的所得稅單。當你的邊際稅率來到 30% 甚至 40% 時，每一塊錢的「免稅額」或「扣除額」都價值連城。以下是工程師絕對不能錯過的合法節稅三招。</p>
+
+                <h2>1. 勞退自提 6%：穩賺不賠的節稅投資</h2>
+                <p>很多人忽略了「勞工退休金自願提繳」這個選項。你可以選擇每月從薪水中提撥 1% ~ 6% 到勞退帳戶。</p>
+                <p><strong>節稅效益：</strong>這筆自提金額是「全額免稅」的。
+                    <br>假設你年薪 300 萬，稅率 30%。如果你提滿 6%（約 10.8 萬），你可以直接省下 $108,000 × 30% = <strong>$32,400</strong> 的稅金。
+                    <br>這相當於政府直接給你 30% 的即時回饋，市面上哪裡找得到保證 30% 獲利的投資？
+                </p>
+
+                <h2>2. 盤點扶養親屬：別只是大概算算</h2>
+                <p>扶養親屬是節稅的大補丸。除了父母（未滿 60 歲若無謀生能力亦可，滿 60 歲無條件），別忘了：</p>
                 <ul>
-                    <li><strong>持之以恆：</strong> 建立規律的習慣是成功的基石。</li>
-                    <li><strong>使用工具：</strong> 選擇適合自己的記帳工具（如 Money Tracker）。</li>
-                    <li><strong>定期回顧：</strong> 每月審視自己的收支狀況並做出調整。</li>
+                    <li>同居受扶養的兄弟姊妹（如在學、未成年）。</li>
+                    <li>其他親屬或家屬（如叔伯甥姪），若確受納稅義務人扶養且同居一家者（需證明無謀生能力或未成年）。</li>
                 </ul>
-                <p>希望這篇關於 <strong>竹科工程師如何合法節稅？</strong> 的簡介對您有所啟發。理財是一場馬拉松，踏出第一步就是成功的開始。</p>
+                <p>每增加一位扶養親屬，免稅額至少扣除 9.2 萬，對於 30% 稅率者，直接省稅 2.7 萬。</p>
+
+                <h2>3. 股利所得：合併 vs. 分開計稅</h2>
+                <p>工程師通常持有不少股票。報稅時系統會自動幫你算是「合併計稅（抵減 8.5%）」還是「分開計稅（單一稅率 28%）」划算。</p>
+                <p><strong>簡單判斷法則：</strong>若你的綜所稅率級距已經超過 30%，那麼選擇「分開計稅（28%）」通常比較有利，因為這等於將股利收入從 30%~40% 的高稅率中抽離出來，只繳 28%。
+                </p>
+
+                <h2>結語：記帳是稅務規劃的基礎</h2>
+                <p>雖然 <strong>Money Tracker</strong> 不是報稅軟體，但透過它記錄每年的大額支出（如捐贈收據）與收入結構（薪資 vs.
+                    股息），能讓你在五月報稅季時不再手忙腳亂。清楚掌握自己的現金流，才能做出最有利的稅務決策。</p>
             </div>
         </article>
 
         <div class="cta">
-            <h2>想要更智慧地管理您的金錢嗎？</h2>
-            <p>立即試用我們的「記帳助手」，體驗自動化與智能分析帶來的便利。</p>
-            <a href="/" class="btn">開始使用</a>
+            <h2>掌握你的每一分淨收入</h2>
+            <p><strong>Money Tracker 記帳助手</strong> 幫助您釐清收入來源與支出流向，讓財務規劃更清晰。</p>
+            <a href="/" class="btn">立即免費使用</a>
         </div>
 
         <footer>
+            <div style="margin-bottom: 24px;">
+                <a href="/">記帳助手 App</a>
+                <a href="/blog/">理財知識庫</a>
+                <a href="/privacy.html">隱私權政策</a>
+            </div>
             &copy; 2026 記帳助手 Money Tracker. All rights reserved.
         </footer>
     </div>
 </body>
+
 </html>

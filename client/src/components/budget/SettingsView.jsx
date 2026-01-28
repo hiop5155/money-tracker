@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Wallet, FileText, X, Power, Download, LogOut, Save, Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wallet, FileText, X, Power, Download, LogOut, Save, Upload, ChevronDown, ChevronUp, Settings as SettingsIcon } from 'lucide-react';
 
-const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onImport, onLogout }) => {
+const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCategory, onDeleteCategory, onExport, onImport, onLogout, onDeleteAccount }) => {
     const [newCategory, setNewCategory] = useState('');
     // State to hold local changes before saving
     const [localBudgets, setLocalBudgets] = useState({ monthly: '', yearly: '', categoryLimits: [] });
@@ -317,6 +317,33 @@ const SettingsView = ({ isDark, budgets, categories, onUpdateBudget, onAddCatego
                     >
                         <Download className="w-5 h-5" /> 匯出資料 (CSV)
                     </button>
+
+                    {/* Account Management Button (Toggle) */}
+                    <button
+                        onClick={() => setExpandedCategory(expandedCategory === 'account_mgmt' ? null : 'account_mgmt')}
+                        className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition"
+                    >
+                        <SettingsIcon className="w-5 h-5" /> 帳號管理
+                    </button>
+
+                    {/* Account Management Sub-section */}
+                    {expandedCategory === 'account_mgmt' && (
+                        <div className={`mt-2 p-4 rounded-lg border ${isDark ? 'border-red-800 bg-red-900/20' : 'border-red-100 bg-red-50'}`}>
+                            <h4 className={`font-bold mb-2 ${isDark ? 'text-red-400' : 'text-red-600'}`}></h4>
+                            <p className="text-sm text-gray-500 mb-4">刪除帳號將無法登入，所有資料將被刪除。</p>
+                            <button
+                                onClick={() => {
+                                    if (window.confirm('確定要刪除帳號嗎？此動作將使您無法再登入此帳號。')) {
+                                        onDeleteAccount();
+                                    }
+                                }}
+                                className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+                            >
+                                <LogOut className="w-4 h-4" /> 確認刪除帳號
+                            </button>
+                        </div>
+                    )}
+
                     <button
                         onClick={onLogout}
                         className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
