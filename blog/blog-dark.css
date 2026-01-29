@@ -8,22 +8,32 @@
    ======================================== */
 :root {
     /* Primary Brand Colors */
-    --primary: #60a5fa;        /* Light blue - accessible on dark backgrounds */
-    --primary-dark: #3b82f6;   /* Slightly darker for hover states */
-    
+    --primary: #60a5fa;
+    /* Light blue - accessible on dark backgrounds */
+    --primary-dark: #3b82f6;
+    /* Slightly darker for hover states */
+
     /* Background Layers */
-    --bg: #0a0e1a;             /* Deep blue-black (softer than pure black) */
-    --card: #1a1f2e;           /* Elevated surface for cards/articles */
-    --card-hover: #242938;     /* Hover state for interactive cards */
-    
+    --bg: #0a0e1a;
+    /* Deep blue-black (softer than pure black) */
+    --card: #1a1f2e;
+    /* Elevated surface for cards/articles */
+    --card-hover: #242938;
+    /* Hover state for interactive cards */
+
     /* Text Colors - High Contrast for Readability */
-    --text: #e8eaed;           /* Main body text - near white (contrast 12.8:1) */
-    --text-light: #9ca3af;     /* Secondary text (contrast 5.2:1) */
-    --heading: #f1f3f5;        /* Headings - brightest (contrast 13.5:1) */
-    
+    --text: #e8eaed;
+    /* Main body text - near white (contrast 12.8:1) */
+    --text-light: #9ca3af;
+    /* Secondary text (contrast 5.2:1) */
+    --heading: #f1f3f5;
+    /* Headings - brightest (contrast 13.5:1) */
+
     /* UI Elements */
-    --border: #2d3748;         /* Subtle borders */
-    --category-bg: #1e3a5f;    /* Dark blue background for badges */
+    --border: #2d3748;
+    /* Subtle borders */
+    --category-bg: #1e3a5f;
+    /* Dark blue background for badges */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
 }
@@ -31,10 +41,13 @@
 /* ========================================
    BASE STYLES
    ======================================== */
+/* ========================================
+   BASE STYLES
+   ======================================== */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif !important;
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
     line-height: 1.8;
     margin: 0;
     padding: 0;
@@ -53,7 +66,7 @@ body {
    HEADER
    ======================================== */
 header {
-    background: var(--card);
+    background: var(--card) !important;
     padding: 24px 0;
     text-align: center;
     border-bottom: 1px solid var(--border);
@@ -66,7 +79,7 @@ header {
 .logo {
     font-size: 24px;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--primary) !important;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -80,7 +93,7 @@ h1 {
     font-size: 36px;
     margin-bottom: 32px;
     line-height: 1.3;
-    color: var(--heading);
+    color: var(--heading) !important;
     font-weight: 800;
     /* Slightly increase letter spacing for better readability */
     letter-spacing: -0.02em;
@@ -90,7 +103,8 @@ h2 {
     font-size: 24px;
     margin-top: 40px;
     margin-bottom: 20px;
-    color: var(--heading);
+    /* Override hardcoded dark colors in HTML files */
+    color: var(--heading) !important;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
@@ -99,7 +113,7 @@ h3 {
     font-size: 20px;
     margin-top: 30px;
     margin-bottom: 16px;
-    color: var(--text);
+    color: var(--heading) !important;
     font-weight: 600;
 }
 
@@ -113,20 +127,20 @@ h3 {
 
 .hero h1 {
     font-size: 36px;
-    color: var(--heading);
+    color: var(--heading) !important;
     margin-bottom: 16px;
 }
 
 .hero p {
     font-size: 18px;
-    color: var(--text-light);
+    color: var(--text-light) !important;
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
 }
 
 article {
-    background: var(--card);
+    background: var(--card) !important;
     padding: 60px;
     border-radius: 16px;
     box-shadow: var(--shadow-md);
@@ -135,7 +149,7 @@ article {
 
 .content {
     font-size: 18px;
-    color: var(--text);
+    color: var(--text) !important;
     /* Optimize text for long-form reading */
     max-width: 70ch;
 }
@@ -149,6 +163,7 @@ article {
 .content ol {
     margin-bottom: 24px;
     padding-left: 24px;
+    color: var(--text) !important;
 }
 
 .content li {
@@ -157,7 +172,7 @@ article {
 }
 
 .content strong {
-    color: var(--heading);
+    color: var(--heading) !important;
     font-weight: 600;
 }
 
@@ -172,7 +187,7 @@ article {
 }
 
 .post-item {
-    background: var(--card);
+    background: var(--card) !important;
     padding: 24px;
     border-radius: 12px;
     box-shadow: var(--shadow-sm);
@@ -183,12 +198,12 @@ article {
 .post-item:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
-    background: var(--card-hover);
+    background: var(--card-hover) !important;
 }
 
 .post-item a {
     text-decoration: none;
-    color: var(--heading);
+    color: var(--heading) !important;
     font-weight: 700;
     font-size: 18px;
     display: block;
@@ -197,7 +212,7 @@ article {
 }
 
 .post-item a:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 /* ========================================
@@ -206,8 +221,8 @@ article {
 .category,
 .post-item .cat {
     display: inline-block;
-    background: var(--category-bg);
-    color: var(--primary);
+    background: var(--category-bg) !important;
+    color: var(--primary) !important;
     padding: 6px 16px;
     border-radius: 9999px;
     font-size: 14px;
@@ -227,16 +242,16 @@ article {
 .cta {
     margin-top: 60px;
     padding: 48px;
-    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-radius: 16px;
-    color: #ffffff;
+    color: #ffffff !important;
     text-align: center;
     box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
 }
 
 .cta h2 {
     margin-top: 0;
-    color: #ffffff;
+    color: #ffffff !important;
     font-size: 28px;
 }
 
@@ -248,12 +263,13 @@ article {
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
+    color: #ffffff !important;
 }
 
 .btn {
     display: inline-block;
-    background: #ffffff;
-    color: #1e40af;
+    background: #ffffff !important;
+    color: #1e40af !important;
     padding: 16px 40px;
     border-radius: 12px;
     font-weight: 700;
@@ -274,21 +290,21 @@ article {
 footer {
     text-align: center;
     padding: 60px 0;
-    color: var(--text-light);
+    color: var(--text-light) !important;
     font-size: 14px;
     border-top: 1px solid var(--border);
     margin-top: 60px;
 }
 
 footer a {
-    color: var(--text-light);
+    color: var(--text-light) !important;
     text-decoration: none;
     margin: 0 12px;
     transition: color 0.2s;
 }
 
 footer a:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 /* ========================================
