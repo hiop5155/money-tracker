@@ -2,13 +2,21 @@
 <html lang="zh-TW">
 
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-J6Q197M3NN');
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                var s = document.createElement("script");
+                s.async = true;
+                s.src = "https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN";
+                document.head.appendChild(s);
+                s.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
+                    gtag("config", "G-J6Q197M3NN");
+                };
+            }, 1000);
+        });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +26,7 @@
     <meta property="og:description"
         content="年薪三百萬的竹科工程師，所得稅級距動輒 30% 起跳。本文整理三大合法節稅重點：勞退自提 6%、扶養親屬優化與股利分離課稅，幫你守住辛苦賺來的血汗錢。">
     <meta property="og:type" content="article">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -260,7 +269,7 @@
                 <a href="/blog/">理財知識庫</a>
                 <a href="/blog/privacy.html">隱私權政策</a>
             </div>
-            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            <script>document.write("&copy; " + new Date().getFullYear() + " 記帳助手 Money Tracker.")</script> All rights reserved.
         </footer>
     </div>
 </body>

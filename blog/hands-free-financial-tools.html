@@ -2,13 +2,21 @@
 <html lang="zh-TW">
 
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-J6Q197M3NN');
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                var s = document.createElement("script");
+                s.async = true;
+                s.src = "https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN";
+                document.head.appendChild(s);
+                s.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
+                    gtag("config", "G-J6Q197M3NN");
+                };
+            }, 1000);
+        });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +26,7 @@
     <meta property="og:description"
         content="記帳總是半途而廢？真正的懶人理財不需要每天動手。本文介紹如何透過自動轉帳、定期定額與 Money Tracker 的自動模組，建立一套「可視化」的自動財富系統。">
     <meta property="og:type" content="article">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -250,7 +259,7 @@
                 <a href="/blog/" style="color: #64748b; text-decoration: none; margin: 0 10px;">回首頁</a>
                 <a href="/" style="color: #64748b; text-decoration: none; margin: 0 10px;">記帳助手 App</a>
             </div>
-            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            <script>document.write("&copy; " + new Date().getFullYear() + " 記帳助手 Money Tracker.")</script> All rights reserved.
         </footer>
     </div>
 </body>

@@ -2,13 +2,21 @@
 <html lang="zh-TW">
 
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-J6Q197M3NN');
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                var s = document.createElement("script");
+                s.async = true;
+                s.src = "https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN";
+                document.head.appendChild(s);
+                s.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
+                    gtag("config", "G-J6Q197M3NN");
+                };
+            }, 1000);
+        });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +25,7 @@
     <meta property="og:title" content="房租與股利收入如何合併管理？包租公的記帳術">
     <meta property="og:description" content="當你同時擁有來自房產的租金收入，以及來自股市的股利收入，該怎麼記帳才不會亂？本文分享這類「複合式被動收入者」的記帳邏輯與 App 設定技巧。">
     <meta property="og:type" content="article">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -251,7 +260,7 @@
                 <a href="/blog/">理財知識庫</a>
                 <a href="/blog/privacy.html">隱私權政策</a>
             </div>
-            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            <script>document.write("&copy; " + new Date().getFullYear() + " 記帳助手 Money Tracker.")</script> All rights reserved.
         </footer>
     </div>
 </body>

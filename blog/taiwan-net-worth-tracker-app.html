@@ -2,13 +2,21 @@
 <html lang="zh-TW">
 
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-J6Q197M3NN');
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                var s = document.createElement("script");
+                s.async = true;
+                s.src = "https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN";
+                document.head.appendChild(s);
+                s.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
+                    gtag("config", "G-J6Q197M3NN");
+                };
+            }, 1000);
+        });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +27,7 @@
     <meta property="og:description"
         content="你也許知道自己每個月花多少錢，但你知道你的「身價」是多少嗎？本文介紹「資產淨值」的重要性，以及如何利用 Money Tracker 整合你的台幣、外幣與投資帳戶。">
     <meta property="og:type" content="article">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -256,7 +265,7 @@
                 <a href="/blog/">理財知識庫</a>
                 <a href="/blog/privacy.html">隱私權政策</a>
             </div>
-            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            <script>document.write("&copy; " + new Date().getFullYear() + " 記帳助手 Money Tracker.")</script> All rights reserved.
         </footer>
     </div>
 </body>

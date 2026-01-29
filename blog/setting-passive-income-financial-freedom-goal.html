@@ -2,13 +2,21 @@
 <html lang="zh-TW">
 
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-
-        gtag('config', 'G-J6Q197M3NN');
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                var s = document.createElement("script");
+                s.async = true;
+                s.src = "https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN";
+                document.head.appendChild(s);
+                s.onload = function() {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag("js", new Date());
+                    gtag("config", "G-J6Q197M3NN");
+                };
+            }, 1000);
+        });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +25,7 @@
     <meta property="og:title" content="如何設定被動收入覆蓋生活費的目標？財務自由的黃金公式">
     <meta property="og:description" content="財務自由的定義很簡單：被動收入 > 總支出。但大多數人只計算「支出」，卻很少精確追蹤「被動收入」的覆蓋率。本文教你如何用數據量化你的自由進度。">
     <meta property="og:type" content="article">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
     <style>
         :root {
             --primary: #2563eb;
@@ -252,7 +261,7 @@
                 <a href="/blog/">理財知識庫</a>
                 <a href="/blog/privacy.html">隱私權政策</a>
             </div>
-            &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            <script>document.write("&copy; " + new Date().getFullYear() + " 記帳助手 Money Tracker.")</script> All rights reserved.
         </footer>
     </div>
 </body>

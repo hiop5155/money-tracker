@@ -1,29 +1,47 @@
 <!doctype html>
 <html lang="zh-Hant">
-    <head>
-        <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/money-tracker-icon.svg" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- SEO Meta Tags -->
-        <title>Money Tracker - 專業記帳網站 | Free Personal Bookkeeping & Charge Manager</title>
-        <meta
-            name="description"
-            content="免費好用的記帳網站 (Bookkeeping App)。輕鬆管理日常收支、設定固定支出 (Recurring Charge) 並提供詳細圖表分析。Best personal finance tool for tracking money."
-        />
-        <meta name="keywords" content="記帳, 記帳網站, Bookkeeping, charge, personal finance, money tracker, budget app" />
-        <meta name="author" content="Money Tracker Team" />
-        <link rel="canonical" href="https://money-tracker-app.com/" />
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/money-tracker-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <!-- Open Graph / Social Media -->
-        <meta property="og:title" content="Money Tracker - 專業記帳網站 | Free Personal Bookkeeping" />
-        <meta property="og:description" content="免費好用的記帳網站。輕鬆管理日常收支、設定固定支出 (Recurring Charge) 並提供詳細圖表分析。" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://money-tracker-app.com/" />
-        <meta property="og:image" content="https://money-tracker-app.com/og-image.jpg" />
+    <!-- Delayed Google Analytics - loads after page renders -->
+    <script>
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                var gaScript = document.createElement('script');
+                gaScript.async = true;
+                gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-J6Q197M3NN';
+                document.head.appendChild(gaScript);
 
-        <!-- Structured Data (JSON-LD) -->
-        <script type="application/ld+json">
+                gaScript.onload = function () {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag() { dataLayer.push(arguments); }
+                    gtag('js', new Date());
+                    gtag('config', 'G-J6Q197M3NN');
+                };
+            }, 1000);
+        });
+    </script>
+
+    <!-- SEO Meta Tags -->
+    <title>Money Tracker - 專業記帳網站 | Free Personal Bookkeeping & Charge Manager</title>
+    <meta name="description"
+        content="免費好用的記帳網站 (Bookkeeping App)。輕鬆管理日常收支、設定固定支出 (Recurring Charge) 並提供詳細圖表分析。Best personal finance tool for tracking money." />
+    <meta name="keywords" content="記帳, 記帳網站, Bookkeeping, charge, personal finance, money tracker, budget app" />
+    <meta name="author" content="Money Tracker Team" />
+    <link rel="canonical" href="https://money-tracker-app.com/" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Money Tracker - 專業記帳網站 | Free Personal Bookkeeping" />
+    <meta property="og:description" content="免費好用的記帳網站。輕鬆管理日常收支、設定固定支出 (Recurring Charge) 並提供詳細圖表分析。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://money-tracker-app.com/" />
+    <meta property="og:image" content="https://money-tracker-app.com/og-image.jpg" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
                 "@type": "SoftwareApplication",
@@ -38,10 +56,11 @@
                 "description": "A professional personal bookkeeping application for tracking income and expenses."
             }
         </script>
-    </head>
+</head>
 
-    <body>
-        <div id="root"></div>
-        <script type="module" src="/src/main.jsx"></script>
-    </body>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
