@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: Money Tracker API
     description: Money Tracker Backend API Documentation (Node.js + Express + MongoDB)
-    version: 1.3.0 # Updated to include Income/Expense type distinction
+    version: 1.4.0 # Updated to include Stock Price API
 servers:
     - url: http://localhost:5000
       description: Local Development Server
@@ -187,6 +187,32 @@ components:
                             yearly:
                                 type: number
                                 example: 36000
+
+        StockPrice:
+            type: object
+            properties:
+                ticker:
+                    type: string
+                    description: Stock ticker symbol with suffix
+                    example: '0050.TW'
+                price:
+                    type: number
+                    description: Stock price (rounded)
+                    example: 181
+                isEstimate:
+                    type: boolean
+                    description: Whether price is from fallback database
+                    example: false
+                source:
+                    type: string
+                    enum: ['yahoo_finance', 'fallback_database']
+                    description: Data source
+                    example: 'yahoo_finance'
+                timestamp:
+                    type: string
+                    format: date-time
+                    description: Timestamp of data retrieval
+                    example: '2026-01-29T08:00:00.000Z'
 
 # --- API Paths ---
 paths:
@@ -612,3 +638,78 @@ paths:
             responses:
                 '200':
                     description: Updated successfully
+
+    # ===========================
+    # Stock Price Endpoints
+    # ===========================
+    /api/stocks/price/{ticker}:
+        get:
+            summary: Get stock price from Yahoo Finance
+            description: Fetches live stock price for given ticker. Automatically handles Taiwan stock suffixes (.TW, .TWO) and US stocks.
+            tags: [Stocks]
+            parameters:
+                - in: path
+                  name: ticker
+                  schema:
+                      type: string
+                  required: true
+                  description: Stock ticker symbol (e.g., 0050, SPY, 2330)
+                  example: '0050'
+            responses:
+                '200':
+                    description: Stock price retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StockPrice'
+                            examples:
+                                taiwan_stock:
+                                    summary: Taiwan Stock (Live)
+                                    value:
+                                        ticker: '0050.TW'
+                                        price: 181
+                                        isEstimate: false
+                                        source: 'yahoo_finance'
+                                        timestamp: '2026-01-29T08:00:00.000Z'
+                                us_stock:
+                                    summary: US Stock (Live)
+                                    value:
+                                        ticker: 'SPY'
+                                        price: 580
+                                        isEstimate: false
+                                        source: 'yahoo_finance'
+                                        timestamp: '2026-01-29T08:00:00.000Z'
+                                fallback:
+                                    summary: Fallback Database
+                                    value:
+                                        ticker: '0056.TW'
+                                        price: 40
+                                        isEstimate: true
+                                        source: 'fallback_database'
+                                        timestamp: '2026-01-29T08:00:00.000Z'
+                '404':
+                    description: Stock price not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'Stock price not found'
+                                    ticker:
+                                        type: string
+                                        example: 'UNKNOWN.TW'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'Failed to fetch stock price'
+                                    message:
+                                        type: string
+                                        example: 'Network timeout'
