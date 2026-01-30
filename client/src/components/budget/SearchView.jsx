@@ -20,7 +20,7 @@ const SearchView = ({ isDark, expenses, categories }) => {
             // If no keyword is entered, consider it a match (true)
             const matchTerm = searchTerm
                 ? (item.note || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (item.category || '').toLowerCase().includes(searchTerm.toLowerCase())
+                (item.category || '').toLowerCase().includes(searchTerm.toLowerCase())
                 : true;
 
             // 2. Category Filtering
@@ -95,9 +95,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="搜尋備註(例如：牛肉)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
@@ -110,9 +109,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                             <select
                                 value={selectedCategory}
                                 onChange={(e) => setSelectedCategory(e.target.value)}
-                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none appearance-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none appearance-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             >
                                 <option value="">所有分類</option>
                                 {categories.map((cat) => (
@@ -132,9 +130,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="最小值"
                                 value={minAmount}
                                 onChange={(e) => setMinAmount(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                         <div className="flex-1">
@@ -143,9 +140,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 placeholder="最大值"
                                 value={maxAmount}
                                 onChange={(e) => setMaxAmount(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
@@ -158,9 +154,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                         <div className="flex-1">
@@ -169,9 +164,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${
-                                    isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
-                                }`}
+                                className={`w-full px-3 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                    }`}
                             />
                         </div>
                     </div>
@@ -213,9 +207,8 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                         </td>
                                         <td className={`p-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{item.note}</td>
                                         <td
-                                            className={`p-2 text-right font-mono font-medium ${
-                                                item.type === 'income' ? 'text-green-500' : 'text-red-500'
-                                            }`}
+                                            className={`p-2 text-right font-mono font-medium ${item.type === 'income' ? 'text-green-500' : 'text-red-500'
+                                                }`}
                                         >
                                             {item.type === 'income' ? '+' : '-'}
                                             {Number(item.amount).toLocaleString()}
@@ -231,6 +224,26 @@ const SearchView = ({ isDark, expenses, categories }) => {
                         <p>No matching records found</p>
                     </div>
                 )}
+                {/* Footer */}
+                <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-8">
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
+                        <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            記帳助手 App
+                        </a>
+                        <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            資產計算器
+                        </a>
+                        <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            理財知識庫
+                        </a>
+                        <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            隱私權政策
+                        </a>
+                    </div>
+                    <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                        &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    </div>
+                </footer>
             </div>
         </div>
     );

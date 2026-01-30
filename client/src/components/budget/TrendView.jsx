@@ -140,8 +140,8 @@ const TrendView = ({ expenses = [], isDark }) => {
                                 key={p.id}
                                 onClick={() => setPeriod(p.id)}
                                 className={`flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap ${period === p.id
-                                        ? `shadow-sm ${isDark ? 'bg-slate-600 text-blue-300' : 'bg-white text-blue-600'}`
-                                        : `hover:text-gray-700 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
+                                    ? `shadow-sm ${isDark ? 'bg-slate-600 text-blue-300' : 'bg-white text-blue-600'}`
+                                    : `hover:text-gray-700 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
                                     }`}
                             >
                                 {p.label}
@@ -252,6 +252,26 @@ const TrendView = ({ expenses = [], isDark }) => {
                         <div className="text-2xl font-bold text-red-500">${avg.expense.toLocaleString()}</div>
                     </div>
                 </div>
+                {/* Footer */}
+                <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-8">
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
+                        <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            記帳助手 App
+                        </a>
+                        <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            資產計算器
+                        </a>
+                        <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            理財知識庫
+                        </a>
+                        <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            隱私權政策
+                        </a>
+                    </div>
+                    <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                        &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    </div>
+                </footer>
             </div>
         </div>
     );
