@@ -94,7 +94,7 @@ const CalendarView = ({
     };
 
     return (
-        <div className="flex flex-col h-full gap-2 md:grid md:grid-cols-[1fr_320px] md:gap-6 overflow-hidden">
+        <div className="flex flex-col h-full gap-2 overflow-y-auto md:grid md:grid-cols-[1fr_320px] md:gap-6 md:overflow-hidden">
             {/* Left/Top: Calendar Grid */}
             <div className={`flex flex-col shrink-0 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <MonthSelector
@@ -164,8 +164,8 @@ const CalendarView = ({
             </div>
 
             {/* Right/Bottom: Selected Date Details (Scrollable) */}
-            <div className="flex flex-col min-h-0 flex-1 gap-2">
-                <div className={`flex flex-col min-h-0 flex-1 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'} overflow-hidden`}>
+            <div className="flex flex-col gap-2 shrink-0 md:min-h-0 md:flex-1">
+                <div className={`flex flex-col rounded-xl shadow-sm md:min-h-0 md:flex-1 md:overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className={`flex justify-between items-center p-3 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
                         <h3 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
                             {selectedDate.getMonth() + 1}/{selectedDate.getDate()} 詳情
@@ -175,7 +175,7 @@ const CalendarView = ({
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
+                    <div className="p-2 space-y-2 md:flex-1 md:overflow-y-auto md:pb-4 custom-scrollbar">
                         {/* InsightCard removed: Moved to Header in BudgetApp */}
 
                         {selectedDateExpenses.length === 0 ? (

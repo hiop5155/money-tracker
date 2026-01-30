@@ -3,7 +3,7 @@ import { Repeat, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 
 const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDeleteRule, deletingId }) => {
     return (
-        <div className="h-full flex flex-col gap-4 overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
             {/* Fixed Header */}
             <div className={`flex-none p-4 rounded-xl shadow-sm flex justify-between items-center shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
@@ -18,7 +18,7 @@ const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDelete
             </div>
 
             {/* Scrollable List */}
-            <div className={`flex-1 overflow-y-auto p-4 pb-32 rounded-xl shadow-sm min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+            <div className={`space-y-3 pb-32 shrink-0 md:min-h-0 md:flex-1 md:overflow-y-auto custom-scrollbar rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="space-y-4">
                     {recurringRules.length === 0 ? (
                         <p className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>目前沒有固定支出設定</p>

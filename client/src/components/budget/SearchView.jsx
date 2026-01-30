@@ -70,7 +70,7 @@ const SearchView = ({ isDark, expenses, categories }) => {
     const totalAmount = filteredExpenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-fade-in overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-fade-in overflow-y-auto md:overflow-hidden">
             {/* Fixed Search Control Panel */}
             <div className={`flex-none p-4 rounded-lg shadow-sm transition-colors shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
@@ -174,7 +174,7 @@ const SearchView = ({ isDark, expenses, categories }) => {
 
             {/* Scrollable Results List */}
             <div
-                className={`flex-1 overflow-y-auto p-4 pb-32 rounded-lg shadow-sm transition-colors min-h-0 custom-scrollbar ${isDark ? 'bg-slate-800' : 'bg-white'}`}
+                className={`p-4 pb-32 rounded-lg shadow-sm transition-colors shrink-0 custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto ${isDark ? 'bg-slate-800' : 'bg-white'}`}
             >
                 <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200 dark:border-slate-700 shrink-0 sticky top-0 bg-inherit z-10">
                     <h4 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>結果 ({filteredExpenses.length})</h4>

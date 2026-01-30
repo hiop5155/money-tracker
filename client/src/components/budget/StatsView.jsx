@@ -277,7 +277,7 @@ const StatsView = ({
     }, [selectedCategory, currentRawExpenses, viewType]);
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
             {/* Fixed Header Section */}
             <div className="flex-none flex flex-col gap-4 shrink-0">
                 <MonthSelector
@@ -331,7 +331,7 @@ const StatsView = ({
             </div>
 
             {/* Scrollable Content Section */}
-            <div className="flex-1 overflow-y-auto space-y-4 min-h-0 pb-32 custom-scrollbar">
+            <div className="space-y-4 pb-32 shrink-0 md:min-h-0 md:flex-1 md:overflow-y-auto md:pb-32 custom-scrollbar">
                 {/* Overview Donut Charts */}
                 <div className="grid grid-cols-1 gap-4">
                     <BudgetDonut

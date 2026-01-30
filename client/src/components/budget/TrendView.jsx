@@ -109,7 +109,7 @@ const TrendView = ({ expenses = [], isDark }) => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
             {/* Controls Header (Fixed) */}
             <div
                 className={`flex-none p-4 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}
@@ -169,7 +169,7 @@ const TrendView = ({ expenses = [], isDark }) => {
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto min-h-0 space-y-4 pb-32 custom-scrollbar">
+            <div className="space-y-4 pb-32 shrink-0 md:min-h-0 md:flex-1 md:overflow-y-auto custom-scrollbar">
                 {/* Main Chart */}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className="mb-6 flex items-center justify-between">
