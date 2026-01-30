@@ -164,85 +164,88 @@ const CalendarView = ({
             </div>
 
             {/* Right/Bottom: Selected Date Details (Scrollable) */}
-            <div className={`flex flex-col min-h-0 flex-1 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'} overflow-hidden`}>
-                <div className={`flex justify-between items-center p-3 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-                    <h3 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
-                        {selectedDate.getMonth() + 1}/{selectedDate.getDate()} 詳情
-                    </h3>
-                    <button onClick={onAddExpense} className="bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700 shadow-sm">
-                        <Plus className="w-4 h-4" />
-                    </button>
-                </div>
+            <div className="flex flex-col min-h-0 flex-1 gap-2">
+                <div className={`flex flex-col min-h-0 flex-1 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'} overflow-hidden`}>
+                    <div className={`flex justify-between items-center p-3 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+                        <h3 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
+                            {selectedDate.getMonth() + 1}/{selectedDate.getDate()} 詳情
+                        </h3>
+                        <button onClick={onAddExpense} className="bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700 shadow-sm">
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
 
-                <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
-                    {/* InsightCard removed: Moved to Header in BudgetApp */}
+                    <div className="flex-1 overflow-y-auto p-2 pb-32 space-y-2 custom-scrollbar">
+                        {/* InsightCard removed: Moved to Header in BudgetApp */}
 
-                    {selectedDateExpenses.length === 0 ? (
-                        <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>
-                    ) : (
-                        selectedDateExpenses.map((item) => (
-                            <div key={item.id} className={`flex flex-col p-2.5 rounded-lg group ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                                <div className="flex justify-between items-start">
-                                    <div className="flex flex-col">
-                                        <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{item.category}</span>
-                                        {item.note && (
-                                            <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{item.note}</span>
-                                        )}
-                                    </div>
+                        {selectedDateExpenses.length === 0 ? (
+                            <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>
+                        ) : (
+                            selectedDateExpenses.map((item) => (
+                                <div key={item.id} className={`flex flex-col p-2.5 rounded-lg group ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex flex-col">
+                                            <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{item.category}</span>
+                                            {item.note && (
+                                                <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{item.note}</span>
+                                            )}
+                                        </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <span className={`font-bold font-mono text-sm ${item.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
-                                            {item.type === 'income' ? '+' : '-'}${item.amount}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`font-bold font-mono text-sm ${item.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                                                {item.type === 'income' ? '+' : '-'}${item.amount}
+                                            </span>
 
-                                        <div className="flex gap-1">
-                                            <button
-                                                onClick={() => onEditExpense(item)}
-                                                disabled={deletingId === item.id}
-                                                className="text-gray-400 hover:text-blue-500 p-1"
-                                            >
-                                                <Edit className="w-3 h-3" />
-                                            </button>
-                                            <button
-                                                onClick={() => onDeleteExpense(item.id)}
-                                                disabled={deletingId === item.id}
-                                                className="text-gray-400 hover:text-red-500 p-1"
-                                            >
-                                                {deletingId === item.id ? (
-                                                    <Loader2 className="w-3 h-3 animate-spin text-red-500" />
-                                                ) : (
-                                                    <Trash2 className="w-3 h-3" />
-                                                )}
-                                            </button>
+                                            <div className="flex gap-1">
+                                                <button
+                                                    onClick={() => onEditExpense(item)}
+                                                    disabled={deletingId === item.id}
+                                                    className="text-gray-400 hover:text-blue-500 p-1"
+                                                >
+                                                    <Edit className="w-3 h-3" />
+                                                </button>
+                                                <button
+                                                    onClick={() => onDeleteExpense(item.id)}
+                                                    disabled={deletingId === item.id}
+                                                    className="text-gray-400 hover:text-red-500 p-1"
+                                                >
+                                                    {deletingId === item.id ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin text-red-500" />
+                                                    ) : (
+                                                        <Trash2 className="w-3 h-3" />
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    )}
-                    {/* Footer */}
-                    <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-8">
-                        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
-                            <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                記帳助手 App
-                            </a>
-                            <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                資產計算器
-                            </a>
-                            <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                理財知識庫
-                            </a>
-                            <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                隱私權政策
-                            </a>
-                        </div>
-                        <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                            &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
-                        </div>
-                    </footer>
+                            ))
+                        )}
+                    </div>
                 </div>
+
+                {/* Footer */}
+                <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
+                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
+                        <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            記帳助手 App
+                        </a>
+                        <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            資產計算器
+                        </a>
+                        <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            理財知識庫
+                        </a>
+                        <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                            隱私權政策
+                        </a>
+                    </div>
+                    <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                        &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    </div>
+                </footer>
             </div>
-        </div>
+        </div >
     );
 };
 

@@ -224,27 +224,29 @@ const SearchView = ({ isDark, expenses, categories }) => {
                         <p>No matching records found</p>
                     </div>
                 )}
-                {/* Footer */}
-                <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-8">
-                    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
-                        <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            記帳助手 App
-                        </a>
-                        <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            資產計算器
-                        </a>
-                        <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            理財知識庫
-                        </a>
-                        <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            隱私權政策
-                        </a>
-                    </div>
-                    <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
-                    </div>
-                </footer>
+
             </div>
+
+            {/* Footer */}
+            <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
+                <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
+                    <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        記帳助手 App
+                    </a>
+                    <a href="/calc" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        資產計算器
+                    </a>
+                    <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        理財知識庫
+                    </a>
+                    <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                        隱私權政策
+                    </a>
+                </div>
+                <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+                    &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                </div>
+            </footer>
         </div>
     );
 };
