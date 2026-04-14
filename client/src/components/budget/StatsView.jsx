@@ -246,6 +246,13 @@ const StatsView = ({
                     limit: limit,
                 };
             })
+            .filter((item) => {
+                // Monthly expense view: only show categories that have a monthly budget set
+                if (timeScale === 'monthly' && viewType === 'expense') {
+                    return item.limit > 0;
+                }
+                return true;
+            })
             .sort((a, b) => b.value - a.value);
     };
 
@@ -345,10 +352,13 @@ const StatsView = ({
 
                 {/* Category List*/}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <h3 className={`font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                    <h3 className={`font-bold mb-2 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
                         {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
                         <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
                     </h3>
+                    {viewMode === 'monthly' && viewType === 'expense' && (
+                        <p className="text-xs text-gray-400 mb-4">＊ 僅顯示已設定月預算的分類</p>
+                    )}
 
                     {currentStats.length > 0 ? (
                         <div className="space-y-2">

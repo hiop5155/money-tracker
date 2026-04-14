@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, X, Tag } from 'lucide-react';
+import { Search, Filter, X, Tag, Pencil } from 'lucide-react';
 
-const SearchView = ({ isDark, expenses, categories }) => {
+const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
     // --- Search Condition State ---
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -186,15 +186,20 @@ const SearchView = ({ isDark, expenses, categories }) => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                    <th className="p-2">Date</th>
-                                    <th className="p-2">Category</th>
-                                    <th className="p-2">Note</th>
-                                    <th className="p-2 text-right">Amount</th>
+                                    <th className="p-2">日期</th>
+                                    <th className="p-2">分類</th>
+                                    <th className="p-2">備註</th>
+                                    <th className="p-2 text-right">金額</th>
+                                    {onEditExpense && <th className="p-2 w-8"></th>}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
                                 {filteredExpenses.map((item) => (
-                                    <tr key={item.id || item._id} className="group hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                                    <tr
+                                        key={item.id || item._id}
+                                        className={`group ${onEditExpense ? 'cursor-pointer' : ''} hover:bg-gray-50 dark:hover:bg-slate-700/50`}
+                                        onClick={() => onEditExpense && onEditExpense(item)}
+                                    >
                                         <td className={`p-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                                             {new Date(item.date).toLocaleDateString()}
                                         </td>
@@ -213,6 +218,11 @@ const SearchView = ({ isDark, expenses, categories }) => {
                                             {item.type === 'income' ? '+' : '-'}
                                             {Number(item.amount).toLocaleString()}
                                         </td>
+                                        {onEditExpense && (
+                                            <td className="p-2 text-center">
+                                                <Pencil className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity inline-block" />
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

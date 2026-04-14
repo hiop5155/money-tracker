@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Plus, Edit, Trash2, Loader2, X, CheckCircle2, MinusCircle } from 'lucide-react';
 import MonthSelector from './MonthSelector';
 
 const formatCurrency = (amount) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(amount);
@@ -30,6 +30,47 @@ const CalendarView = ({
     const safeDate = currentDate || new Date();
     const currentYear = safeDate.getFullYear();
     const currentMonth = safeDate.getMonth();
+
+    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(false);
+
+    // Monthly expense total limited to categories that have a monthly budget set
+    const budgetedMonthlyTotal = (monthlyExpenses || [])
+        .filter((e) => {
+            if (e.type !== 'expense' && e.type) return false;
+            const catName = e.category ? e.category.trim() : '未分類';
+            return budgets?.categoryLimits?.some((l) => l.name === catName && l.monthly > 0);
+        })
+        .reduce((sum, e) => sum + Number(e.amount), 0);
+
+    // Per-category breakdown for the rule modal
+    const categoryBreakdown = useMemo(() => {
+        // Spending this month per category (for display only)
+        const spentMap = {};
+        (monthlyExpenses || []).forEach((e) => {
+            if (e.type !== 'expense' && e.type) return;
+            const catName = e.category ? e.category.trim() : '未分類';
+            spentMap[catName] = (spentMap[catName] || 0) + Number(e.amount);
+        });
+
+        const included = [];
+        const excluded = [];
+
+        // Base: all user categories
+        (categories || []).forEach((cat) => {
+            const limitObj = budgets?.categoryLimits?.find((l) => l.name === cat && l.monthly > 0);
+            const spent = spentMap[cat] || 0;
+            if (limitObj) {
+                included.push({ name: cat, limit: limitObj.monthly, spent, remaining: limitObj.monthly - spent });
+            } else {
+                excluded.push({ name: cat, spent });
+            }
+        });
+
+        included.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+        excluded.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+        return { included, excluded };
+    }, [categories, monthlyExpenses, budgets]);
+
     const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
@@ -94,6 +135,7 @@ const CalendarView = ({
     };
 
     return (
+        <>
         <div className="flex flex-col h-full gap-2 overflow-y-auto md:grid md:grid-cols-[1fr_320px] md:gap-6 md:overflow-hidden">
             {/* Left/Top: Calendar Grid */}
             <div className={`flex flex-col shrink-0 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
@@ -128,9 +170,14 @@ const CalendarView = ({
                         <span className="font-bold text-green-500">{formatCurrency(monthlyIncome || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center pl-2">
-                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>本月支出:</span>
-                        <span className={`font-bold ${monthlyTotal > budgets.monthly ? 'text-red-600' : 'text-red-500'}`}>
-                            {formatCurrency(monthlyTotal)}
+                        <button
+                            onClick={() => setShowBudgetRuleModal(true)}
+                            className={`underline underline-offset-2 decoration-dotted transition-colors ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            本月支出 *
+                        </button>
+                        <span className={`font-bold ${budgetedMonthlyTotal > budgets.monthly ? 'text-red-600' : 'text-red-500'}`}>
+                            {formatCurrency(budgetedMonthlyTotal)}
                         </span>
                     </div>
 
@@ -139,10 +186,10 @@ const CalendarView = ({
                         const today = new Date();
                         if (today.getFullYear() === currentYear && today.getMonth() === currentMonth) {
                             const remainingDays = getDaysInMonth(currentYear, currentMonth) - today.getDate();
-                            const remainingBudget = (budgets.monthly || 0) - monthlyTotal;
+                            const remainingBudget = (budgets.monthly || 0) - budgetedMonthlyTotal;
                             const dailyAvailable = remainingDays > 0 ? Math.round(Math.max(0, remainingBudget) / remainingDays) : 0;
                             const daysPassed = today.getDate();
-                            const dailySpent = daysPassed > 0 ? Math.round(monthlyTotal / daysPassed) : 0;
+                            const dailySpent = daysPassed > 0 ? Math.round(budgetedMonthlyTotal / daysPassed) : 0;
 
                             return (
                                 <div
@@ -245,7 +292,101 @@ const CalendarView = ({
                     </div>
                 </footer>
             </div>
-        </div >
+        </div>
+
+        {/* Budget Rule Modal */}
+        {showBudgetRuleModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className={`w-full max-w-sm rounded-xl shadow-2xl flex flex-col max-h-[80vh] ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-800'}`}>
+                    {/* Header */}
+                    <div className={`flex justify-between items-center p-4 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+                        <h3 className="font-bold text-base">本月支出統計規則</h3>
+                        <button onClick={() => setShowBudgetRuleModal(false)} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    {/* Rule explanation */}
+                    <div className={`px-4 py-3 text-sm shrink-0 ${isDark ? 'bg-slate-700/40 text-slate-300' : 'bg-blue-50 text-blue-800'}`}>
+                        本月支出只計入<strong>有設定月預算</strong>的分類。<br />
+                        未設定月預算的分類不列入統計，但仍會記錄在帳目中。<br />
+                        如需計入，請至「設定」為該分類設定月預算。
+                    </div>
+
+                    {/* Category lists */}
+                    <div className="overflow-y-auto px-4 py-3 space-y-3 custom-scrollbar">
+                        {/* Included */}
+                        <div>
+                            <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                計入本月統計（{categoryBreakdown.included.length} 項）：
+                                {categoryBreakdown.included.length > 0 && (
+                                    <span className="font-normal truncate">{categoryBreakdown.included.map((c) => c.name).join('、')}</span>
+                                )}
+                            </p>
+                            {categoryBreakdown.included.length > 0 ? (
+                                <ul className={`rounded-lg overflow-hidden divide-y text-sm ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
+                                    {categoryBreakdown.included.map((cat) => (
+                                        <li key={cat.name} className={`px-3 py-2 ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+                                            <div className="flex justify-between items-center">
+                                                <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
+                                                <span className="font-mono text-red-500 text-xs">花費 {formatCurrency(cat.spent)}</span>
+                                            </div>
+                                            <div className={`flex justify-between text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                                                <span>月預算 {formatCurrency(cat.limit)}</span>
+                                                <span className={cat.remaining < 0 ? 'text-red-500 font-bold' : 'text-green-500'}>
+                                                    剩 {formatCurrency(cat.remaining)}
+                                                </span>
+                                            </div>
+                                            <div className={`mt-1.5 w-full rounded-full h-1.5 overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
+                                                <div
+                                                    className={`h-1.5 rounded-full transition-all ${cat.remaining < 0 ? 'bg-red-500' : 'bg-green-500'}`}
+                                                    style={{ width: `${Math.min(100, (cat.spent / cat.limit) * 100)}%` }}
+                                                />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無已設定月預算的分類</p>
+                            )}
+                        </div>
+
+                        <div className={`border-t ${isDark ? 'border-slate-700' : 'border-gray-100'}`} />
+
+                        {/* Excluded */}
+                        <div>
+                            <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                                <MinusCircle className="w-3.5 h-3.5 shrink-0" />
+                                未計入（無月預算設定，{categoryBreakdown.excluded.length} 項）：
+                                {categoryBreakdown.excluded.length > 0 && (
+                                    <span className="font-normal truncate">{categoryBreakdown.excluded.map((c) => c.name).join('、')}</span>
+                                )}
+                            </p>
+                            {categoryBreakdown.excluded.length > 0 ? (
+                                <ul className={`rounded-lg overflow-hidden divide-y text-sm ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
+                                    {categoryBreakdown.excluded.map((cat) => (
+                                        <li key={cat.name} className={`px-3 py-2 flex justify-between items-center ${isDark ? 'bg-slate-700/20 text-slate-400' : 'bg-gray-50 text-gray-400'}`}>
+                                            <span>{cat.name}</span>
+                                            <span className="font-mono text-xs">{formatCurrency(cat.spent)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>所有分類皆已設定月預算</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Footer totals */}
+                    <div className={`px-4 py-3 border-t text-sm flex justify-between shrink-0 ${isDark ? 'border-slate-700 bg-slate-900/40' : 'border-gray-200 bg-gray-50'}`}>
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>計入統計總計</span>
+                        <span className="font-bold text-red-500">{formatCurrency(budgetedMonthlyTotal)}</span>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar as CalendarIcon, Tag, FileText, Check } from 'lucide-react';
 import CalculatorKeypad from './CalculatorKeypad';
 
@@ -11,6 +11,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
         date: '',
     });
     const [isNoteFocused, setIsNoteFocused] = useState(false);
+    const noteInputRef = useRef(null);
 
     // Initialize Data
     useEffect(() => {
@@ -188,10 +189,14 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 <FileText className="w-5 h-5" />
                             </div>
                             <input
+                                ref={noteInputRef}
                                 type="text"
                                 placeholder="備註..."
                                 value={formData.note}
-                                onFocus={() => setIsNoteFocused(true)}
+                                onFocus={() => {
+                                    setIsNoteFocused(true);
+                                    setTimeout(() => noteInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                }}
                                 onBlur={() => setIsNoteFocused(false)}
                                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                                 className={`flex-1 bg-transparent border-b outline-none py-1 ${isDark ? 'border-slate-700 text-white placeholder-slate-500' : 'border-gray-200 text-gray-800 placeholder-gray-400'} focus:border-blue-500 transition-colors`}

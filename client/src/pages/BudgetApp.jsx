@@ -224,7 +224,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
                         {currentView === 'trend' && <TrendView isDark={isDarkMode} expenses={data.expenses || []} />}
 
-                        {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} />}
+                        {currentView === 'search' && <SearchView isDark={isDarkMode} expenses={data.yearlyExpenses} categories={data.categories} onEditExpense={openEditExpense} />}
 
                         {currentView === 'recurring' && (
                             <RecurringView
