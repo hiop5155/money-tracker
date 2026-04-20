@@ -184,7 +184,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                         )}
 
                         {/* Note Input */}
-                        <div className="flex items-center gap-3">
+                        <div className={`flex items-center gap-3 ${isNoteFocused ? 'pb-[40vh] md:pb-0' : ''}`}>
                             <div className={`p-2 rounded-full ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500'}`}>
                                 <FileText className="w-5 h-5" />
                             </div>
@@ -195,7 +195,10 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 value={formData.note}
                                 onFocus={() => {
                                     setIsNoteFocused(true);
+                                    // Use multiple setTimeouts to handle different mobile browser popup delays
+                                    setTimeout(() => noteInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                                     setTimeout(() => noteInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                    setTimeout(() => noteInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 600);
                                 }}
                                 onBlur={() => setIsNoteFocused(false)}
                                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
