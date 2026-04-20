@@ -13,6 +13,43 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
     const [isNoteFocused, setIsNoteFocused] = useState(false);
     const noteInputRef = useRef(null);
 
+    // Detect mobile keyboard close (when height increases)
+    useEffect(() => {
+        if (!isNoteFocused) return;
+        
+        const viewport = window.visualViewport;
+        // Record the height 500ms after focus (to ensure keyboard has opened)
+        let trackingHeight = viewport ? viewport.height : window.innerHeight;
+        
+        const handleResize = () => {
+            const currentHeight = viewport ? viewport.height : window.innerHeight;
+            // If the height increases by more than 100px, the keyboard has been dismissed.
+            if (currentHeight > trackingHeight + 100) {
+                noteInputRef.current?.blur();
+            } else if (currentHeight < trackingHeight) {
+                // Keyboard might be adjusting, keep the smaller height as baseline
+                trackingHeight = currentHeight;
+            }
+        };
+
+        const timeoutId = setTimeout(() => {
+            if (viewport) {
+                viewport.addEventListener('resize', handleResize);
+            } else {
+                window.addEventListener('resize', handleResize);
+            }
+        }, 800); // Wait for the keyboard animation to fully finish
+
+        return () => {
+            clearTimeout(timeoutId);
+            if (viewport) {
+                viewport.removeEventListener('resize', handleResize);
+            } else {
+                window.addEventListener('resize', handleResize);
+            }
+        };
+    }, [isNoteFocused]);
+
     // Initialize Data
     useEffect(() => {
         if (isOpen) {
@@ -191,6 +228,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                             <input
                                 ref={noteInputRef}
                                 type="text"
+                                enterKeyHint="done"
                                 placeholder="備註..."
                                 value={formData.note}
                                 onFocus={() => {
@@ -201,6 +239,11 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                     setTimeout(() => noteInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 600);
                                 }}
                                 onBlur={() => setIsNoteFocused(false)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        noteInputRef.current?.blur();
+                                    }
+                                }}
                                 onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                                 className={`flex-1 bg-transparent border-b outline-none py-1 ${isDark ? 'border-slate-700 text-white placeholder-slate-500' : 'border-gray-200 text-gray-800 placeholder-gray-400'} focus:border-blue-500 transition-colors`}
                             />
