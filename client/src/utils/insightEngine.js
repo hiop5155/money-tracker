@@ -27,8 +27,13 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
     const currentMonthExpenses = getMonthExpenses(currentYear, currentMonth);
     const lastMonthExpenses = getMonthExpenses(currentYear, currentMonth - 1 < 0 ? 11 : currentMonth - 1);
 
-    const currentTotal = currentMonthExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-    const lastMonthTotal = lastMonthExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    const isBudgeted = (e) => {
+        const catName = e.category ? e.category.trim() : '未分類';
+        return budgets?.categoryLimits?.some((l) => l.name === catName && l.monthly > 0);
+    };
+
+    const currentTotal = currentMonthExpenses.filter(isBudgeted).reduce((sum, e) => sum + Number(e.amount), 0);
+    const lastMonthTotal = lastMonthExpenses.filter(isBudgeted).reduce((sum, e) => sum + Number(e.amount), 0);
 
     // --- 1. Budget Burn Rate Alert ---
     const monthlyBudget = budgets.monthly || 0;
