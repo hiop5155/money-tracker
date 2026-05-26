@@ -261,7 +261,12 @@ const StatsView = ({
         return currentStats;
     }, [currentStats, viewMode, viewType]);
 
-    const currentTotalExpense = viewMode === 'monthly' ? monthlyTotal : yearlyTotal;
+    const currentTotalExpense = useMemo(() => {
+        if (viewMode === 'monthly') {
+            return pieStats.reduce((sum, item) => sum + item.value, 0);
+        }
+        return yearlyTotal;
+    }, [pieStats, viewMode, yearlyTotal]);
     const currentTotalIncome = viewMode === 'monthly' ? monthlyIncome : yearlyIncome;
     const currentTotal = viewType === 'income' ? currentTotalIncome : currentTotalExpense;
 
