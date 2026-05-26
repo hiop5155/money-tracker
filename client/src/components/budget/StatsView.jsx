@@ -246,13 +246,6 @@ const StatsView = ({
                     limit: limit,
                 };
             })
-            .filter((item) => {
-                // Monthly expense view: only show categories that have a monthly budget set
-                if (timeScale === 'monthly' && viewType === 'expense') {
-                    return item.limit > 0;
-                }
-                return true;
-            })
             .sort((a, b) => b.value - a.value);
     };
 
@@ -260,6 +253,13 @@ const StatsView = ({
     const yearlyStats = useMemo(() => processStatsData(yearlyExpenses, budgets?.categoryLimits, 'yearly'), [yearlyExpenses, budgets, viewType]);
 
     const currentStats = viewMode === 'monthly' ? monthlyStats : yearlyStats;
+
+    const pieStats = useMemo(() => {
+        if (viewMode === 'monthly' && viewType === 'expense') {
+            return currentStats.filter((item) => item.limit > 0);
+        }
+        return currentStats;
+    }, [currentStats, viewMode, viewType]);
 
     const currentTotalExpense = viewMode === 'monthly' ? monthlyTotal : yearlyTotal;
     const currentTotalIncome = viewMode === 'monthly' ? monthlyIncome : yearlyIncome;
@@ -356,9 +356,7 @@ const StatsView = ({
                         {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
                         <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
                     </h3>
-                    {viewMode === 'monthly' && viewType === 'expense' && (
-                        <p className="text-xs text-gray-400 mb-4">＊ 僅顯示已設定月預算的分類</p>
-                    )}
+
 
                     {currentStats.length > 0 ? (
                         <div className="space-y-2">
@@ -384,9 +382,12 @@ const StatsView = ({
 
                 {/* 4. Distribution Pie Chart */}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                    <h3 className={`font-bold mb-4 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
+                    <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'} ${viewMode === 'monthly' && viewType === 'expense' ? 'mb-2' : 'mb-4'}`}>
                         {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
                     </h3>
+                    {viewMode === 'monthly' && viewType === 'expense' && (
+                        <p className="text-xs text-gray-400 mb-4">＊ 圓餅圖僅顯示已設定月預算的分類</p>
+                    )}
 
                     {/* Use ref for Observer to listen.
                         Only render PieChart when chartSize.width > 0.
@@ -394,23 +395,29 @@ const StatsView = ({
                     */}
                     <div ref={chartContainerRef} style={{ width: '100%', height: 300, minHeight: 300, position: 'relative' }}>
                         {chartSize.width > 0 ? (
-                            <PieChart width={chartSize.width} height={chartSize.height}>
-                                <Pie
-                                    data={currentStats}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                    onClick={(data) => setSelectedCategory(data.name)}
-                                    cursor="pointer"
-                                >
-                                    {currentStats.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
-                            </PieChart>
+                            pieStats.length > 0 ? (
+                                <PieChart width={chartSize.width} height={chartSize.height}>
+                                    <Pie
+                                        data={pieStats}
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        fill="#8884d8"
+                                        dataKey="value"
+                                        onClick={(data) => setSelectedCategory(data.name)}
+                                        cursor="pointer"
+                                    >
+                                        {pieStats.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                                </PieChart>
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    尚無已設定預算的支出比例資料
+                                </div>
+                            )
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
                                 <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
