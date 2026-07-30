@@ -12,13 +12,31 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// DB Connection
-if (process.env.NODE_ENV !== 'test') {
-    mongoose
-        .connect(process.env.MONGODB_URI)
-        .then(() => console.log('MongoDB Connected'))
-        .catch((err) => console.log(err));
+// Serverless-friendly MongoDB Connection Helper
+let isConnected = false;
+async function connectToDatabase() {
+    if (isConnected && mongoose.connection.readyState === 1) {
+        return;
+    }
+    if (!process.env.MONGODB_URI) {
+        throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log('MongoDB Connected');
 }
+
+// Middleware to ensure DB connection before handling API routes
+app.use('/api', async (req, res, next) => {
+    if (process.env.NODE_ENV === 'test') return next();
+    try {
+        await connectToDatabase();
+        next();
+    } catch (err) {
+        console.error('Database connection error:', err);
+        return res.status(500).json({ error: '資料庫連線失敗: ' + err.message });
+    }
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
