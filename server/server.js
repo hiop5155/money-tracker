@@ -53,10 +53,12 @@ app.use(express.static(clientDistPath));
 const uploadsPath = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 
-// SPA Fallback: Return index.html for any wildcard GET route not handled by API
-app.get('*', (req, res) => {
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-});
+// SPA Fallback only for standalone non-serverless mode
+if (require.main === module) {
+    app.get('(.*)', (req, res) => {
+        res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+}
 
 if (require.main === module) {
     app.listen(PORT, () => {
