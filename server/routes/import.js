@@ -7,8 +7,11 @@ const auth = require('../middleware/auth');
 const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 
-// Setup Multer (Temporary storage)
-const upload = multer({ dest: 'uploads/' });
+const os = require('os');
+const path = require('path');
+
+// Setup Multer (Temporary storage in /tmp for Serverless compatibility)
+const upload = multer({ dest: path.join(os.tmpdir(), 'uploads') });
 
 router.post('/csv', auth, upload.single('file'), async (req, res) => {
     if (!req.file) {
