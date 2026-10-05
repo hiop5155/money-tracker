@@ -58,9 +58,9 @@ function App() {
                     element={token ? <Navigate to="/" /> : <AuthPage onLogin={handleLogin} isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}
                 />
 
-                {/* Other pages benefit from body class, props not strictly needed unless button is displayed */}
-                <Route path="/verify" element={<VerifyEmail />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+                {/* Deprecated auth routes redirect to login */}
+                <Route path="/verify" element={<Navigate to="/login" replace />} />
+                <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
 
                 <Route
                     path="/"

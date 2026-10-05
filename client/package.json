@@ -5,13 +5,14 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "vite build && cp -r ../blog dist/blog && cp dist/blog/privacy.html dist/privacy.html",
         "lint": "eslint .",
         "preview": "vite preview",
         "format": "npx prettier --write .",
         "test": "vitest"
     },
     "dependencies": {
+        "@react-oauth/google": "^0.13.5",
         "@tailwindcss/vite": "^4.1.18",
         "lucide-react": "^0.562.0",
         "react": "^19.2.0",

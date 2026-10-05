@@ -1,0 +1,13 @@
+name = "money-tracker"
+compatibility_date = "2024-09-23"
+compatibility_flags = [ "nodejs_compat" ]
+pages_build_output_dir = "client/dist"
+
+[vars]
+JWT_SECRET = "thisismysecretkey123456"
+VITE_GOOGLE_CLIENT_ID = "760743200880-hjfqpm9d52v614kffb7inqdq5pruvtvm.apps.googleusercontent.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "money-tracker-db"
+database_id = "86f68fb0-f289-4ad0-8264-dce8aae7491c"

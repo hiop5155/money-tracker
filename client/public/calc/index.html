@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資產計算器 | 投資複利與退休試算 | 記帳助手 Money Tracker</title>
+    <meta name="description" content="記帳助手 Money Tracker 資產計算器 - 線上試算每月定期定額複利成長、資產累積進度與 4% 法則退休現金流。">
+    <link rel="stylesheet" href="/blog/blog-dark.css">
+    <style>
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .calc-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-card, .result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--heading);
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0f1424;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.05rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+        }
+
+        .stat-badge {
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .stat-badge .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .stat-badge .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #38bdf8;
+            font-family: monospace;
+        }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .mini-stat-card {
+            background: #111628;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .mini-stat-card .val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f1f3f5;
+            font-family: monospace;
+            margin-top: 4px;
+        }
+
+        .chart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .chart-table th, .chart-table td {
+            padding: 10px 8px;
+            text-align: right;
+            border-bottom: 1px solid #232b3e;
+        }
+
+        .chart-table th:first-child, .chart-table td:first-child {
+            text-align: left;
+        }
+
+        .progress-bar-bg {
+            background: #1f293d;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #3b82f6, #38bdf8);
+            height: 100%;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="background: var(--card); padding: 20px 0; text-align: center; border-bottom: 1px solid #2d3748;">
+        <div style="font-size: 26px; font-weight: 800; color: #f1f3f5;">
+            💰 Money Tracker
+        </div>
+        <div class="nav-links">
+            <a href="/">記帳助手 App</a>
+            <a href="/calc" class="active">資產計算器</a>
+            <a href="/blog/">理財知識庫</a>
+            <a href="/blog/privacy.html">隱私權政策</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 style="text-align: center; color: var(--heading); margin-bottom: 8px;">資產成長與複利試算器</h1>
+        <p style="text-align: center; color: var(--text-light); max-width: 600px; margin: 0 auto 24px;">
+            輸入您的本金、每月定期定額金額與預期年化報酬率，即時推演長期資產成長軌跡與退休現金流。
+        </p>
+
+        <div class="calc-grid">
+            <!-- 輸入區塊 -->
+            <div class="input-card">
+                <h2 style="font-size: 1.25rem; color: var(--heading); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                    ⚙️ 試算參數設定
+                </h2>
+
+                <div class="form-group">
+                    <label>現有資產 / 初始本金 (NTD)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="initAmount" value="500000" step="10000" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>每月定期定額投入 (NTD)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="monthlyDeposit" value="20000" step="1000" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>預估年化報酬率 (%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="annualReturn" value="7" step="0.5" min="0" max="50">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>投資年期 (年)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="years" value="20" min="1" max="50">
+                    </div>
+                </div>
+
+                <p style="font-size: 0.8rem; color: #888; margin-top: 16px;">
+                    💡 提示：台股大盤 (0050) 與美股標普500 (VOO) 的歷史長期年化報酬率約落在 7% ~ 10% 區間。
+                </p>
+            </div>
+
+            <!-- 結果區塊 -->
+            <div class="result-card">
+                <h2 style="font-size: 1.25rem; color: var(--heading); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                    📈 試算結果推演
+                </h2>
+
+                <div class="stat-badge">
+                    <div class="stat-label">預估最終總資產</div>
+                    <div class="stat-value" id="resTotal">NT$ 0</div>
+                </div>
+
+                <div class="mini-stats">
+                    <div class="mini-stat-card">
+                        <div style="font-size: 0.75rem; color: var(--text-light);">累計總投入本金</div>
+                        <div class="val" id="resPrincipal">NT$ 0</div>
+                    </div>
+                    <div class="mini-stat-card">
+                        <div style="font-size: 0.75rem; color: var(--text-light);">複利累積利息</div>
+                        <div class="val" style="color: #4ade80;" id="resInterest">NT$ 0</div>
+                    </div>
+                </div>
+
+                <div class="mini-stat-card" style="margin-bottom: 20px; background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.2);">
+                    <div style="font-size: 0.8rem; color: #38bdf8;">🔥 4% 法則每月被動提領金</div>
+                    <div class="val" style="color: #38bdf8; font-size: 1.3rem;" id="resFourPercent">NT$ 0 /月</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 4px;">達到此資產後，每年提領 4% 本金幾乎永不耗盡</div>
+                </div>
+
+                <div style="max-height: 220px; overflow-y: auto;">
+                    <table class="chart-table">
+                        <thead>
+                            <tr>
+                                <th>年次</th>
+                                <th>投入本金</th>
+                                <th>資產總值</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timelineBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 40px 0 20px; border-top: 1px solid var(--border); margin-top: 60px;">
+            <div class="nav-links" style="margin-bottom: 16px;">
+                <a href="/">記帳助手 App</a>
+                <a href="/calc">資產計算器</a>
+                <a href="/blog/">理財知識庫</a>
+                <a href="/blog/privacy.html">隱私權政策</a>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-light);">
+                &copy; 2026 記帳助手 Money Tracker. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function formatMoney(num) {
+            return 'NT$ ' + Math.round(num).toLocaleString('zh-TW');
+        }
+
+        function calculate() {
+            const P = parseFloat(document.getElementById('initAmount').value) || 0;
+            const PMT = parseFloat(document.getElementById('monthlyDeposit').value) || 0;
+            const rYear = parseFloat(document.getElementById('annualReturn').value) || 0;
+            const years = parseInt(document.getElementById('years').value) || 1;
+
+            const rMonthly = (rYear / 100) / 12;
+            let currentBalance = P;
+            let totalInvested = P;
+
+            const timeline = [];
+
+            for (let y = 1; y <= years; y++) {
+                for (let m = 1; m <= 12; m++) {
+                    currentBalance = currentBalance * (1 + rMonthly) + PMT;
+                    totalInvested += PMT;
+                }
+                timeline.push({
+                    year: y,
+                    principal: totalInvested,
+                    balance: currentBalance
+                });
+            }
+
+            const finalBalance = currentBalance;
+            const totalInterest = finalBalance - totalInvested;
+            const monthly4Percent = (finalBalance * 0.04) / 12;
+
+            document.getElementById('resTotal').innerText = formatMoney(finalBalance);
+            document.getElementById('resPrincipal').innerText = formatMoney(totalInvested);
+            document.getElementById('resInterest').innerText = formatMoney(totalInterest);
+            document.getElementById('resFourPercent').innerText = formatMoney(monthly4Percent) + ' /月';
+
+            // 渲染時間軸
+            const tbody = document.getElementById('timelineBody');
+            tbody.innerHTML = '';
+            
+            const maxVal = timeline[timeline.length - 1].balance;
+
+            timeline.forEach(row => {
+                const tr = document.createElement('tr');
+                const percent = Math.min(100, Math.round((row.balance / maxVal) * 100));
+                tr.innerHTML = `
+                    <td>
+                        第 ${row.year} 年
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+                        </div>
+                    </td>
+                    <td>${formatMoney(row.principal)}</td>
+                    <td style="font-weight: 700; color: #38bdf8;">${formatMoney(row.balance)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('initAmount').addEventListener('input', calculate);
+        document.getElementById('monthlyDeposit').addEventListener('input', calculate);
+        document.getElementById('annualReturn').addEventListener('input', calculate);
+        document.getElementById('years').addEventListener('input', calculate);
+
+        calculate();
+    </script>
+</body>
+
+</html>

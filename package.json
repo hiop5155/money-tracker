@@ -9,5 +9,8 @@
     "devDependencies": {
         "prettier": "^3.4.2",
         "vercel": "^58.4.0"
+    },
+    "dependencies": {
+        "hono": "^4.13.13"
     }
 }
