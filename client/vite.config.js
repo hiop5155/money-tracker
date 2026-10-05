@@ -20,6 +20,19 @@ export default defineConfig(({ mode }) => {
                 },
             },
         },
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+                        'vendor-charts': ['recharts'],
+                        'vendor-icons': ['lucide-react'],
+                        'vendor-auth': ['@react-oauth/google'],
+                    },
+                },
+            },
+            chunkSizeWarningLimit: 600,
+        },
         test: {
             environment: 'jsdom',
             globals: true,
