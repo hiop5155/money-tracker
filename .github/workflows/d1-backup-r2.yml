@@ -1,0 +1,37 @@
+name: Daily D1 to R2 Backup
+
+on:
+  schedule:
+    - cron: '0 19 * * *' # 每天 UTC 19:00 (台灣時間凌晨 03:00) 自動執行
+  workflow_dispatch:     # 支援在 GitHub 網頁手動一鍵觸發
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Export D1 Database & Upload to R2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          DATE=$(date +%Y%m%d_%H%M%S)
+          FILENAME="backup_${DATE}.sql"
+
+          echo "1. 正在從 Cloudflare D1 匯出資料庫..."
+          npx wrangler d1 export money-tracker-db --remote --output=$FILENAME -y
+
+          echo "2. 進行 gzip 壓縮以節省儲存空間與頻寬..."
+          gzip $FILENAME
+
+          echo "3. 上傳壓縮檔至 Cloudflare R2 私有儲存桶..."
+          npx wrangler r2 object put money-tracker-backups/d1/${FILENAME}.gz --file ${FILENAME}.gz --remote
+
+          echo "✅ 備份成功完成：${FILENAME}.gz 已安全儲存至 R2！"
