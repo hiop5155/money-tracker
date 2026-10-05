@@ -149,7 +149,7 @@ app.post('/expenses', auth, async (c) => {
 
         await c.env.DB.prepare(
             'INSERT INTO expenses (id, user_id, date, category, amount, type, note, recurring_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-        ).bind(id, userId, date, Number(amount || 0), type || 'expense', note || '', recurringId || null).run();
+        ).bind(id, userId, date, category, Number(amount || 0), type || 'expense', note || '', recurringId || null).run();
 
         return c.json({
             id,
