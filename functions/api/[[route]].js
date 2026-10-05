@@ -70,6 +70,29 @@ app.post('/auth/google', async (c) => {
 });
 
 // ==========================================
+// 1.1 刪除帳號 (/api/auth/delete)
+// ==========================================
+app.on(['PUT', 'DELETE'], '/auth/delete', auth, async (c) => {
+    try {
+        const userId = c.get('userId');
+        const db = c.env.DB;
+
+        // 原子性刪除該用戶的所有記帳、分類、預算、定期交易與帳號本身
+        await db.batch([
+            db.prepare('DELETE FROM expenses WHERE user_id = ?').bind(userId),
+            db.prepare('DELETE FROM categories WHERE user_id = ?').bind(userId),
+            db.prepare('DELETE FROM budgets WHERE user_id = ?').bind(userId),
+            db.prepare('DELETE FROM recurring_expenses WHERE user_id = ?').bind(userId),
+            db.prepare('DELETE FROM users WHERE id = ?').bind(userId),
+        ]);
+
+        return c.json({ success: true, message: '帳號及所有關聯資料已徹底刪除' });
+    } catch (err) {
+        return c.json({ error: '刪除帳號失敗: ' + err.message }, 500);
+    }
+});
+
+// ==========================================
 // 2. 主資料獲取 (/api/data)
 // ==========================================
 app.get('/data', auth, async (c) => {
