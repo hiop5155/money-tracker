@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { X, Calendar, FileText, Loader2, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import MonthSelector from './MonthSelector';
+import { getCalcUrl } from '../../utils/calcUrl';
 
 // Chart Colors
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#64748B', '#84CC16', '#0EA5E9', '#D946EF'];
@@ -438,7 +439,7 @@ const StatsView = ({
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                         記帳助手 App
                     </a>
-                    <a href="https://calc.money-tracker.xyz" target="_blank" rel="noopener noreferrer" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <a href={getCalcUrl()} target="_blank" rel="noopener noreferrer" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                         資產計算器
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>

@@ -4,6 +4,7 @@ import BudgetApp from './pages/BudgetApp';
 import AuthPage from './pages/AuthPage';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
+import { getSharedAuth, setSharedAuth, clearSharedAuth } from './utils/cookieAuth';
 
 // Protected Route
 const ProtectedRoute = ({ token, children }) => {
@@ -12,9 +13,16 @@ const ProtectedRoute = ({ token, children }) => {
 };
 
 function App() {
-    // Initialize Token
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [username, setUsername] = useState(localStorage.getItem('username'));
+    // Initialize Token (支援跨子網域 SSO 共用 Cookie)
+    const [token, setToken] = useState(() => {
+        const shared = getSharedAuth();
+        return shared.token || localStorage.getItem('token');
+    });
+    const [username, setUsername] = useState(() => {
+        const shared = getSharedAuth();
+        if (shared.user) return shared.user.name || shared.user.email;
+        return localStorage.getItem('username');
+    });
 
     // Initialize Dark Mode
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -35,9 +43,17 @@ function App() {
     // Toggle mode function (passed to child components)
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
+    // Synchronize SSO cookie when logged in
+    useEffect(() => {
+        if (token && username) {
+            setSharedAuth(token, { name: username, email: username });
+        }
+    }, [token, username]);
+
     const handleLogin = (newToken, newUsername) => {
         localStorage.setItem('token', newToken);
         localStorage.setItem('username', newUsername);
+        setSharedAuth(newToken, { name: newUsername, email: newUsername });
         setToken(newToken);
         setUsername(newUsername);
     };
@@ -45,6 +61,7 @@ function App() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
+        clearSharedAuth();
         setToken(null);
         setUsername(null);
     };
