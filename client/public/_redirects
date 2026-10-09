@@ -1,3 +1,1 @@
-/calc https://calc.money-tracker.xyz 302
-/calc/* https://calc.money-tracker.xyz/:splat 302
 /* /index.html 200
