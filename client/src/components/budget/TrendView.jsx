@@ -261,7 +261,7 @@ const TrendView = ({ expenses = [], isDark }) => {
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                         記帳助手 App
                     </a>
-                    <a href={getCalcUrl()} target="_blank" rel="noopener noreferrer" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                         資產計算器
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>

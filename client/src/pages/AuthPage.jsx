@@ -65,9 +65,7 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
 
                     <div className="flex items-center gap-4">
                         <a
-                            href="https://calc.money-tracker.xyz"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href="/calc/"
                             className="hidden md:inline-flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors"
                         >
                             <span>台股 ETF 試算</span>
@@ -232,7 +230,7 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                             <a href="/blog" className="hover:text-blue-500 transition-colors">
                                 官方部落格
                             </a>
-                            <a href="https://calc.money-tracker.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transition-colors">
+                            <a href="/calc/" className="hover:text-blue-500 transition-colors">
                                 ETF 退休模擬器
                             </a>
                         </div>
