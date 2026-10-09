@@ -1,0 +1,19 @@
+{
+  "name": "Money Tracker - AI 智慧記帳",
+  "short_name": "MoneyTracker",
+  "description": "次世代 AI 智慧記帳與個人財務決策平台",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#18191a",
+  "theme_color": "#18191a",
+  "icons": [
+    {
+      "src": "/money-tracker-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
