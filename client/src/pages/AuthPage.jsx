@@ -57,10 +57,6 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                     <div className="flex items-center gap-3">
                         <span className="text-2xl">💰</span>
                         <span className="font-bold text-xl tracking-tight">Money Tracker</span>
-                        <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500/15 to-indigo-500/15 border border-purple-500/30 text-purple-600 dark:text-purple-300">
-                            <Sparkles size={12} className="text-purple-500 animate-pulse" />
-                            <span>Powered by Claude 3.5 Sonnet</span>
-                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -94,31 +90,31 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                     <div className="lg:col-span-7 flex flex-col gap-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold w-fit bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                             <Zap size={14} />
-                            <span>次世代 AI 智慧財務決策平台</span>
+                            <span>個人財務決策與記帳平台</span>
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
-                            讓每一分收支都有智慧，
+                            讓每一分收支清清楚楚，
                             <br />
                             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                專屬於你的 Claude 財務顧問
+                                掌控你的個人資產與預算
                             </span>
                         </h1>
 
                         <p className="text-base sm:text-lg opacity-80 leading-relaxed" style={{ color: 'var(--text-sub)' }}>
-                            不再只是死板記帳。Money Tracker 深度整合 Anthropic Claude 3.5 Sonnet 核心能力與統計演算法，自動洞悉消費趨勢、預測現金流風險，提供量身打造的預算節流建議。
+                            不再只是繁瑣記帳。Money Tracker 結合直覺的收支管理與財務統計分析，即時洞悉消費趨勢、預警預算透支，協助你輕鬆管理個人資產。
                         </p>
 
-                        {/* 3 AI Feature Highlights */}
+                        {/* 3 Feature Highlights */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                             <div className="p-4 rounded-xl border flex flex-col gap-2 transition-transform hover:-translate-y-1"
                                 style={{ backgroundColor: 'var(--bg-card)', borderColor: isDarkMode ? '#3a3b3c' : '#e2e8f0' }}>
                                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-purple-500/15 text-purple-600 dark:text-purple-300">
-                                    <Bot size={20} />
+                                    <TrendingUp size={20} />
                                 </div>
-                                <h3 className="font-bold text-sm">Claude 智慧顧問</h3>
+                                <h3 className="font-bold text-sm">清晰收支儀表板</h3>
                                 <p className="text-xs opacity-75" style={{ color: 'var(--text-sub)' }}>
-                                    深度學習個人消費模式，主動提供個人化省錢與財務洞察建議。
+                                    圖表即時掌握消費趨勢，月度與年度收支一目了然。
                                 </p>
                             </div>
 
@@ -127,20 +123,20 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-500/15 text-blue-600 dark:text-blue-300">
                                     <Sparkles size={20} />
                                 </div>
-                                <h3 className="font-bold text-sm">自然語言語意記帳</h3>
+                                <h3 className="font-bold text-sm">極速直覺記帳</h3>
                                 <p className="text-xs opacity-75" style={{ color: 'var(--text-sub)' }}>
-                                    免去繁瑣表單點選，一句話智慧解析日期、金額、店家與類別。
+                                    免去複雜表單，簡潔介面輕鬆記錄金額、分類與備註。
                                 </p>
                             </div>
 
                             <div className="p-4 rounded-xl border flex flex-col gap-2 transition-transform hover:-translate-y-1"
                                 style={{ backgroundColor: 'var(--bg-card)', borderColor: isDarkMode ? '#3a3b3c' : '#e2e8f0' }}>
                                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
-                                    <TrendingUp size={20} />
+                                    <ShieldCheck size={20} />
                                 </div>
-                                <h3 className="font-bold text-sm">燃燒率與異常警報</h3>
+                                <h3 className="font-bold text-sm">預算超支警報</h3>
                                 <p className="text-xs opacity-75" style={{ color: 'var(--text-sub)' }}>
-                                    Z-Score 統計偵測支出異常，提前 15 天警示預算透支風險。
+                                    動態追蹤預算使用進度，提前警示月底透支風險。
                                 </p>
                             </div>
                         </div>
@@ -151,19 +147,11 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                                 <CheckCircle2 size={14} className="text-emerald-500" />
                                 <span>個人資料嚴格隔離</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <CheckCircle2 size={14} className="text-emerald-500" />
-                                <span>Cloudflare 全球極速邊緣運算</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <CheckCircle2 size={14} className="text-emerald-500" />
-                                <span>完整支援跨平台與暗色模式</span>
-                            </div>
                         </div>
-                    </div>
+                    </div >
 
                     {/* Right: Login Card */}
-                    <div className="lg:col-span-5 flex justify-center">
+                    < div className="lg:col-span-5 flex justify-center" >
                         <div className="w-full max-w-md p-8 rounded-2xl border shadow-xl flex flex-col items-center text-center relative"
                             style={{ backgroundColor: 'var(--bg-card)', borderColor: isDarkMode ? '#3a3b3c' : '#e2e8f0' }}>
 
@@ -196,24 +184,26 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
 
                             <div className="w-full mt-6 pt-6 border-t text-xs flex flex-col gap-2 opacity-75"
                                 style={{ borderColor: isDarkMode ? '#3a3b3c' : '#edf2f7', color: 'var(--text-sub)' }}>
-                                <div className="flex items-center justify-center gap-1.5">
-                                    <ShieldCheck size={14} className="text-blue-500" />
-                                    <span>登入即代表同意服務條款與隱私權保護規範</span>
+                                <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                    <ShieldCheck size={14} className="text-blue-500 shrink-0" />
+                                    <span>登入即代表同意</span>
+                                    <a href="/terms.html" className="underline hover:text-blue-500 transition-colors">服務條款</a>
+                                    <span>與</span>
+                                    <a href="/privacy.html" className="underline hover:text-blue-500 transition-colors">隱私權政策</a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </main>
+                    </div >
+                </main >
 
                 {/* Professional Startup Footer */}
-                <footer className="w-full border-t px-6 py-8 mt-12 text-xs"
-                    style={{ borderColor: isDarkMode ? '#2d3748' : '#e2e8f0', color: 'var(--text-sub)' }}>
+                < footer className="w-full border-t px-6 py-8 mt-12 text-xs"
+                    style={{ borderColor: isDarkMode ? '#2d3748' : '#e2e8f0', color: 'var(--text-sub)' }
+                    }>
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                             <span className="font-semibold text-sm" style={{ color: 'var(--text-main)' }}>Money Tracker AI Studio</span>
                             <span>© 2026 All rights reserved.</span>
-                            <span className="hidden sm:inline">|</span>
-                            <span>Powered by Anthropic Claude 3.5 & Cloudflare Edge</span>
                         </div>
 
                         <div className="flex flex-wrap items-center justify-center gap-6">
@@ -223,6 +213,9 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                             >
                                 <Mail size={13} />
                                 <span>contact@money-tracker.xyz</span>
+                            </a>
+                            <a href="/terms.html" className="hover:text-blue-500 transition-colors">
+                                服務條款
                             </a>
                             <a href="/privacy.html" className="hover:text-blue-500 transition-colors">
                                 隱私權政策
@@ -235,8 +228,8 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
                             </a>
                         </div>
                     </div>
-                </footer>
-            </div>
+                </footer >
+            </div >
         </>
     );
 }

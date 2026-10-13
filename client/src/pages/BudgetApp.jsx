@@ -30,11 +30,16 @@ const BudgetApp = ({ token, onLogout, username }) => {
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
     const [editingRecurring, setEditingRecurring] = useState(null);
 
-    // Smart Insight State
+    // Smart Insight State (目前暫時關閉此功能，保留完整程式碼以備後續重構)
+    const ENABLE_INSIGHTS = false;
     const [currentInsight, setCurrentInsight] = useState(null);
     const [isInsightVisible, setIsInsightVisible] = useState(true);
 
     useEffect(() => {
+        if (!ENABLE_INSIGHTS) {
+            setCurrentInsight(null);
+            return;
+        }
         if (data.expenses.length > 0) {
             const insights = generateInsights(data.expenses, data.budgets, data.categories);
             if (insights.length > 0) {
@@ -139,7 +144,7 @@ const BudgetApp = ({ token, onLogout, username }) => {
                     className={`flex-none shadow-sm p-4 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
                 >
                     <div className="max-w-4xl mx-auto flex justify-between items-center gap-4">
-                        {currentInsight && isInsightVisible ? (
+                        {ENABLE_INSIGHTS && currentInsight && isInsightVisible ? (
                             <div
                                 className={`flex-1 flex items-center justify-between p-2 rounded-lg border animate-in slide-in-from-top-2 fade-in duration-300 ${insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
                                     } ${insightStyles[currentInsight.type]?.border || insightStyles.warning.border} ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text

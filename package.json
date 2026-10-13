@@ -3,6 +3,7 @@
     "private": true,
     "scripts": {
         "build": "npm install --prefix client --include=dev && npm run build --prefix client",
+        "clean": "rm -rf client/dist",
         "start": "node server/server.js",
         "format": "prettier --write ."
     },

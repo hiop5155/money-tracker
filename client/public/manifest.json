@@ -1,7 +1,7 @@
 {
-  "name": "Money Tracker - AI 智慧記帳",
+  "name": "Money Tracker 記帳助手",
   "short_name": "MoneyTracker",
-  "description": "次世代 AI 智慧記帳與個人財務決策平台",
+  "description": "簡單高效的個人記帳與財務管理平台",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
