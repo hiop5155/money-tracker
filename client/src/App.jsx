@@ -4,6 +4,8 @@ import BudgetApp from './pages/BudgetApp';
 import AuthPage from './pages/AuthPage';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
+const enableDevPreview = import.meta.env.VITE_ENABLE_DEV_PREVIEW === 'true';
+const DevPreview = enableDevPreview ? React.lazy(() => import('./pages/DevPreview')) : null;
 import { getSharedAuth, setSharedAuth, clearSharedAuth } from './utils/cookieAuth';
 
 // Protected Route
@@ -78,6 +80,16 @@ function App() {
                 {/* Deprecated auth routes redirect to login */}
                 <Route path="/verify" element={<Navigate to="/login" replace />} />
                 <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
+                {enableDevPreview && DevPreview && (
+                    <Route
+                        path="/dev-preview"
+                        element={
+                            <React.Suspense fallback={<div className="p-4 text-center text-sm">載入預覽中...</div>}>
+                                <DevPreview isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+                            </React.Suspense>
+                        }
+                    />
+                )}
 
                 <Route
                     path="/"

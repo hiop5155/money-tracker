@@ -52,8 +52,8 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
             <LoadingOverlay isVisible={isLoading} />
             <div className="min-h-screen flex flex-col justify-between" style={{ backgroundColor: 'var(--bg-body)', color: 'var(--text-main)' }}>
                 {/* Top Navigation */}
-                <header className="w-full border-b backdrop-blur-md px-6 py-4 flex items-center justify-between sticky top-0 z-20"
-                    style={{ borderColor: isDarkMode ? '#2d3748' : '#e2e8f0', backgroundColor: isDarkMode ? 'rgba(24, 25, 26, 0.85)' : 'rgba(255, 255, 255, 0.85)' }}>
+                <header className="w-full border-b px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm"
+                    style={{ borderColor: isDarkMode ? '#2d3748' : '#e2e8f0', backgroundColor: isDarkMode ? '#18191a' : '#ffffff' }}>
                     <div className="flex items-center gap-3">
                         <span className="text-2xl">💰</span>
                         <span className="font-bold text-xl tracking-tight">Money Tracker</span>

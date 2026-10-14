@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { X, Calendar, FileText, Loader2, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { X, Calendar, FileText, Loader2, TrendingUp, TrendingDown, DollarSign, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react';
 import MonthSelector from './MonthSelector';
 import { getCalcUrl } from '../../utils/calcUrl';
 
@@ -45,7 +45,7 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
 };
 
 // --- Sub-component: Donut Chart (Fixed size, no ResponsiveContainer) ---
-const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode }) => {
+const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleModal, showRuleButton }) => {
     const safeBudget = budget || 0;
     const remaining = Math.max(0, safeBudget - spent);
     const incomeData = [{ name: '總收入', value: spent }];
@@ -68,7 +68,22 @@ const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode }) => {
 
     return (
         <div className={`p-5 rounded-xl shadow-sm flex flex-col items-center ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>{title}</h3>
+            <div className="flex items-center gap-2 mb-2">
+                <h3 className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>{title}</h3>
+                {showRuleButton && (
+                    <button
+                        onClick={onShowRuleModal}
+                        title="查看月統計規則說明"
+                        className={`text-xs px-2 py-0.5 rounded-full border flex items-center gap-1 transition-colors cursor-pointer ${
+                            isDark
+                                ? 'border-slate-600 bg-slate-700/60 text-slate-300 hover:bg-slate-700'
+                                : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                    >
+                        <span>統計規則 *</span>
+                    </button>
+                )}
+            </div>
 
             <div style={{ width: 192, height: 192, position: 'relative' }}>
                 <PieChart width={192} height={192}>
@@ -199,6 +214,7 @@ const StatsView = ({
     const [viewType, setViewType] = useState('expense'); // 'expense' | 'income'
 
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(false);
 
     const chartContainerRef = useRef(null);
     const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
@@ -289,8 +305,53 @@ const StatsView = ({
             .sort((a, b) => new Date(a.date) - new Date(b.date));
     }, [selectedCategory, currentRawExpenses, viewType]);
 
+    // Category Breakdown Calculation for Budget Rule Modal
+    const categoryBreakdown = useMemo(() => {
+        const categoryLimits = budgets?.categoryLimits || [];
+        const budgetedCategoriesMap = new Map();
+        categoryLimits.forEach((cat) => {
+            if (cat.monthly > 0) {
+                budgetedCategoriesMap.set(cat.name, cat.monthly);
+            }
+        });
+
+        const spentMap = new Map();
+        (monthlyExpenses || []).forEach((exp) => {
+            if (exp.type === 'expense' || !exp.type) {
+                const current = spentMap.get(exp.category) || 0;
+                spentMap.set(exp.category, current + Number(exp.amount));
+            }
+        });
+
+        const included = [];
+        const excluded = [];
+
+        const allCategoryNames = new Set([...budgetedCategoriesMap.keys(), ...spentMap.keys()]);
+
+        allCategoryNames.forEach((catName) => {
+            const spent = spentMap.get(catName) || 0;
+            const limit = budgetedCategoriesMap.get(catName);
+
+            if (limit !== undefined) {
+                included.push({
+                    name: catName,
+                    spent,
+                    limit,
+                    remaining: limit - spent,
+                });
+            } else if (spent > 0) {
+                excluded.push({
+                    name: catName,
+                    spent,
+                });
+            }
+        });
+
+        return { included, excluded };
+    }, [budgets, monthlyExpenses]);
+
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in duration-150 overflow-y-auto md:overflow-hidden">
             {/* Fixed Header Section */}
             <div className="flex-none flex flex-col gap-4 shrink-0">
                 <MonthSelector
@@ -353,6 +414,8 @@ const StatsView = ({
                         budget={currentBudget}
                         isDark={isDark}
                         isIncomeMode={viewType === 'income'}
+                        showRuleButton={viewMode === 'monthly' && viewType === 'expense'}
+                        onShowRuleModal={() => setShowBudgetRuleModal(true)}
                     />
                 </div>
 
@@ -392,7 +455,13 @@ const StatsView = ({
                         {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
                     </h3>
                     {viewMode === 'monthly' && viewType === 'expense' && (
-                        <p className="text-xs text-gray-400 mb-4">＊ 圓餅圖僅顯示已設定月預算的分類</p>
+                        <button
+                            onClick={() => setShowBudgetRuleModal(true)}
+                            className="text-xs text-blue-500 hover:underline mb-4 text-left flex items-center gap-1 cursor-pointer"
+                        >
+                            <span>＊ 圓餅圖與總預算僅計入已設定月預算的分類 (點此查看統計規則)</span>
+                            <HelpCircle className="w-3.5 h-3.5" />
+                        </button>
                     )}
 
                     {/* Use ref for Observer to listen.
@@ -454,7 +523,7 @@ const StatsView = ({
                 </div>
             </footer>
 
-            {/* Modal */}
+            {/* Category Detail Modal */}
             <CategoryDetailModal
                 isOpen={!!selectedCategory}
                 onClose={() => setSelectedCategory(null)}
@@ -463,6 +532,85 @@ const StatsView = ({
                 isDark={isDark}
                 isIncomeMode={viewType === 'income'}
             />
+
+            {/* Budget Rule Modal */}
+            {showBudgetRuleModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className={`w-full max-w-sm rounded-xl shadow-2xl flex flex-col max-h-[80vh] ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-800'}`}>
+                        {/* Header */}
+                        <div className={`flex justify-between items-center p-4 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+                            <h3 className="font-bold text-base flex items-center gap-2">
+                                <span>月統計規則說明</span>
+                            </h3>
+                            <button onClick={() => setShowBudgetRuleModal(false)} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Rule explanation */}
+                        <div className={`px-4 py-3 text-sm shrink-0 ${isDark ? 'bg-slate-700/40 text-slate-300' : 'bg-blue-50 text-blue-800'}`}>
+                            月統計圖表（環形圖與圓餅圖）只計入<strong>有設定月預算</strong>的分類。<br />
+                            未設定月預算的分類不列入上方圖表加總，但<strong>仍完整記錄並顯示於下方明細清單</strong>中。<br />
+                            如需將該分類納入圖表，請至「設定」為該分類設定月預算。
+                        </div>
+
+                        {/* Category lists */}
+                        <div className="overflow-y-auto px-4 py-3 space-y-3 custom-scrollbar">
+                            {/* Included */}
+                            <div>
+                                <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                    計入圖表統計（{categoryBreakdown.included.length} 項）：
+                                    {categoryBreakdown.included.length > 0 && (
+                                        <span className="font-normal truncate">{categoryBreakdown.included.map((c) => c.name).join('、')}</span>
+                                    )}
+                                </p>
+                                {categoryBreakdown.included.length > 0 ? (
+                                    <ul className={`rounded-lg overflow-hidden divide-y text-sm ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
+                                        {categoryBreakdown.included.map((cat) => (
+                                            <li key={cat.name} className={`px-3 py-2 ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+                                                <div className="flex justify-between items-center">
+                                                    <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
+                                                    <span className="font-mono text-red-500 text-xs">花費 ${cat.spent.toLocaleString()}</span>
+                                                </div>
+                                                <div className={`flex justify-between text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                                                    <span>月預算 ${cat.limit.toLocaleString()}</span>
+                                                    <span className={cat.remaining < 0 ? 'text-red-500 font-bold' : 'text-green-500'}>
+                                                        剩 ${cat.remaining.toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-gray-400 pl-4">尚無設定月預算的分類花費</p>
+                                )}
+                            </div>
+
+                            {/* Excluded */}
+                            {categoryBreakdown.excluded.length > 0 && (
+                                <div>
+                                    <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
+                                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                                        僅於下方明細顯示，未計入圖表（{categoryBreakdown.excluded.length} 項）：
+                                    </p>
+                                    <ul className={`rounded-lg overflow-hidden divide-y text-sm ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
+                                        {categoryBreakdown.excluded.map((cat) => (
+                                            <li key={cat.name} className={`px-3 py-2 flex justify-between items-center ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
+                                                <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
+                                                <div className="text-right">
+                                                    <span className="font-mono text-gray-500 text-xs">花費 ${cat.spent.toLocaleString()}</span>
+                                                    <span className="block text-[10px] text-gray-400">（未設月預算）</span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

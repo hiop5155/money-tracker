@@ -4,7 +4,7 @@ import { getCalcUrl } from '../../utils/calcUrl';
 
 const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDeleteRule, deletingId }) => {
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in duration-150 overflow-y-auto md:overflow-hidden">
             {/* Fixed Header */}
             <div className={`flex-none p-4 rounded-xl shadow-sm flex justify-between items-center shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>

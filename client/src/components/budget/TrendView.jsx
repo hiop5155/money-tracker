@@ -110,7 +110,7 @@ const TrendView = ({ expenses = [], isDark }) => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300 overflow-y-auto md:overflow-hidden">
+        <div className="h-full flex flex-col gap-4 animate-in fade-in duration-150 overflow-y-auto md:overflow-hidden">
             {/* Controls Header (Fixed) */}
             <div
                 className={`flex-none p-4 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}

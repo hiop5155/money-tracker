@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Edit, Trash2, Loader2, X, CheckCircle2, MinusCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, X, CheckCircle2, MinusCircle, Receipt } from 'lucide-react';
 import MonthSelector from './MonthSelector';
 import { getCalcUrl } from '../../utils/calcUrl';
 
@@ -227,40 +227,58 @@ const CalendarView = ({
                         {/* InsightCard removed: Moved to Header in BudgetApp */}
 
                         {selectedDateExpenses.length === 0 ? (
-                            <p className={`text-center py-4 text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無紀錄</p>
+                            <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                                <div className={`p-3 rounded-full mb-2 ${isDark ? 'bg-slate-700/50 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
+                                    <Receipt className="w-5 h-5" />
+                                </div>
+                                <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>本日尚無收支記錄</p>
+                                <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>點擊右上角 ＋ 記錄一筆</p>
+                            </div>
                         ) : (
                             selectedDateExpenses.map((item) => (
-                                <div key={item.id} className={`flex flex-col p-2.5 rounded-lg group ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex flex-col">
-                                            <span className={`font-medium text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{item.category}</span>
+                                <div key={item.id} className={`flex flex-col p-2.5 rounded-lg transition-colors ${isDark ? 'bg-slate-700/50 hover:bg-slate-700/80' : 'bg-gray-50 hover:bg-gray-100/70'}`}>
+                                    <div className="flex justify-between items-center gap-2">
+                                        {/* Left: Category and Note (min-w-0 prevents flex overflow) */}
+                                        <div className="flex flex-col min-w-0 flex-1 mr-2">
+                                            <span className={`font-medium text-sm truncate ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
+                                                {item.category || '未分類'}
+                                            </span>
                                             {item.note && (
-                                                <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>{item.note}</span>
+                                                <span className={`text-[11px] break-all line-clamp-2 mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
+                                                    {item.note}
+                                                </span>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <span className={`font-bold font-mono text-sm ${item.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
-                                                {item.type === 'income' ? '+' : '-'}${item.amount}
+                                        {/* Right: Amount & Touch-friendly Action Buttons */}
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <span className={`font-bold font-mono text-sm shrink-0 ${item.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                                                {item.type === 'income' ? '+' : '-'}${Number(item.amount || 0).toLocaleString()}
                                             </span>
 
-                                            <div className="flex gap-1">
+                                            <div className="flex items-center gap-0.5">
                                                 <button
                                                     onClick={() => onEditExpense(item)}
                                                     disabled={deletingId === item.id}
-                                                    className="text-gray-400 hover:text-blue-500 p-1"
+                                                    aria-label="編輯項目"
+                                                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors active:scale-[0.95] ${
+                                                        isDark ? 'text-slate-400 hover:text-blue-400 hover:bg-slate-600' : 'text-gray-400 hover:text-blue-600 hover:bg-gray-200'
+                                                    }`}
                                                 >
-                                                    <Edit className="w-3 h-3" />
+                                                    <Edit className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
                                                     onClick={() => onDeleteExpense(item.id)}
                                                     disabled={deletingId === item.id}
-                                                    className="text-gray-400 hover:text-red-500 p-1"
+                                                    aria-label="刪除項目"
+                                                    className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors active:scale-[0.95] ${
+                                                        isDark ? 'text-slate-400 hover:text-red-400 hover:bg-red-500/10' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
+                                                    }`}
                                                 >
                                                     {deletingId === item.id ? (
-                                                        <Loader2 className="w-3 h-3 animate-spin text-red-500" />
+                                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-red-500" />
                                                     ) : (
-                                                        <Trash2 className="w-3 h-3" />
+                                                        <Trash2 className="w-3.5 h-3.5" />
                                                     )}
                                                 </button>
                                             </div>

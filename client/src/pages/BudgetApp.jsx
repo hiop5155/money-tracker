@@ -137,20 +137,20 @@ const BudgetApp = ({ token, onLogout, username }) => {
             <LoadingOverlay isVisible={data.isApiLoading} />
             {/* Main App Container - Full Height, No Global Scroll */}
             <div
-                className={`flex flex-col h-screen fixed inset-0 font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
+                className={`flex flex-col fixed inset-0 w-full h-full font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
             >
                 {/* 1. Header (Fixed Top) */}
                 <header
                     className={`flex-none shadow-sm p-4 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
                 >
-                    <div className="max-w-4xl mx-auto flex justify-between items-center gap-4">
+                    <div className="max-w-4xl mx-auto flex justify-between items-center gap-2 w-full min-w-0">
                         {ENABLE_INSIGHTS && currentInsight && isInsightVisible ? (
                             <div
-                                className={`flex-1 flex items-center justify-between p-2 rounded-lg border animate-in slide-in-from-top-2 fade-in duration-300 ${insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
+                                className={`flex-1 min-w-0 flex items-center justify-between p-2 rounded-lg border animate-in slide-in-from-top-2 fade-in duration-300 ${insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
                                     } ${insightStyles[currentInsight.type]?.border || insightStyles.warning.border} ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text
                                     }`}
                             >
-                                <div className="flex items-center gap-2 overflow-hidden">
+                                <div className="flex items-center gap-2 overflow-hidden min-w-0">
                                     {React.createElement(insightStyles[currentInsight.type]?.icon || AlertTriangle, { className: 'w-4 h-4 shrink-0' })}
                                     <span className="text-sm font-bold truncate">
                                         {currentInsight.message}
@@ -165,13 +165,15 @@ const BudgetApp = ({ token, onLogout, username }) => {
                                 </button>
                             </div>
                         ) : (
-                            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 shrink-0">
-                                <Wallet className="w-6 h-6" /> 記帳 ({username})
+                            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 min-w-0 flex-1 mr-2">
+                                <Wallet className="w-6 h-6 shrink-0" />
+                                <span className="truncate">記帳 ({username})</span>
                             </h1>
                         )}
                         <button
                             onClick={() => setIsDarkMode(!isDarkMode)}
-                            className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-slate-700 text-yellow-400' : 'bg-gray-100 text-slate-600'}`}
+                            className={`p-2 rounded-full transition-colors shrink-0 ${isDarkMode ? 'bg-slate-700 text-yellow-400' : 'bg-gray-100 text-slate-600'}`}
+                            title={isDarkMode ? '切換至淺色模式' : '切換至深色模式'}
                         >
                             {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
@@ -261,9 +263,18 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
                 {/* 3. Bottom Navigation Bar (Fixed Bottom) */}
                 <nav
-                    className={`flex-none fixed bottom-0 w-full h-[72px] pb-[safe-area-inset-bottom] border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}
+                    className={`flex-none fixed bottom-0 left-0 right-0 w-full border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}
+                    style={{
+                        paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))',
+                        height: 'calc(64px + max(0.5rem, env(safe-area-inset-bottom, 0px)))'
+                    }}
                 >
-                    <div className="max-w-4xl mx-auto h-full flex justify-around items-center px-2">
+                    {/* Downward background bleed: physically covers any letterbox gap below nav */}
+                    <div
+                        className={`absolute top-full left-0 right-0 h-48 pointer-events-none ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+                        aria-hidden="true"
+                    />
+                    <div className="max-w-4xl mx-auto h-full flex justify-around items-center px-2 relative z-10">
                         {[
                             { id: 'calendar', icon: Calendar, label: '記帳' },
                             { id: 'stats', icon: PieIcon, label: '統計' },
