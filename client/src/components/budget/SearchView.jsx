@@ -71,7 +71,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
     const totalAmount = filteredExpenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-fade-in overflow-y-auto md:overflow-hidden">
+        <div className="w-full flex flex-col gap-4 animate-fade-in md:h-full md:overflow-hidden">
             {/* Fixed Search Control Panel */}
             <div className={`flex-none p-4 rounded-lg shadow-sm transition-colors shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
@@ -124,8 +124,8 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                     </div>
 
                     {/* 3. Amount Range (Min - Max) */}
-                    <div className="flex gap-2 min-w-0">
-                        <div className="flex-1 min-w-0">
+                    <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+                        <div className="min-w-0">
                             <label className="text-xs text-gray-500 mb-1 block">金額下限</label>
                             <input
                                 type="number"
@@ -136,7 +136,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                                     }`}
                             />
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0">
                             <label className="text-xs text-gray-500 mb-1 block">金額上限</label>
                             <input
                                 type="number"
@@ -150,24 +150,26 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                     </div>
 
                     {/* 4. Date Range */}
-                    <div className="flex gap-2 min-w-0">
-                        <div className="flex-1 min-w-0">
+                    <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+                        <div className="min-w-0">
                             <label className="text-xs text-gray-500 mb-1 block">開始日期</label>
                             <input
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className={`w-full h-10 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                style={{ WebkitAppearance: 'none', appearance: 'none', minHeight: '40px', maxWidth: '100%', minWidth: '0' }}
+                                className={`w-full block min-w-0 max-w-full h-10 px-2 sm:px-3 py-2 rounded-lg border text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
                                     }`}
                             />
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0">
                             <label className="text-xs text-gray-500 mb-1 block">結束日期</label>
                             <input
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className={`w-full h-10 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
+                                style={{ WebkitAppearance: 'none', appearance: 'none', minHeight: '40px', maxWidth: '100%', minWidth: '0' }}
+                                className={`w-full block min-w-0 max-w-full h-10 px-2 sm:px-3 py-2 rounded-lg border text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
                                     }`}
                             />
                         </div>

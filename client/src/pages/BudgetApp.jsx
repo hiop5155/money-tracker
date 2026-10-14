@@ -18,7 +18,7 @@ import TrendView from '../components/budget/TrendView.jsx';
 import ExpenseModal from '../components/budget/ExpenseModal';
 import RecurringModal from '../components/budget/RecurringModal';
 
-const BudgetApp = ({ token, onLogout, username }) => {
+const BudgetApp = ({ token, onLogout, username, avatar }) => {
     const data = useBudgetData(token, onLogout);
 
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
@@ -29,6 +29,20 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
     const [editingRecurring, setEditingRecurring] = useState(null);
+
+    // Format username: remove @domain if present
+    const formatDisplayName = (name) => {
+        if (!name) return '個人';
+        return name.includes('@') ? name.split('@')[0] : name;
+    };
+
+    // Detect standalone PWA mode dynamically
+    useEffect(() => {
+        const isStandalone = window.navigator?.standalone || window.matchMedia?.('(display-mode: standalone)').matches;
+        if (isStandalone) {
+            document.documentElement.classList.add('is-pwa');
+        }
+    }, []);
 
     // Smart Insight State (目前暫時關閉此功能，保留完整程式碼以備後續重構)
     const ENABLE_INSIGHTS = false;
@@ -74,10 +88,12 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
     useEffect(() => {
         if (isDarkMode) {
-            document.documentElement.classList.add('dark');
+            document.documentElement.classList.add('dark', 'dark-mode');
+            document.body.classList.add('dark', 'dark-mode');
             localStorage.setItem('theme', 'dark');
         } else {
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.remove('dark', 'dark-mode');
+            document.body.classList.remove('dark', 'dark-mode');
             localStorage.setItem('theme', 'light');
         }
     }, [isDarkMode]);
@@ -135,13 +151,13 @@ const BudgetApp = ({ token, onLogout, username }) => {
     return (
         <>
             <LoadingOverlay isVisible={data.isApiLoading} />
-            {/* Main App Container - Full Height, No Global Scroll */}
+            {/* Main App Container - Dynamic Viewport Height Edge-to-Edge */}
             <div
-                className={`flex flex-col fixed inset-0 w-full h-full font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
+                className={`flex flex-col min-h-screen min-h-[100dvh] w-full font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
             >
-                {/* 1. Header (Fixed Top) */}
+                {/* 1. Header (Sticky Top with Notch Safe Area) */}
                 <header
-                    className={`flex-none shadow-sm p-4 z-10 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
+                    className={`sticky top-0 shadow-sm p-4 z-20 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
                 >
                     <div className="max-w-4xl mx-auto flex justify-between items-center gap-2 w-full min-w-0">
                         {ENABLE_INSIGHTS && currentInsight && isInsightVisible ? (
@@ -165,24 +181,46 @@ const BudgetApp = ({ token, onLogout, username }) => {
                                 </button>
                             </div>
                         ) : (
-                            <h1 className="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 min-w-0 flex-1 mr-2">
-                                <Wallet className="w-6 h-6 shrink-0" />
-                                <span className="truncate">記帳 ({username})</span>
-                            </h1>
+                            <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+                                {avatar ? (
+                                    <img
+                                        src={avatar}
+                                        alt="用戶頭像"
+                                        className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10"
+                                        referrerPolicy="no-referrer"
+                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                    />
+                                ) : (
+                                    <div className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-500/20 shadow-sm">
+                                        <Wallet className="w-5 h-5" />
+                                    </div>
+                                )}
+                                <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 min-w-0 flex-1">
+                                    <span className="shrink-0 text-blue-600 dark:text-blue-400">記帳</span>
+                                    <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate flex-1 min-w-0" title={username}>
+                                        ({formatDisplayName(username)})
+                                    </span>
+                                </h1>
+                            </div>
                         )}
                         <button
                             onClick={() => setIsDarkMode(!isDarkMode)}
-                            className={`p-2 rounded-full transition-colors shrink-0 ${isDarkMode ? 'bg-slate-700 text-yellow-400' : 'bg-gray-100 text-slate-600'}`}
+                            className={`w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 shadow-sm border ${
+                                isDarkMode
+                                    ? 'bg-slate-700/80 hover:bg-slate-700 text-yellow-400 border-slate-600'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                            }`}
+                            aria-label={isDarkMode ? '切換至淺色模式' : '切換至深色模式'}
                             title={isDarkMode ? '切換至淺色模式' : '切換至深色模式'}
                         >
-                            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
                     </div>
                 </header>
 
-                {/* 2. Main Content Area (View-controlled Scroll) */}
-                <main className="flex-1 overflow-hidden relative max-w-4xl mx-auto w-full">
-                    <div className="absolute inset-0 p-4 pb-24 md:pb-4 w-full h-full">
+                {/* 2. Main Content Area (Natural Fluid Scroll) */}
+                <main className="flex-1 w-full max-w-4xl mx-auto p-4 pb-28 md:pb-8">
+                    <div className="w-full">
                         {/* View Rendering */}
                         {currentView === 'calendar' && (
                             <CalendarView
@@ -263,18 +301,18 @@ const BudgetApp = ({ token, onLogout, username }) => {
 
                 {/* 3. Bottom Navigation Bar (Fixed Bottom) */}
                 <nav
-                    className={`flex-none fixed bottom-0 left-0 right-0 w-full border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}
+                    className={`fixed bottom-0 left-0 right-0 w-full border-t z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200 shadow-upper'}`}
                     style={{
-                        paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0px))',
-                        height: 'calc(64px + max(0.5rem, env(safe-area-inset-bottom, 0px)))'
+                        paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 34px))',
+                        transform: 'translateZ(0)'
                     }}
                 >
                     {/* Downward background bleed: physically covers any letterbox gap below nav */}
                     <div
-                        className={`absolute top-full left-0 right-0 h-48 pointer-events-none ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
+                        className={`absolute top-full left-0 right-0 h-64 pointer-events-none ${isDarkMode ? 'bg-slate-800' : 'bg-white'}`}
                         aria-hidden="true"
                     />
-                    <div className="max-w-4xl mx-auto h-full flex justify-around items-center px-2 relative z-10">
+                    <div className="max-w-4xl mx-auto h-14 flex justify-around items-center px-2 relative z-10">
                         {[
                             { id: 'calendar', icon: Calendar, label: '記帳' },
                             { id: 'stats', icon: PieIcon, label: '統計' },

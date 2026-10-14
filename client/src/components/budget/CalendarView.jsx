@@ -137,7 +137,7 @@ const CalendarView = ({
 
     return (
         <>
-        <div className="flex flex-col h-full gap-2 overflow-y-auto md:grid md:grid-cols-[1fr_320px] md:gap-6 md:overflow-hidden">
+        <div className="flex flex-col gap-2 md:h-full md:grid md:grid-cols-[1fr_320px] md:gap-6 md:overflow-hidden">
             {/* Left/Top: Calendar Grid */}
             <div className={`flex flex-col shrink-0 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <MonthSelector

@@ -106,7 +106,7 @@ const SettingsView = ({
     const currentCatObj = localBudgets.categoryLimits.find((l) => l.name === selectedCategory) || { monthly: '', yearly: '' };
 
     return (
-        <div className="h-full overflow-y-auto custom-scrollbar pb-32 max-w-4xl mx-auto space-y-4 px-1 pt-2 animate-in fade-in duration-150">
+        <div className="w-full max-w-4xl mx-auto space-y-4 px-1 pt-2 pb-32 animate-in fade-in duration-150">
             {/* Auto-saved Floating Toast */}
             {showSavedToast && (
                 <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-in fade-in slide-in-from-top-2 duration-200">

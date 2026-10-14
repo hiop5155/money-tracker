@@ -351,7 +351,7 @@ const StatsView = ({
     }, [budgets, monthlyExpenses]);
 
     return (
-        <div className="h-full flex flex-col gap-4 animate-in fade-in duration-150 overflow-y-auto md:overflow-hidden">
+        <div className="w-full flex flex-col gap-4 animate-in fade-in duration-150 md:h-full md:overflow-hidden">
             {/* Fixed Header Section */}
             <div className="flex-none flex flex-col gap-4 shrink-0">
                 <MonthSelector

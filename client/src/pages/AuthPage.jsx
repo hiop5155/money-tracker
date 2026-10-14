@@ -34,7 +34,7 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Google 登入失敗');
 
-            onLogin(data.token, data.email || data.name);
+            onLogin(data.token, data.name || data.email, data.avatar || '');
             navigate('/');
         } catch (err) {
             setError(err.message);
@@ -50,7 +50,7 @@ function AuthPage({ onLogin, isDarkMode, toggleTheme }) {
     return (
         <>
             <LoadingOverlay isVisible={isLoading} />
-            <div className="min-h-screen flex flex-col justify-between" style={{ backgroundColor: 'var(--bg-body)', color: 'var(--text-main)' }}>
+            <div className="w-full min-h-screen min-h-[100dvh] flex flex-col justify-between" style={{ backgroundColor: 'var(--bg-body)', color: 'var(--text-main)' }}>
                 {/* Top Navigation */}
                 <header className="w-full border-b px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm"
                     style={{ borderColor: isDarkMode ? '#2d3748' : '#e2e8f0', backgroundColor: isDarkMode ? '#18191a' : '#ffffff' }}>

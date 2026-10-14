@@ -25,19 +25,26 @@ function App() {
         if (shared.user) return shared.user.name || shared.user.email;
         return localStorage.getItem('username');
     });
+    const [avatar, setAvatar] = useState(() => {
+        const shared = getSharedAuth();
+        if (shared.user?.avatar) return shared.user.avatar;
+        return localStorage.getItem('avatar') || '';
+    });
 
     // Initialize Dark Mode
     const [isDarkMode, setIsDarkMode] = useState(() => {
         return localStorage.getItem('theme') === 'dark';
     });
 
-    // Apply dark mode class to body
+    // Apply dark mode class to html and body
     useEffect(() => {
         if (isDarkMode) {
-            document.body.classList.add('dark-mode');
+            document.documentElement.classList.add('dark', 'dark-mode');
+            document.body.classList.add('dark', 'dark-mode');
             localStorage.setItem('theme', 'dark');
         } else {
-            document.body.classList.remove('dark-mode');
+            document.documentElement.classList.remove('dark', 'dark-mode');
+            document.body.classList.remove('dark', 'dark-mode');
             localStorage.setItem('theme', 'light');
         }
     }, [isDarkMode]);
@@ -48,16 +55,18 @@ function App() {
     // Synchronize SSO cookie when logged in
     useEffect(() => {
         if (token && username) {
-            setSharedAuth(token, { name: username, email: username });
+            setSharedAuth(token, { name: username, email: username, avatar });
         }
-    }, [token, username]);
+    }, [token, username, avatar]);
 
-    const handleLogin = (newToken, newUsername) => {
+    const handleLogin = (newToken, newUsername, newAvatar) => {
         localStorage.setItem('token', newToken);
         localStorage.setItem('username', newUsername);
-        setSharedAuth(newToken, { name: newUsername, email: newUsername });
+        if (newAvatar) localStorage.setItem('avatar', newAvatar);
+        setSharedAuth(newToken, { name: newUsername, email: newUsername, avatar: newAvatar });
         setToken(newToken);
         setUsername(newUsername);
+        if (newAvatar) setAvatar(newAvatar);
     };
 
     const handleLogout = () => {
@@ -99,6 +108,7 @@ function App() {
                             <BudgetApp
                                 token={token}
                                 username={username}
+                                avatar={avatar}
                                 onLogout={handleLogout}
                                 isDarkMode={isDarkMode} // Let BudgetApp know the state
                                 toggleTheme={toggleTheme} // Let BudgetApp toggle as well
