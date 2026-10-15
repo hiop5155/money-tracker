@@ -4,13 +4,25 @@ const auth = require('../middleware/auth');
 const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Budget = require('../models/Budget');
+const User = require('../models/User');
 
 // Get All Data
 router.get('/data', auth, async (req, res) => {
     try {
         const userId = req.user.id;
-        const expenses = await Expense.find({ userId }).sort({ date: -1 });
-        const categories = await Category.find({ userId });
+        const userEmail = req.user.email;
+        let [expenses, categories, user] = await Promise.all([
+            Expense.find({ userId }).sort({ date: -1 }),
+            Category.find({ userId }),
+            User.findById(userId).catch(() => null),
+        ]);
+        if (!user && userEmail) {
+            user = await User.findOne({ email: userEmail.toLowerCase().trim() });
+        }
+        if (user) {
+            const { syncUserProStatus } = require('../utils/planHelper');
+            user = await syncUserProStatus(user);
+        }
         let budget = await Budget.findOne({ userId });
 
         // Initialize default categories
@@ -29,6 +41,8 @@ router.get('/data', auth, async (req, res) => {
             expenses: expenses.map((e) => ({ id: e._id, ...e._doc })),
             categories: categoryList,
             budget,
+            userPlan: user?.plan_type || 'free',
+            planExpiresAt: user?.plan_expires_at || null,
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

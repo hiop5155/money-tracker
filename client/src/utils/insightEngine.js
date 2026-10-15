@@ -8,7 +8,7 @@
  * 3. Month-over-Month Comparison
  */
 
-export const generateInsights = (expenses = [], budgets = {}, categories = []) => {
+export const generateInsights = (expenses = [], budgets = {}, categories = [], t = null) => {
     const insights = [];
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -27,8 +27,9 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
     const currentMonthExpenses = getMonthExpenses(currentYear, currentMonth);
     const lastMonthExpenses = getMonthExpenses(currentYear, currentMonth - 1 < 0 ? 11 : currentMonth - 1);
 
+    const uncategorizedLabel = t ? t('common.uncategorized') : '未分類';
     const isBudgeted = (e) => {
-        const catName = e.category ? e.category.trim() : '未分類';
+        const catName = e.category ? e.category.trim() : uncategorizedLabel;
         return budgets?.categoryLimits?.some((l) => l.name === catName && l.monthly > 0);
     };
 
@@ -45,10 +46,14 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
         // If spending speed is significantly faster than time passed
         // e.g., Day 10 (33%) but spent 60% budget
         if (progress > monthProgress + 0.2 && progress < 1.0) {
+            const timePercent = Math.round(monthProgress * 100);
+            const budgetPercent = Math.round(progress * 100);
             insights.push({
                 type: 'warning',
-                title: '預算消耗過快',
-                message: `目前才過 ${Math.round(monthProgress * 100)}% 的時間，但您已使用了 ${Math.round(progress * 100)}% 的預算。`,
+                title: t ? t('insights.fastBurnTitle') : '預算消耗過快',
+                message: t
+                    ? t('insights.fastBurnDesc', { timePercent, budgetPercent })
+                    : `目前才過 ${timePercent}% 的時間，但您已使用了 ${budgetPercent}% 的預算。`,
                 priority: 5,
             });
         }
@@ -56,8 +61,10 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
         if (progress >= 1.0) {
             insights.push({
                 type: 'danger',
-                title: '預算超支警報',
-                message: `本月支出 $${currentTotal.toLocaleString()} 已超過預算 $${monthlyBudget.toLocaleString()}！`,
+                title: t ? t('insights.overBudgetTitle') : '預算超支警報',
+                message: t
+                    ? t('insights.overBudgetDesc', { current: currentTotal.toLocaleString(), budget: monthlyBudget.toLocaleString() })
+                    : `本月支出 $${currentTotal.toLocaleString()} 已超過預算 $${monthlyBudget.toLocaleString()}！`,
                 priority: 10,
             });
         }
@@ -97,8 +104,10 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
                 const percent = Math.round(((currentCatTotal - mean) / mean) * 100);
                 insights.push({
                     type: 'warning',
-                    title: `「${cat}」支出異常`,
-                    message: `本月已花費 $${currentCatTotal.toLocaleString()}，比過去半年平均高出 ${percent}%。`,
+                    title: t ? t('insights.anomalyTitle', { category: cat }) : `「${cat}」支出異常`,
+                    message: t
+                        ? t('insights.anomalyDesc', { amount: currentCatTotal.toLocaleString(), percent })
+                        : `本月已花費 $${currentCatTotal.toLocaleString()}，比過去半年平均高出 ${percent}%。`,
                     priority: 8,
                 });
             }
@@ -111,10 +120,13 @@ export const generateInsights = (expenses = [], budgets = {}, categories = []) =
         // Compare same timeframe if possible, or simplified total comparison
         // Here we do simple total check if last month exists
         if (lastMonthTotal > 0 && currentTotal < lastMonthTotal * 0.8) {
+            const percent = Math.round((1 - currentTotal / lastMonthTotal) * 100);
             insights.push({
                 type: 'success',
-                title: '支出控制良好',
-                message: `本月目前支出比上個月少了 ${Math.round((1 - currentTotal / lastMonthTotal) * 100)}%，繼續保持！`,
+                title: t ? t('insights.wellControlledTitle') : '支出控制良好',
+                message: t
+                    ? t('insights.wellControlledDesc', { percent })
+                    : `本月目前支出比上個月少了 ${percent}%，繼續保持！`,
                 priority: 3,
             });
         }

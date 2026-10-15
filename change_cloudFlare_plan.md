@@ -37,18 +37,22 @@
 針對上述資料結構進行 SQLite 最佳化，保持與現有前端資料相容：
 
 ```sql
--- 1. 使用者表 (支援舊用戶與 Google OAuth 自動綁定)
+-- 1. 使用者表 (支援舊用戶與 Google OAuth 自動綁定及 Pro 會員方案)
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,                   -- 保持原 MongoDB _id (Hex 字串)
     google_id TEXT UNIQUE,                 -- Google Sub ID (首次 Google 登入時填入)
     email TEXT UNIQUE NOT NULL,            -- Email (唯一識別)
     name TEXT DEFAULT '',                  -- 使用者姓名
     avatar_url TEXT DEFAULT '',            -- Google 頭像網址
+    plan_type TEXT DEFAULT 'free',         -- 會員方案: free, pro_monthly, pro_yearly, pro_lifetime
+    plan_expires_at DATETIME NULL,         -- Pro 到期時間
+    helio_customer_id TEXT NULL,           -- Helio 客戶/錢包識別碼
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+CREATE INDEX IF NOT EXISTS idx_users_plan ON users(plan_type);
 
 -- 2. 分類表
 CREATE TABLE IF NOT EXISTS categories (
@@ -104,6 +108,22 @@ CREATE TABLE IF NOT EXISTS recurring_expenses (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_recurring_user ON recurring_expenses(user_id);
+
+-- 6. 訂單與金流交易記錄表 (Helio Webhook / 方案付款)
+CREATE TABLE IF NOT EXISTS orders (
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
+    order_type TEXT,
+    amount REAL,
+    currency TEXT DEFAULT 'USDT',
+    status TEXT DEFAULT 'completed',
+    helio_transaction_id TEXT,
+    customer_email TEXT,
+    customer_wallet TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
 ```
 
 ---

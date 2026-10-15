@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Lightbulb, AlertTriangle, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { generateInsights } from '../../utils/insightEngine';
+import { useTranslation } from '../../i18n';
 
 const InsightCard = ({ expenses, budgets, categories, isDark }) => {
+    const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(true);
     const [topInsight, setTopInsight] = useState(null);
 
     useEffect(() => {
         // Run analysis when data changes
         if (expenses && expenses.length > 0) {
-            const results = generateInsights(expenses, budgets, categories);
+            const results = generateInsights(expenses, budgets, categories, t);
             if (results.length > 0) {
                 setTopInsight(results[0]); // Show highest priority only
                 setIsVisible(true);
@@ -17,7 +19,7 @@ const InsightCard = ({ expenses, budgets, categories, isDark }) => {
                 setTopInsight(null);
             }
         }
-    }, [expenses, budgets, categories]);
+    }, [expenses, budgets, categories, t]);
 
     if (!topInsight || !isVisible) return null;
 

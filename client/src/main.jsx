@@ -5,12 +5,16 @@ import './index.css';
 import './App.css';
 import App from './App.jsx';
 
+import { I18nProvider } from './i18n/index.jsx';
+
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <GoogleOAuthProvider clientId={clientId}>
-            <App />
-        </GoogleOAuthProvider>
+        <I18nProvider>
+            <GoogleOAuthProvider clientId={clientId}>
+                <App />
+            </GoogleOAuthProvider>
+        </I18nProvider>
     </StrictMode>
 );

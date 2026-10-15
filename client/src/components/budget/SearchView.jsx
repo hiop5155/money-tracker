@@ -2,7 +2,19 @@ import React, { useState, useMemo } from 'react';
 import { Search, Filter, X, Tag, Pencil } from 'lucide-react';
 import { getCalcUrl } from '../../utils/calcUrl';
 
-const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
+import { usePlan } from '../../context/PlanContext';
+import { useTranslation } from '../../i18n';
+
+const SearchView = ({
+    isDark,
+    expenses,
+    categories,
+    onEditExpense,
+}) => {
+    const { t, formatCurrency } = useTranslation();
+    // 方案權限直接由金流模組取得
+    const { isPro, userPlan, openUpgradeModal } = usePlan();
+
     // --- Search Condition State ---
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -76,13 +88,13 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
             <div className={`flex-none p-4 rounded-lg shadow-sm transition-colors shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="flex justify-between items-center mb-4">
                     <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                        <Search className="w-5 h-5" /> 搜尋
+                        <Search className="w-5 h-5" /> {t('search.title')}
                     </h3>
                     <button
                         onClick={handleClearFilters}
                         className="text-sm text-blue-500 hover:text-blue-600 hover:underline flex items-center gap-1"
                     >
-                        <X className="w-3 h-3" /> 清除條件
+                        <X className="w-3 h-3" /> {t('search.clearFilters')}
                     </button>
                 </div>
 
@@ -93,7 +105,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                             <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="搜尋備註(例如：牛肉)..."
+                                placeholder={t('search.placeholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
@@ -104,7 +116,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
 
                     {/* 2. Category */}
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">分類</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('search.category')}</label>
                         <div className="relative">
                             <Tag className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                             <select
@@ -113,7 +125,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                                 className={`w-full pl-9 pr-4 py-2 rounded border focus:ring-2 focus:ring-blue-500 outline-none appearance-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-gray-300'
                                     }`}
                             >
-                                <option value="">所有分類</option>
+                                <option value="">{t('search.allCategories')}</option>
                                 {categories.map((cat) => (
                                     <option key={cat} value={cat}>
                                         {cat}
@@ -126,10 +138,10 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                     {/* 3. Amount Range (Min - Max) */}
                     <div className="grid grid-cols-2 gap-2 w-full min-w-0">
                         <div className="min-w-0">
-                            <label className="text-xs text-gray-500 mb-1 block">金額下限</label>
+                            <label className="text-xs text-gray-500 mb-1 block">{t('search.minAmount')}</label>
                             <input
                                 type="number"
-                                placeholder="最小值"
+                                placeholder={t('search.minPlaceholder')}
                                 value={minAmount}
                                 onChange={(e) => setMinAmount(e.target.value)}
                                 className={`w-full h-10 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-white border-gray-300'
@@ -137,10 +149,10 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                             />
                         </div>
                         <div className="min-w-0">
-                            <label className="text-xs text-gray-500 mb-1 block">金額上限</label>
+                            <label className="text-xs text-gray-500 mb-1 block">{t('search.maxAmount')}</label>
                             <input
                                 type="number"
-                                placeholder="最大值"
+                                placeholder={t('search.maxPlaceholder')}
                                 value={maxAmount}
                                 onChange={(e) => setMaxAmount(e.target.value)}
                                 className={`w-full h-10 px-3 py-2 rounded-lg border text-sm focus:ring-2 focus:ring-blue-500 outline-none box-border ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder-slate-400' : 'bg-white border-gray-300'
@@ -152,7 +164,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                     {/* 4. Date Range */}
                     <div className="grid grid-cols-2 gap-2 w-full min-w-0">
                         <div className="min-w-0">
-                            <label className="text-xs text-gray-500 mb-1 block">開始日期</label>
+                            <label className="text-xs text-gray-500 mb-1 block">{t('search.startDate')}</label>
                             <input
                                 type="date"
                                 value={startDate}
@@ -163,7 +175,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                             />
                         </div>
                         <div className="min-w-0">
-                            <label className="text-xs text-gray-500 mb-1 block">結束日期</label>
+                            <label className="text-xs text-gray-500 mb-1 block">{t('search.endDate')}</label>
                             <input
                                 type="date"
                                 value={endDate}
@@ -182,8 +194,8 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                 className={`p-4 pb-32 rounded-lg shadow-sm transition-colors shrink-0 custom-scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto ${isDark ? 'bg-slate-800' : 'bg-white'}`}
             >
                 <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200 dark:border-slate-700 shrink-0 sticky top-0 bg-inherit z-10">
-                    <h4 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>結果 ({filteredExpenses.length})</h4>
-                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">總計: ${totalAmount.toLocaleString()}</span>
+                    <h4 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>{t('search.resultsCount', { count: filteredExpenses.length })}</h4>
+                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{t('search.totalAmount', { amount: totalAmount.toLocaleString() })}</span>
                 </div>
 
                 {filteredExpenses.length > 0 ? (
@@ -191,10 +203,10 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                    <th className="p-2">日期</th>
-                                    <th className="p-2">分類</th>
-                                    <th className="p-2">備註</th>
-                                    <th className="p-2 text-right">金額</th>
+                                    <th className="p-2">{t('search.colDate')}</th>
+                                    <th className="p-2">{t('search.colCategory')}</th>
+                                    <th className="p-2">{t('search.colNote')}</th>
+                                    <th className="p-2 text-right">{t('search.colAmount')}</th>
                                     {onEditExpense && <th className="p-2 w-8"></th>}
                                 </tr>
                             </thead>
@@ -212,10 +224,10 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                                             <span
                                                 className={`px-2 py-0.5 rounded text-xs ${isDark ? 'bg-slate-600 text-slate-200' : 'bg-gray-100 text-gray-600'}`}
                                             >
-                                                {item.category}
+                                                {item.category || t('common.uncategorized')}
                                             </span>
                                         </td>
-                                        <td className={`p-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{item.note}</td>
+                                        <td className={`p-2 text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{item.note || ''}</td>
                                         <td
                                             className={`p-2 text-right font-mono font-medium ${item.type === 'income' ? 'text-green-500' : 'text-red-500'
                                                 }`}
@@ -236,7 +248,7 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
                 ) : (
                     <div className="text-center py-10 text-gray-400">
                         <Filter className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                        <p>No matching records found</p>
+                        <p>{t('search.noResults')}</p>
                     </div>
                 )}
 
@@ -246,20 +258,20 @@ const SearchView = ({ isDark, expenses, categories, onEditExpense }) => {
             <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        記帳助手 App
+                        {t('footer.appName')}
                     </a>
                     <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        資產計算器
+                        {t('footer.calcTool')}
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        理財知識庫
+                        {t('footer.knowledge')}
                     </a>
                     <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        隱私權政策
+                        {t('footer.privacy')}
                     </a>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                    &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </div>
             </footer>
         </div>

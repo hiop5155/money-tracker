@@ -214,6 +214,110 @@ components:
                     description: Timestamp of data retrieval
                     example: '2026-01-29T08:00:00.000Z'
 
+        StandardSuccessResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: true
+                code:
+                    type: string
+                    description: Machine-readable response code for internationalization (i18n)
+                    example: 'SUCCESS'
+                message:
+                    type: string
+                    description: Human-readable status message (debug/fallback)
+                    example: 'Operation completed successfully'
+
+        StandardErrorResponse:
+            type: object
+            properties:
+                error:
+                    type: string
+                    description: Error description
+                    example: 'Validation error'
+                code:
+                    type: string
+                    description: Machine-readable error code for internationalization (i18n)
+                    example: 'VALIDATION_ERROR'
+
+        PaymentStatusResponse:
+            type: object
+            properties:
+                isPro:
+                    type: boolean
+                    example: true
+                planType:
+                    type: string
+                    enum: ['free', 'pro_monthly', 'pro_yearly', 'pro_lifetime']
+                    example: 'pro_monthly'
+                planExpiresAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: '2026-11-15T00:00:00.000Z'
+                userId:
+                    type: string
+                    example: '6ad023ee06f8d1f52655c87f'
+                email:
+                    type: string
+                    example: 'user@example.com'
+                code:
+                    type: string
+                    description: Status code for i18n
+                    example: 'PAYMENT_STATUS_SUCCESS'
+
+        SubscriptionCancelResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: true
+                isPro:
+                    type: boolean
+                    example: false
+                planType:
+                    type: string
+                    example: 'free'
+                planExpiresAt:
+                    type: string
+                    nullable: true
+                    example: null
+                helioCancelled:
+                    type: boolean
+                    example: true
+                code:
+                    type: string
+                    description: Machine-readable code for i18n
+                    example: 'SUBSCRIPTION_CANCELLED'
+                message:
+                    type: string
+                    example: 'Subscription cancelled successfully'
+
+        Order:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: string
+                orderType:
+                    type: string
+                    example: 'pro_monthly'
+                amount:
+                    type: number
+                    example: 60
+                currency:
+                    type: string
+                    example: 'USDT'
+                status:
+                    type: string
+                    example: 'completed'
+                helioTransactionId:
+                    type: string
+                customerEmail:
+                    type: string
+
 # --- API Paths ---
 paths:
     # ===========================
@@ -232,8 +336,16 @@ paths:
             responses:
                 '200':
                     description: Registration successful, verification email sent
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
                 '400':
                     description: Email already exists or format error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/verify:
         post:
@@ -248,8 +360,16 @@ paths:
             responses:
                 '200':
                     description: Verification successful
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
                 '400':
                     description: Verification code incorrect
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/login:
         post:
@@ -274,8 +394,21 @@ paths:
                                         description: JWT Token
                                     email:
                                         type: string
+                                    code:
+                                        type: string
+                                        example: 'LOGIN_SUCCESS'
+                '400':
+                    description: Invalid credentials
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
                 '403':
                     description: Account not verified
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/forgot-password:
         post:
@@ -290,6 +423,28 @@ paths:
             responses:
                 '200':
                     description: OTP sent to Email
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
+                '400':
+                    description: Request error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+                '404':
+                    description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+                '429':
+                    description: Rate limited
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/verify-reset-otp:
         post:
@@ -305,8 +460,16 @@ paths:
             responses:
                 '200':
                     description: Verification code correct
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
                 '400':
                     description: Verification code incorrect or expired
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/reset-password:
         post:
@@ -321,6 +484,16 @@ paths:
             responses:
                 '200':
                     description: Password reset successful
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
+                '400':
+                    description: Verification code invalid or expired
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     /api/auth/delete:
         put:
@@ -332,8 +505,16 @@ paths:
             responses:
                 '200':
                     description: Account deleted successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardSuccessResponse'
                 '404':
                     description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     # ===========================
     # Data Endpoints (Protected)
@@ -471,11 +652,24 @@ paths:
                                     count:
                                         type: number
                                         example: 15
+                                    code:
+                                        type: string
+                                        example: 'CSV_IMPORT_SUCCESS'
                                     message:
                                         type: string
                                         example: '成功匯入 15 筆資料'
                 '400':
                     description: No file uploaded or invalid format
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+                '403':
+                    description: Pro plan required for CSV import
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
 
     # ===========================
     # Recurring Expenses Endpoints
@@ -713,3 +907,150 @@ paths:
                                     message:
                                         type: string
                                         example: 'Network timeout'
+
+    # ===========================
+    # Payment & Membership Endpoints
+    # ===========================
+    /api/payment/status:
+        get:
+            summary: Get current user membership and Pro plan status
+            tags: [Payment]
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: Membership status retrieved
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PaymentStatusResponse'
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+
+    /api/payment/cancel:
+        post:
+            summary: Cancel active subscription, stop recurring billing and reset to free plan
+            tags: [Payment]
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: Subscription cancelled successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SubscriptionCancelResponse'
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+                '404':
+                    description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+
+    /api/payment/simulate:
+        post:
+            summary: Development only - Simulate upgrading/switching plan
+            tags: [Payment]
+            security:
+                - bearerAuth: []
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                planType:
+                                    type: string
+                                    enum: ['free', 'pro_monthly', 'pro_yearly', 'pro_lifetime']
+                                    example: 'pro_monthly'
+            responses:
+                '200':
+                    description: Simulated plan updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    isPro:
+                                        type: boolean
+                                        example: true
+                                    planType:
+                                        type: string
+                                        example: 'pro_monthly'
+                                    code:
+                                        type: string
+                                        example: 'PLAN_SIMULATED'
+                                    message:
+                                        type: string
+                                        example: 'Simulated plan updated'
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+
+    /api/payment/simulate-upgrade:
+        post:
+            summary: Development only - Legacy alias for /api/payment/simulate
+            tags: [Payment]
+            security:
+                - bearerAuth: []
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                planType:
+                                    type: string
+                                    enum: ['free', 'pro_monthly', 'pro_yearly', 'pro_lifetime']
+                                    example: 'pro_monthly'
+            responses:
+                '200':
+                    description: Simulated plan updated successfully
+
+    /api/payment/webhook:
+        post:
+            summary: Helio Webhook listener for paylink completions and subscription cancellations
+            tags: [Payment]
+            responses:
+                '200':
+                    description: Webhook processed successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    code:
+                                        type: string
+                                        example: 'WEBHOOK_PROCESSED'
+                '401':
+                    description: Invalid webhook signature
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StandardErrorResponse'
+

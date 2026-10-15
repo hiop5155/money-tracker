@@ -1,7 +1,9 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, isDark }) => {
+    const { t } = useTranslation();
     const dateObj = currentDate instanceof Date ? currentDate : new Date();
     const currentYear = dateObj.getFullYear();
     const currentMonth = dateObj.getMonth() + 1;
@@ -35,7 +37,12 @@ const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, is
         <div
             className={`p-4 border-b flex justify-between items-center ${isDark ? 'bg-slate-700/50 border-slate-700' : 'bg-gray-50 border-gray-100'}`}
         >
-            <button onClick={onPrevMonth} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}>
+            <button
+                onClick={onPrevMonth}
+                aria-label={t('monthSelector.prevMonth')}
+                title={t('monthSelector.prevMonth')}
+                className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}
+            >
                 <ChevronLeft className="w-5 h-5" />
             </button>
 
@@ -43,7 +50,7 @@ const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, is
             <div className="relative group cursor-pointer" onClick={handleDivClick}>
                 {/* 顯示文字 */}
                 <h2 className="text-lg font-bold flex items-center justify-center gap-2">
-                    {currentYear}年 {currentMonth}月
+                    {t('monthSelector.yearMonth', { year: currentYear, month: currentMonth })}
                 </h2>
 
                 {/* Hidden input */}
@@ -57,7 +64,12 @@ const MonthSelector = ({ currentDate, onPrevMonth, onNextMonth, onDateChange, is
                 />
             </div>
 
-            <button onClick={onNextMonth} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}>
+            <button
+                onClick={onNextMonth}
+                aria-label={t('monthSelector.nextMonth')}
+                title={t('monthSelector.nextMonth')}
+                className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200'}`}
+            >
                 <ChevronRight className="w-5 h-5" />
             </button>
         </div>

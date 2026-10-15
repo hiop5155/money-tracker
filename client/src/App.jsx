@@ -15,12 +15,35 @@ const ProtectedRoute = ({ token, children }) => {
 };
 
 function App() {
-    // Initialize Token (支援跨子網域 SSO 共用 Cookie)
+    // Initialize Token (僅在本地開發環境支援 URL 測試參數注入，並立即清理網址列)
     const [token, setToken] = useState(() => {
+        if (import.meta.env.DEV && typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const devToken = params.get('token');
+            if (devToken) {
+                localStorage.setItem('token', devToken);
+                params.delete('token');
+                const cleanSearch = params.toString() ? `?${params.toString()}` : '';
+                window.history.replaceState({}, document.title, window.location.pathname + cleanSearch);
+                return devToken;
+            }
+        }
         const shared = getSharedAuth();
         return shared.token || localStorage.getItem('token');
     });
     const [username, setUsername] = useState(() => {
+        if (import.meta.env.DEV && typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const devUser = params.get('username') || params.get('email');
+            if (devUser) {
+                localStorage.setItem('username', devUser);
+                params.delete('username');
+                params.delete('email');
+                const cleanSearch = params.toString() ? `?${params.toString()}` : '';
+                window.history.replaceState({}, document.title, window.location.pathname + cleanSearch);
+                return devUser;
+            }
+        }
         const shared = getSharedAuth();
         if (shared.user) return shared.user.name || shared.user.email;
         return localStorage.getItem('username');

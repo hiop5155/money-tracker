@@ -2,19 +2,32 @@ import React from 'react';
 import { Repeat, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { getCalcUrl } from '../../utils/calcUrl';
 
-const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDeleteRule, deletingId }) => {
+import { usePlan } from '../../context/PlanContext';
+import { useTranslation } from '../../i18n';
+
+const RecurringView = ({
+    isDark,
+    recurringRules,
+    onAddRule,
+    onEditRule,
+    onDeleteRule,
+    deletingId,
+}) => {
+    const { t } = useTranslation();
+    // 方案權限直接由金流模組取得
+    const { isPro, userPlan, openUpgradeModal } = usePlan();
     return (
         <div className="w-full flex flex-col gap-4 animate-in fade-in duration-150 md:h-full md:overflow-hidden">
             {/* Fixed Header */}
             <div className={`flex-none p-4 rounded-xl shadow-sm flex justify-between items-center shrink-0 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <h3 className={`font-bold flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                    <Repeat className="w-5 h-5" /> 固定支出管理
+                    <Repeat className="w-5 h-5" /> {t('recurring.title')}
                 </h3>
                 <button
                     onClick={onAddRule}
                     className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 text-sm flex items-center gap-1"
                 >
-                    <Plus className="w-4 h-4" /> 新增規則
+                    <Plus className="w-4 h-4" /> {t('recurring.addRule')}
                 </button>
             </div>
 
@@ -22,7 +35,7 @@ const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDelete
             <div className={`space-y-3 pb-32 shrink-0 md:min-h-0 md:flex-1 md:overflow-y-auto custom-scrollbar rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                 <div className="space-y-4">
                     {recurringRules.length === 0 ? (
-                        <p className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>目前沒有固定支出設定</p>
+                        <p className={`text-center py-8 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{t('recurring.empty')}</p>
                     ) : (
                         recurringRules.map((rule) => (
                             <div
@@ -36,7 +49,7 @@ const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDelete
                                             <span
                                                 className={`text-xs px-2 py-0.5 rounded-full ${rule.frequency === 'monthly' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'}`}
                                             >
-                                                {rule.frequency === 'monthly' ? '每月' : '每年'}
+                                                {rule.frequency === 'monthly' ? t('recurring.monthly') : t('recurring.yearly')}
                                             </span>
                                         </div>
                                         <p className={`text-sm mb-2 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -68,20 +81,20 @@ const RecurringView = ({ isDark, recurringRules, onAddRule, onEditRule, onDelete
             <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        記帳助手 App
+                        {t('footer.appName')}
                     </a>
                     <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        資產計算器
+                        {t('footer.calcTool')}
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        理財知識庫
+                        {t('footer.knowledge')}
                     </a>
                     <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        隱私權政策
+                        {t('footer.privacy')}
                     </a>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                    &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </div>
             </footer>
         </div>

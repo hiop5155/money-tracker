@@ -20,6 +20,9 @@ const UserSchema = new mongoose.Schema({
     resetPasswordExpires: { type: Date },
     lastVerificationEmailSentAt: { type: Date },
     lastResetPasswordEmailSentAt: { type: Date },
+    plan_type: { type: String, default: 'free' },
+    plan_expires_at: { type: Date, default: null },
+    helio_customer_id: { type: String, default: null },
 });
 
 module.exports = mongoose.model('User', UserSchema);

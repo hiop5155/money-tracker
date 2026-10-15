@@ -3,7 +3,17 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 import { TrendingUp, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getCalcUrl } from '../../utils/calcUrl';
 
-const TrendView = ({ expenses = [], isDark }) => {
+import { usePlan } from '../../context/PlanContext';
+import { useTranslation } from '../../i18n';
+
+const TrendView = ({
+    expenses = [],
+    isDark,
+}) => {
+    const { t, formatCurrency } = useTranslation();
+    // 方案權限直接由金流模組取得 (無須 Props Drilling)
+    const { isPro, userPlan, openUpgradeModal } = usePlan();
+
     // State for Filter
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [period, setPeriod] = useState('ALL'); // 'ALL', 'H1', 'H2'
@@ -121,9 +131,12 @@ const TrendView = ({ expenses = [], isDark }) => {
                         <TrendingUp className="w-6 h-6" />
                     </div>
                     <div>
-                        <h2 className={`font-bold text-lg ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>收支趨勢</h2>
+                        <h2 className={`font-bold text-lg ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>{t('trend.title')}</h2>
                         <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            {selectedYear}年 {period === 'ALL' ? '全年度' : period === 'H1' ? '上半年' : '下半年'}
+                            {t('trend.periodSubtitle', {
+                                year: selectedYear,
+                                period: period === 'ALL' ? t('trend.allYear') : period === 'H1' ? t('trend.h1') : t('trend.h2'),
+                            })}
                         </p>
                     </div>
                 </div>
@@ -133,9 +146,9 @@ const TrendView = ({ expenses = [], isDark }) => {
                     {/* Period Tabs */}
                     <div className={`flex p-1 rounded-lg w-full sm:w-auto ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
                         {[
-                            { id: 'H1', label: '上半年' },
-                            { id: 'H2', label: '下半年' },
-                            { id: 'ALL', label: '全年度' },
+                            { id: 'H1', label: t('trend.h1') },
+                            { id: 'H2', label: t('trend.h2') },
+                            { id: 'ALL', label: t('trend.allYear') },
                         ].map((p) => (
                             <button
                                 key={p.id}
@@ -174,15 +187,15 @@ const TrendView = ({ expenses = [], isDark }) => {
                 {/* Main Chart */}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className="mb-6 flex items-center justify-between">
-                        <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>月收支對比</h3>
+                        <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>{t('trend.monthlyComparison')}</h3>
                         <div className="flex gap-4 text-sm">
                             <span className="flex items-center gap-1.5">
                                 <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>收入</span>
+                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>{t('trend.income')}</span>
                             </span>
                             <span className="flex items-center gap-1.5">
                                 <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>支出</span>
+                                <span className={isDark ? 'text-slate-300' : 'text-gray-600'}>{t('trend.expense')}</span>
                             </span>
                         </div>
                     </div>
@@ -225,8 +238,8 @@ const TrendView = ({ expenses = [], isDark }) => {
                                     }}
                                     formatter={(value) => `$${value.toLocaleString()}`}
                                 />
-                                <Bar dataKey="income" name="收入" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
-                                <Bar dataKey="expense" name="支出" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                                <Bar dataKey="income" name={t('trend.income')} fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={50} />
+                                <Bar dataKey="expense" name={t('trend.expense')} fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={50} />
                             </BarChart>
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -239,17 +252,17 @@ const TrendView = ({ expenses = [], isDark }) => {
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                        <div className="text-sm text-gray-500 mb-1">期間總結餘</div>
+                        <div className="text-sm text-gray-500 mb-1">{t('trend.totalBalance')}</div>
                         <div className={`text-2xl font-bold ${totals.balance >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                             {totals.balance >= 0 ? '+' : ''}${totals.balance.toLocaleString()}
                         </div>
                     </div>
                     <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                        <div className="text-sm text-gray-500 mb-1">月平均總收入</div>
+                        <div className="text-sm text-gray-500 mb-1">{t('trend.avgIncome')}</div>
                         <div className="text-2xl font-bold text-emerald-500">${avg.income.toLocaleString()}</div>
                     </div>
                     <div className={`p-5 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-                        <div className="text-sm text-gray-500 mb-1">月平均總支出</div>
+                        <div className="text-sm text-gray-500 mb-1">{t('trend.avgExpense')}</div>
                         <div className="text-2xl font-bold text-red-500">${avg.expense.toLocaleString()}</div>
                     </div>
                 </div>
@@ -259,20 +272,20 @@ const TrendView = ({ expenses = [], isDark }) => {
             <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        記帳助手 App
+                        {t('footer.appName')}
                     </a>
                     <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        資產計算器
+                        {t('footer.calcTool')}
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        理財知識庫
+                        {t('footer.knowledge')}
                     </a>
                     <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        隱私權政策
+                        {t('footer.privacy')}
                     </a>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                    &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </div>
             </footer>
         </div>

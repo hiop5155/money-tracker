@@ -3,7 +3,8 @@ import { Plus, Edit, Trash2, Loader2, X, CheckCircle2, MinusCircle, Receipt } fr
 import MonthSelector from './MonthSelector';
 import { getCalcUrl } from '../../utils/calcUrl';
 
-const formatCurrency = (amount) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', maximumFractionDigits: 0 }).format(amount);
+import { usePlan } from '../../context/PlanContext';
+import { useTranslation } from '../../i18n';
 
 const CalendarView = ({
     isDark,
@@ -27,18 +28,23 @@ const CalendarView = ({
     onDeleteExpense,
     deletingId,
 }) => {
+    const { t, formatCurrency, language } = useTranslation();
+    const { isPro, userPlan, openUpgradeModal } = usePlan();
     // Guard clause: Ensure currentDate has a value
     const safeDate = currentDate || new Date();
     const currentYear = safeDate.getFullYear();
     const currentMonth = safeDate.getMonth();
 
-    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(false);
+    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('modal') === 'budget-rule';
+    });
 
     // Monthly expense total limited to categories that have a monthly budget set
     const budgetedMonthlyTotal = (monthlyExpenses || [])
         .filter((e) => {
             if (e.type !== 'expense' && e.type) return false;
-            const catName = e.category ? e.category.trim() : '未分類';
+            const catName = e.category ? e.category.trim() : t('calendar.uncategorized');
             return budgets?.categoryLimits?.some((l) => l.name === catName && l.monthly > 0);
         })
         .reduce((sum, e) => sum + Number(e.amount), 0);
@@ -49,7 +55,7 @@ const CalendarView = ({
         const spentMap = {};
         (monthlyExpenses || []).forEach((e) => {
             if (e.type !== 'expense' && e.type) return;
-            const catName = e.category ? e.category.trim() : '未分類';
+            const catName = e.category ? e.category.trim() : t('calendar.uncategorized');
             spentMap[catName] = (spentMap[catName] || 0) + Number(e.amount);
         });
 
@@ -67,10 +73,10 @@ const CalendarView = ({
             }
         });
 
-        included.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
-        excluded.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
+        included.sort((a, b) => a.name.localeCompare(b.name, language));
+        excluded.sort((a, b) => a.name.localeCompare(b.name, language));
         return { included, excluded };
-    }, [categories, monthlyExpenses, budgets]);
+    }, [categories, monthlyExpenses, budgets, language]);
 
     const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -151,13 +157,9 @@ const CalendarView = ({
                 <div
                     className={`grid grid-cols-7 text-center text-xs font-medium py-1 border-b ${isDark ? 'bg-slate-700/30 text-slate-400 border-slate-700' : 'bg-gray-50 text-gray-500 border-gray-100'}`}
                 >
-                    <div>日</div>
-                    <div>一</div>
-                    <div>二</div>
-                    <div>三</div>
-                    <div>四</div>
-                    <div>五</div>
-                    <div>六</div>
+                    {(Array.isArray(t('calendar.weekdays')) ? t('calendar.weekdays') : ['日', '一', '二', '三', '四', '五', '六']).map((dayStr, idx) => (
+                        <div key={idx}>{dayStr}</div>
+                    ))}
                 </div>
 
                 <div className="grid grid-cols-7">{renderCalendarDays()}</div>
@@ -167,7 +169,7 @@ const CalendarView = ({
                     className={`px-3 py-2 text-xs grid grid-cols-2 gap-y-1 ${isDark ? 'bg-slate-900/50 border-t border-slate-700' : 'bg-blue-50/50 border-t border-blue-100'}`}
                 >
                     <div className={`flex justify-between items-center pr-2 border-r ${isDark ? 'border-slate-600' : 'border-gray-300'}`}>
-                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>本月收入:</span>
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>{t('calendar.monthlyIncome')}</span>
                         <span className="font-bold text-green-500">{formatCurrency(monthlyIncome || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center pl-2">
@@ -175,7 +177,7 @@ const CalendarView = ({
                             onClick={() => setShowBudgetRuleModal(true)}
                             className={`underline underline-offset-2 decoration-dotted transition-colors ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            本月支出 *
+                            {t('calendar.monthlyExpense')}
                         </button>
                         <span className={`font-bold ${budgetedMonthlyTotal > budgets.monthly ? 'text-red-600' : 'text-red-500'}`}>
                             {formatCurrency(budgetedMonthlyTotal)}
@@ -196,12 +198,12 @@ const CalendarView = ({
                                 <div
                                     className={`col-span-2 pt-1 mt-1 border-t flex justify-between text-[10px] ${isDark ? 'border-slate-700 text-slate-400' : 'border-gray-300 text-gray-500'}`}
                                 >
-                                    <span>剩: {remainingDays}天</span>
+                                    <span>{t('calendar.daysRemaining', { days: remainingDays })}</span>
                                     <span className="flex items-center gap-1">
-                                        每日平均花費: <strong className={isDark ? 'text-slate-300' : 'text-gray-600'}>${dailySpent}</strong>
+                                        {t('calendar.dailyAvgSpent')} <strong className={isDark ? 'text-slate-300' : 'text-gray-600'}>${dailySpent}</strong>
                                     </span>
                                     <span>
-                                        剩下每日可用: <strong className="text-blue-500">${dailyAvailable}</strong>
+                                        {t('calendar.dailyAvailable')} <strong className="text-blue-500">${dailyAvailable}</strong>
                                     </span>
                                 </div>
                             );
@@ -216,7 +218,7 @@ const CalendarView = ({
                 <div className={`flex flex-col rounded-xl shadow-sm md:min-h-0 md:flex-1 md:overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <div className={`flex justify-between items-center p-3 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
                         <h3 className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
-                            {selectedDate.getMonth() + 1}/{selectedDate.getDate()} 詳情
+                            {t('calendar.selectedDateDetails', { month: selectedDate.getMonth() + 1, day: selectedDate.getDate() })}
                         </h3>
                         <button onClick={onAddExpense} className="bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700 shadow-sm">
                             <Plus className="w-4 h-4" />
@@ -231,8 +233,8 @@ const CalendarView = ({
                                 <div className={`p-3 rounded-full mb-2 ${isDark ? 'bg-slate-700/50 text-slate-500' : 'bg-gray-100 text-gray-400'}`}>
                                     <Receipt className="w-5 h-5" />
                                 </div>
-                                <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>本日尚無收支記錄</p>
-                                <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>點擊右上角 ＋ 記錄一筆</p>
+                                <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{t('calendar.noRecordsToday')}</p>
+                                <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>{t('calendar.clickPlusToRecord')}</p>
                             </div>
                         ) : (
                             selectedDateExpenses.map((item) => (
@@ -241,7 +243,7 @@ const CalendarView = ({
                                         {/* Left: Category and Note (min-w-0 prevents flex overflow) */}
                                         <div className="flex flex-col min-w-0 flex-1 mr-2">
                                             <span className={`font-medium text-sm truncate ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>
-                                                {item.category || '未分類'}
+                                                {item.category || t('common.uncategorized')}
                                             </span>
                                             {item.note && (
                                                 <span className={`text-[11px] break-all line-clamp-2 mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
@@ -260,7 +262,7 @@ const CalendarView = ({
                                                 <button
                                                     onClick={() => onEditExpense(item)}
                                                     disabled={deletingId === item.id}
-                                                    aria-label="編輯項目"
+                                                    aria-label={t('common.edit')}
                                                     className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors active:scale-[0.95] ${
                                                         isDark ? 'text-slate-400 hover:text-blue-400 hover:bg-slate-600' : 'text-gray-400 hover:text-blue-600 hover:bg-gray-200'
                                                     }`}
@@ -270,7 +272,7 @@ const CalendarView = ({
                                                 <button
                                                     onClick={() => onDeleteExpense(item.id)}
                                                     disabled={deletingId === item.id}
-                                                    aria-label="刪除項目"
+                                                    aria-label={t('common.delete')}
                                                     className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors active:scale-[0.95] ${
                                                         isDark ? 'text-slate-400 hover:text-red-400 hover:bg-red-500/10' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
                                                     }`}
@@ -294,20 +296,20 @@ const CalendarView = ({
                 <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
                     <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
                         <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            記帳助手 App
+                            {t('footer.appName')}
                         </a>
                         <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            資產計算器
+                            {t('footer.calcTool')}
                         </a>
                         <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            理財知識庫
+                            {t('footer.knowledge')}
                         </a>
                         <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                            隱私權政策
+                            {t('footer.privacy')}
                         </a>
                     </div>
                     <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                        &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                        {t('footer.copyright', { year: new Date().getFullYear() })}
                     </div>
                 </footer>
             </div>
@@ -319,7 +321,7 @@ const CalendarView = ({
                 <div className={`w-full max-w-sm rounded-xl shadow-2xl flex flex-col max-h-[80vh] ${isDark ? 'bg-slate-800 text-slate-100' : 'bg-white text-gray-800'}`}>
                     {/* Header */}
                     <div className={`flex justify-between items-center p-4 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-                        <h3 className="font-bold text-base">本月支出統計規則</h3>
+                        <h3 className="font-bold text-base">{t('calendar.ruleModalTitle')}</h3>
                         <button onClick={() => setShowBudgetRuleModal(false)} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
                             <X className="w-5 h-5" />
                         </button>
@@ -327,9 +329,7 @@ const CalendarView = ({
 
                     {/* Rule explanation */}
                     <div className={`px-4 py-3 text-sm shrink-0 ${isDark ? 'bg-slate-700/40 text-slate-300' : 'bg-blue-50 text-blue-800'}`}>
-                        本月支出只計入<strong>有設定月預算</strong>的分類。<br />
-                        未設定月預算的分類不列入統計，但仍會記錄在帳目中。<br />
-                        如需計入，請至「設定」為該分類設定月預算。
+                        {t('calendar.ruleModalDesc')}
                     </div>
 
                     {/* Category lists */}
@@ -338,7 +338,7 @@ const CalendarView = ({
                         <div>
                             <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
                                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                                計入本月統計（{categoryBreakdown.included.length} 項）：
+                                {t('calendar.countedCategories')}（{categoryBreakdown.included.length}）：
                                 {categoryBreakdown.included.length > 0 && (
                                     <span className="font-normal truncate">{categoryBreakdown.included.map((c) => c.name).join('、')}</span>
                                 )}
@@ -349,12 +349,12 @@ const CalendarView = ({
                                         <li key={cat.name} className={`px-3 py-2 ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
                                             <div className="flex justify-between items-center">
                                                 <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
-                                                <span className="font-mono text-red-500 text-xs">花費 {formatCurrency(cat.spent)}</span>
+                                                <span className="font-mono text-red-500 text-xs">{t('calendar.spent')} {formatCurrency(cat.spent)}</span>
                                             </div>
                                             <div className={`flex justify-between text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
-                                                <span>月預算 {formatCurrency(cat.limit)}</span>
+                                                <span>{t('calendar.limit')} {formatCurrency(cat.limit)}</span>
                                                 <span className={cat.remaining < 0 ? 'text-red-500 font-bold' : 'text-green-500'}>
-                                                    剩 {formatCurrency(cat.remaining)}
+                                                    {cat.remaining < 0 ? t('calendar.overBudget') : t('calendar.remaining')} {formatCurrency(Math.abs(cat.remaining))}
                                                 </span>
                                             </div>
                                             <div className={`mt-1.5 w-full rounded-full h-1.5 overflow-hidden ${isDark ? 'bg-slate-600' : 'bg-gray-200'}`}>
@@ -367,7 +367,7 @@ const CalendarView = ({
                                     ))}
                                 </ul>
                             ) : (
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>無已設定月預算的分類</p>
+                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>-</p>
                             )}
                         </div>
 
@@ -377,7 +377,7 @@ const CalendarView = ({
                         <div>
                             <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
                                 <MinusCircle className="w-3.5 h-3.5 shrink-0" />
-                                未計入（無月預算設定，{categoryBreakdown.excluded.length} 項）：
+                                {t('calendar.uncountedCategories')}（{categoryBreakdown.excluded.length}）：
                                 {categoryBreakdown.excluded.length > 0 && (
                                     <span className="font-normal truncate">{categoryBreakdown.excluded.map((c) => c.name).join('、')}</span>
                                 )}
@@ -392,14 +392,14 @@ const CalendarView = ({
                                     ))}
                                 </ul>
                             ) : (
-                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>所有分類皆已設定月預算</p>
+                                <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>-</p>
                             )}
                         </div>
                     </div>
 
                     {/* Footer totals */}
                     <div className={`px-4 py-3 border-t text-sm flex justify-between shrink-0 ${isDark ? 'border-slate-700 bg-slate-900/40' : 'border-gray-200 bg-gray-50'}`}>
-                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>計入統計總計</span>
+                        <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>{t('calendar.monthlyExpense')}</span>
                         <span className="font-bold text-red-500">{formatCurrency(budgetedMonthlyTotal)}</span>
                     </div>
                 </div>

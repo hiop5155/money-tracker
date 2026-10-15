@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar as CalendarIcon, Tag, FileText, Check } from 'lucide-react';
 import CalculatorKeypad from './CalculatorKeypad';
+import { useTranslation } from '../../i18n';
 
 const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, categories, expenses, budgets, isDark }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         type: 'expense',
         amountStr: '', // Store expression as string (e.g., "100+50")
@@ -100,13 +102,13 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
         const finalAmount = calculateResult(formData.amountStr);
 
         if (finalAmount <= 0) {
-            alert('Please enter a valid amount');
+            alert(t('expenseModal.invalidAmount'));
             return;
         }
 
         // 2. Validate category
         if (!formData.category) {
-            alert('Please select a category');
+            alert(t('expenseModal.selectCategory'));
             return;
         }
 
@@ -135,7 +137,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
                                 }`}
                         >
-                            支出
+                            {t('expenseModal.typeExpense')}
                         </button>
                         <button
                             onClick={() => setFormData({ ...formData, type: 'income' })}
@@ -144,7 +146,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 : `${isDark ? 'text-slate-400' : 'text-gray-500'}`
                                 }`}
                         >
-                            收入
+                            {t('expenseModal.typeIncome')}
                         </button>
                     </div>
                     <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
@@ -229,7 +231,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                                 ref={noteInputRef}
                                 type="text"
                                 enterKeyHint="done"
-                                placeholder="備註..."
+                                placeholder={t('expenseModal.notePlaceholder')}
                                 value={formData.note}
                                 onFocus={() => {
                                     setIsNoteFocused(true);
@@ -260,7 +262,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
                             onClick={handleSubmit}
                             className="bg-blue-600 text-white px-6 py-1.5 rounded-full flex items-center gap-1 font-bold shadow hover:bg-blue-700 active:scale-95 transition-all"
                         >
-                            <Check className="w-4 h-4" /> 完成
+                            <Check className="w-4 h-4" /> {t('expenseModal.complete')}
                         </button>
                     </div>
 
@@ -280,6 +282,7 @@ const ExpenseModal = ({ isOpen, onClose, onSave, initialData, selectedDate, cate
 };
 
 const CategoryBudgetInfo = ({ category, date, expenses, budgets, isDark }) => {
+    const { t } = useTranslation();
     // 1. Get Monthly Limit
     const categoryLimit = budgets?.categoryLimits?.find((c) => c.name === category)?.monthly || 0;
 
@@ -305,9 +308,14 @@ const CategoryBudgetInfo = ({ category, date, expenses, budgets, isDark }) => {
     return (
         <div className={`mx-4 px-3 py-2 rounded-lg text-sm flex justify-between items-center ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
             <span className={isDark ? 'text-slate-400' : 'text-gray-500'}>
-                預算: {categoryLimit.toLocaleString()} / 已用: {spent.toLocaleString()}
+                {t('expenseModal.budgetProgress', {
+                    budget: categoryLimit.toLocaleString(),
+                    spent: spent.toLocaleString(),
+                })}
             </span>
-            <span className={`font-medium ${isOverBudget ? 'text-red-500' : 'text-green-500'}`}>剩餘: {remaining.toLocaleString()}</span>
+            <span className={`font-medium ${isOverBudget ? 'text-red-500' : 'text-green-500'}`}>
+                {t('expenseModal.remaining', { remaining: remaining.toLocaleString() })}
+            </span>
         </div>
     );
 };

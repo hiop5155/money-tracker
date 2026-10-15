@@ -3,12 +3,15 @@ import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { X, Calendar, FileText, Loader2, TrendingUp, TrendingDown, DollarSign, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react';
 import MonthSelector from './MonthSelector';
 import { getCalcUrl } from '../../utils/calcUrl';
+import { useTranslation } from '../../i18n';
+import { usePlan } from '../../context/PlanContext';
 
 // Chart Colors
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6', '#64748B', '#84CC16', '#0EA5E9', '#D946EF'];
 
 // --- Sub-component: Budget Progress Bar ---
 const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', onClick, isIncomeMode, isDark }) => {
+    const { t } = useTranslation();
     const percentage = total > 0 ? Math.min(100, Math.max(0, (current / total) * 100)) : 0;
     const isOver = !isIncomeMode && total > 0 && current > total;
 
@@ -21,7 +24,7 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
                 <span className="font-medium truncate pr-2 flex items-center gap-2">
                     {label}
                     <span className={`opacity-0 group-hover:opacity-100 transition-opacity text-xs px-1.5 py-0.5 rounded-full ${isDark ? 'text-blue-500 bg-blue-900' : 'text-blue-500 bg-blue-100'}`}>
-                        查看詳情
+                        {t('stats.viewDetails')}
                     </span>
                 </span>
                 <span className={isOver ? 'text-red-500 font-bold' : isIncomeMode ? 'text-green-600 font-bold' : isDark ? 'text-gray-400' : 'text-gray-500'}>
@@ -46,12 +49,13 @@ const BudgetProgressBar = ({ label, current, total, colorClass = 'bg-blue-600', 
 
 // --- Sub-component: Donut Chart (Fixed size, no ResponsiveContainer) ---
 const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleModal, showRuleButton }) => {
+    const { t } = useTranslation();
     const safeBudget = budget || 0;
     const remaining = Math.max(0, safeBudget - spent);
-    const incomeData = [{ name: '總收入', value: spent }];
+    const incomeData = [{ name: t('stats.totalIncome'), value: spent }];
     const expenseData = [
-        { name: '已花費', value: spent },
-        { name: '剩餘', value: remaining },
+        { name: t('stats.spent'), value: spent },
+        { name: t('stats.remaining'), value: remaining },
     ];
 
     const data = isIncomeMode ? incomeData : expenseData;
@@ -73,14 +77,14 @@ const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleMod
                 {showRuleButton && (
                     <button
                         onClick={onShowRuleModal}
-                        title="查看月統計規則說明"
+                        title={t('stats.ruleButtonTitle')}
                         className={`text-xs px-2 py-0.5 rounded-full border flex items-center gap-1 transition-colors cursor-pointer ${
                             isDark
                                 ? 'border-slate-600 bg-slate-700/60 text-slate-300 hover:bg-slate-700'
                                 : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100'
                         }`}
                     >
-                        <span>統計規則 *</span>
+                        <span>{t('stats.ruleButton')}</span>
                     </button>
                 )}
             </div>
@@ -117,7 +121,7 @@ const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleMod
                 </PieChart>
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-xs text-gray-500">{isIncomeMode ? '總收入' : safeBudget > 0 ? '總預算' : '無預算上限'}</span>
+                    <span className="text-xs text-gray-500">{isIncomeMode ? t('stats.totalIncome') : safeBudget > 0 ? t('stats.totalBudget') : t('stats.noLimit')}</span>
                     <span className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {isIncomeMode ? `$${spent.toLocaleString()}` : safeBudget > 0 ? `$${safeBudget.toLocaleString()}` : '∞'}
                     </span>
@@ -126,10 +130,10 @@ const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleMod
 
             <div className="mt-2 text-center">
                 {isIncomeMode ? (
-                    <p className="text-sm text-green-500 font-bold">本期收入: ${spent.toLocaleString()}</p>
+                    <p className="text-sm text-green-500 font-bold">{t('stats.currentIncomeText', { amount: spent.toLocaleString() })}</p>
                 ) : (
                     <p className={`text-sm ${safeBudget > 0 && spent > safeBudget ? 'text-red-500 font-bold' : 'text-gray-500'}`}>
-                        已用: ${spent.toLocaleString()}
+                        {t('stats.currentSpentText', { amount: spent.toLocaleString() })}
                         {safeBudget > 0 && ` (${Math.round((spent / safeBudget) * 100)}%)`}
                     </p>
                 )}
@@ -140,6 +144,7 @@ const BudgetDonut = ({ title, spent, budget, isDark, isIncomeMode, onShowRuleMod
 
 // --- Sub-component: Category Detail Modal ---
 const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIncomeMode }) => {
+    const { t } = useTranslation();
     if (!isOpen) return null;
 
     return (
@@ -150,7 +155,10 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
                 <div className={`flex justify-between items-center p-4 border-b ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
                     <h3 className="font-bold text-lg flex items-center gap-2">
                         <FileText className={`w-5 h-5 ${isIncomeMode ? 'text-green-500' : 'text-blue-500'}`} />
-                        {category} - {isIncomeMode ? '收入明細' : '支出明細'}
+                        {t('stats.categoryDetails', {
+                            category,
+                            type: isIncomeMode ? t('stats.incomeDetails') : t('stats.expenseDetails'),
+                        })}
                     </h3>
                     <button onClick={onClose} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-200'}`}>
                         <X className="w-5 h-5" />
@@ -169,7 +177,7 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
                                         <Calendar className="w-3 h-3" />
                                         {expense.date}
                                     </div>
-                                    <span className="font-medium">{expense.note || '無備註'}</span>
+                                    <span className="font-medium">{expense.note || t('stats.noNote')}</span>
                                 </div>
                                 <span className={`font-bold text-lg ${isIncomeMode ? 'text-green-500' : isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                                     ${Number(expense.amount).toLocaleString()}
@@ -177,13 +185,13 @@ const CategoryDetailModal = ({ isOpen, onClose, category, expenses, isDark, isIn
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500 py-8">無紀錄</p>
+                        <p className="text-center text-gray-500 py-8">{t('stats.noRecord')}</p>
                     )}
                 </div>
 
                 <div className={`p-4 border-t rounded-b-xl flex justify-between items-center ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                    <span className="text-sm text-gray-500">總筆數: {expenses.length}</span>
-                    <span className="font-bold text-lg">總計: ${expenses.reduce((sum, e) => sum + Number(e.amount), 0).toLocaleString()}</span>
+                    <span className="text-sm text-gray-500">{t('stats.totalCount', { count: expenses.length })}</span>
+                    <span className="font-bold text-lg">{t('stats.totalAmount', { amount: expenses.reduce((sum, e) => sum + Number(e.amount), 0).toLocaleString() })}</span>
                 </div>
             </div>
         </div>
@@ -208,13 +216,29 @@ const StatsView = ({
     onNextMonth,
     onDateChange,
 }) => {
-    // State for Time Range (Monthly / Yearly)
-    const [viewMode, setViewMode] = useState('monthly');
-    // State for Type (Expense / Income)
-    const [viewType, setViewType] = useState('expense'); // 'expense' | 'income'
+    const { t } = useTranslation();
+    // 方案權限直接由金流模組取得 (無須 Props Drilling)
+    const { isPro, userPlan, openUpgradeModal } = usePlan();
 
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(false);
+    // State for Time Range (Monthly / Yearly)
+    const [viewMode, setViewMode] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('period') || 'monthly';
+    });
+    // State for Type (Expense / Income)
+    const [viewType, setViewType] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('type') || 'expense';
+    });
+
+    const [selectedCategory, setSelectedCategory] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('category') || null;
+    });
+    const [showBudgetRuleModal, setShowBudgetRuleModal] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('modal') === 'stats-rule';
+    });
 
     const chartContainerRef = useRef(null);
     const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
@@ -246,7 +270,7 @@ const StatsView = ({
         });
 
         filteredList.forEach((e) => {
-            const catName = e.category ? e.category.trim() : '未分類';
+            const catName = e.category ? e.category.trim() : t('common.uncategorized');
             stats[catName] = (stats[catName] || 0) + Number(e.amount);
         });
 
@@ -291,7 +315,9 @@ const StatsView = ({
 
     const currentRawExpenses = viewMode === 'monthly' ? monthlyExpenses : yearlyExpenses;
 
-    const titlePrefix = viewMode === 'monthly' ? `${currentYear}年 ${currentMonth + 1}月` : `${currentYear} 年度`;
+    const titlePrefix = viewMode === 'monthly'
+        ? t('monthSelector.yearMonth', { year: currentYear, month: currentMonth + 1 })
+        : `${currentYear} ${t('stats.periodYearly')}`;
 
     const detailExpenses = useMemo(() => {
         if (!selectedCategory) return [];
@@ -299,11 +325,11 @@ const StatsView = ({
         return sourceData
             .filter((e) => {
                 const typeMatch = viewType === 'income' ? e.type === 'income' : e.type === 'expense' || !e.type;
-                const cat = e.category ? e.category.trim() : '未分類';
+                const cat = e.category ? e.category.trim() : t('common.uncategorized');
                 return typeMatch && cat === selectedCategory;
             })
             .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }, [selectedCategory, currentRawExpenses, viewType]);
+    }, [selectedCategory, currentRawExpenses, viewType, t]);
 
     // Category Breakdown Calculation for Budget Rule Modal
     const categoryBreakdown = useMemo(() => {
@@ -375,7 +401,7 @@ const StatsView = ({
                                     : `hover:text-gray-700 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
                                     }`}
                             >
-                                {mode === 'monthly' ? '月統計' : '年統計'}
+                                {mode === 'monthly' ? t('stats.periodMonthly') : t('stats.periodYearly')}
                             </button>
                         ))}
                     </div>
@@ -389,7 +415,7 @@ const StatsView = ({
                                 : `border-transparent ${isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`
                                 }`}
                         >
-                            <TrendingDown className="w-4 h-4" /> 支出
+                            <TrendingDown className="w-4 h-4" /> {t('stats.modeExpense')}
                         </button>
                         <button
                             onClick={() => setViewType('income')}
@@ -398,7 +424,7 @@ const StatsView = ({
                                 : `border-transparent ${isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-gray-50 text-gray-500'}`
                                 }`}
                         >
-                            <TrendingUp className="w-4 h-4" /> 收入
+                            <TrendingUp className="w-4 h-4" /> {t('stats.modeIncome')}
                         </button>
                     </div>
                 </div>
@@ -409,7 +435,7 @@ const StatsView = ({
                 {/* Overview Donut Charts */}
                 <div className="grid grid-cols-1 gap-4">
                     <BudgetDonut
-                        title={`${titlePrefix} ${viewType === 'expense' ? '總預算概覽' : '總收入概覽'}`}
+                        title={`${titlePrefix} ${viewType === 'expense' ? t('stats.budgetOverview') : t('stats.incomeOverview')}`}
                         spent={currentTotal}
                         budget={currentBudget}
                         isDark={isDark}
@@ -422,10 +448,9 @@ const StatsView = ({
                 {/* Category List*/}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <h3 className={`font-bold mb-2 flex items-center gap-2 ${isDark ? 'text-slate-200' : 'text-gray-800'}`}>
-                        {titlePrefix} {viewType === 'expense' ? '分類花費列表' : '收入來源列表'}
-                        <span className="text-xs font-normal text-gray-500 ml-2">(點擊查看明細)</span>
+                        {titlePrefix} {viewType === 'expense' ? t('stats.categoryExpenseList') : t('stats.categoryIncomeList')}
+                        <span className="text-xs font-normal text-gray-500 ml-2">{t('stats.clickForDetail')}</span>
                     </h3>
-
 
                     {currentStats.length > 0 ? (
                         <div className="space-y-2">
@@ -444,7 +469,9 @@ const StatsView = ({
                         </div>
                     ) : (
                         <div className="h-40 flex items-center justify-center text-gray-400">
-                            {titlePrefix} 尚無{viewType === 'expense' ? '支出' : '收入'}資料
+                            {viewType === 'expense'
+                                ? t('stats.noExpenseData', { prefix: titlePrefix })
+                                : t('stats.noIncomeData', { prefix: titlePrefix })}
                         </div>
                     )}
                 </div>
@@ -452,22 +479,19 @@ const StatsView = ({
                 {/* 4. Distribution Pie Chart */}
                 <div className={`p-6 rounded-xl shadow-sm ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     <h3 className={`font-bold ${isDark ? 'text-slate-200' : 'text-gray-800'} ${viewMode === 'monthly' && viewType === 'expense' ? 'mb-2' : 'mb-4'}`}>
-                        {titlePrefix} {viewType === 'expense' ? '花費比例分佈' : '收入比例分佈'}
+                        {titlePrefix} {viewType === 'expense' ? t('stats.distributionExpense') : t('stats.distributionIncome')}
                     </h3>
                     {viewMode === 'monthly' && viewType === 'expense' && (
                         <button
                             onClick={() => setShowBudgetRuleModal(true)}
                             className="text-xs text-blue-500 hover:underline mb-4 text-left flex items-center gap-1 cursor-pointer"
                         >
-                            <span>＊ 圓餅圖與總預算僅計入已設定月預算的分類 (點此查看統計規則)</span>
+                            <span>{t('stats.ruleNotice')}</span>
                             <HelpCircle className="w-3.5 h-3.5" />
                         </button>
                     )}
 
-                    {/* Use ref for Observer to listen.
-                        Only render PieChart when chartSize.width > 0.
-                        This resolves initialization errors with ResponsiveContainer.
-                    */}
+                    {/* Manual observer for responsive chart */}
                     <div ref={chartContainerRef} style={{ width: '100%', height: 300, minHeight: 300, position: 'relative' }}>
                         {chartSize.width > 0 ? (
                             pieStats.length > 0 ? (
@@ -490,7 +514,7 @@ const StatsView = ({
                                 </PieChart>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    尚無已設定預算的支出比例資料
+                                    {t('stats.noBudgetedData')}
                                 </div>
                             )
                         ) : (
@@ -506,20 +530,20 @@ const StatsView = ({
             <footer className="text-center py-8 border-t border-gray-200 dark:border-slate-700 mt-2 shrink-0">
                 <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mb-4">
                     <a href="/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        記帳助手 App
+                        {t('footer.appName')}
                     </a>
                     <a href={getCalcUrl()} className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        資產計算器
+                        {t('footer.calcTool')}
                     </a>
                     <a href="/blog/" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        理財知識庫
+                        {t('footer.knowledge')}
                     </a>
                     <a href="/blog/privacy.html" className={`hover:text-blue-500 transition-colors ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                        隱私權政策
+                        {t('footer.privacy')}
                     </a>
                 </div>
                 <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-                    &copy; {new Date().getFullYear()} 記帳助手 Money Tracker.
+                    {t('footer.copyright', { year: new Date().getFullYear() })}
                 </div>
             </footer>
 
@@ -540,7 +564,7 @@ const StatsView = ({
                         {/* Header */}
                         <div className={`flex justify-between items-center p-4 border-b shrink-0 ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
                             <h3 className="font-bold text-base flex items-center gap-2">
-                                <span>月統計規則說明</span>
+                                <span>{t('stats.ruleModalTitle')}</span>
                             </h3>
                             <button onClick={() => setShowBudgetRuleModal(false)} className={`p-1 rounded-full transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
                                 <X className="w-5 h-5" />
@@ -549,9 +573,7 @@ const StatsView = ({
 
                         {/* Rule explanation */}
                         <div className={`px-4 py-3 text-sm shrink-0 ${isDark ? 'bg-slate-700/40 text-slate-300' : 'bg-blue-50 text-blue-800'}`}>
-                            月統計圖表（環形圖與圓餅圖）只計入<strong>有設定月預算</strong>的分類。<br />
-                            未設定月預算的分類不列入上方圖表加總，但<strong>仍完整記錄並顯示於下方明細清單</strong>中。<br />
-                            如需將該分類納入圖表，請至「設定」為該分類設定月預算。
+                            {t('stats.ruleModalDesc1')}<strong>{t('stats.ruleModalDesc2')}</strong>{t('stats.ruleModalDesc3')}
                         </div>
 
                         {/* Category lists */}
@@ -560,7 +582,7 @@ const StatsView = ({
                             <div>
                                 <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
                                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                                    計入圖表統計（{categoryBreakdown.included.length} 項）：
+                                    {t('stats.countedCategories', { count: categoryBreakdown.included.length })}
                                     {categoryBreakdown.included.length > 0 && (
                                         <span className="font-normal truncate">{categoryBreakdown.included.map((c) => c.name).join('、')}</span>
                                     )}
@@ -571,19 +593,19 @@ const StatsView = ({
                                             <li key={cat.name} className={`px-3 py-2 ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
                                                 <div className="flex justify-between items-center">
                                                     <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
-                                                    <span className="font-mono text-red-500 text-xs">花費 ${cat.spent.toLocaleString()}</span>
+                                                    <span className="font-mono text-red-500 text-xs">{t('stats.spentLabel', { amount: cat.spent.toLocaleString() })}</span>
                                                 </div>
                                                 <div className={`flex justify-between text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}>
-                                                    <span>月預算 ${cat.limit.toLocaleString()}</span>
+                                                    <span>{t('stats.monthlyBudgetLabel', { amount: cat.limit.toLocaleString() })}</span>
                                                     <span className={cat.remaining < 0 ? 'text-red-500 font-bold' : 'text-green-500'}>
-                                                        剩 ${cat.remaining.toLocaleString()}
+                                                        {t('stats.remainingLabel', { amount: cat.remaining.toLocaleString() })}
                                                     </span>
                                                 </div>
                                             </li>
                                         ))}
                                     </ul>
                                 ) : (
-                                    <p className="text-xs text-gray-400 pl-4">尚無設定月預算的分類花費</p>
+                                    <p className="text-xs text-gray-400 pl-4">{t('stats.noCountedExpenses')}</p>
                                 )}
                             </div>
 
@@ -592,15 +614,15 @@ const StatsView = ({
                                 <div>
                                     <p className={`text-xs font-bold mb-2 flex items-center gap-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
                                         <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                                        僅於下方明細顯示，未計入圖表（{categoryBreakdown.excluded.length} 項）：
+                                        {t('stats.excludedNotice', { count: categoryBreakdown.excluded.length })}
                                     </p>
                                     <ul className={`rounded-lg overflow-hidden divide-y text-sm ${isDark ? 'divide-slate-700' : 'divide-gray-100'}`}>
                                         {categoryBreakdown.excluded.map((cat) => (
                                             <li key={cat.name} className={`px-3 py-2 flex justify-between items-center ${isDark ? 'bg-slate-700/40' : 'bg-gray-50'}`}>
                                                 <span className={`font-medium ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{cat.name}</span>
                                                 <div className="text-right">
-                                                    <span className="font-mono text-gray-500 text-xs">花費 ${cat.spent.toLocaleString()}</span>
-                                                    <span className="block text-[10px] text-gray-400">（未設月預算）</span>
+                                                    <span className="font-mono text-gray-500 text-xs">{t('stats.spentLabel', { amount: cat.spent.toLocaleString() })}</span>
+                                                    <span className="block text-[10px] text-gray-400">{t('stats.unbudgetedTag')}</span>
                                                 </div>
                                             </li>
                                         ))}

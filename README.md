@@ -35,7 +35,9 @@ The Money Tracker allows users to track their expenses and income, manage catego
     - **AI Insights:** Local statistical engine for anomaly detection and burn rate warnings with actionable advice.
 - **Data Visualization:** Interactive charts (Pie/Bar) to visualize spending and income patterns.
 - **Dark Mode:** Built-in dark/light theme toggle.
-- **Data Import/Export:** Import/Export data via CSV.
+- **Internationalization (i18n):** Multi-language engine supporting Traditional Chinese (`zh-TW`), English (`en-US`), Japanese (`ja-JP`), and Korean (`ko-KR`) with automatic browser detection, zero hardcoding, and seamless fallback.
+- **Pro Edition & Subscription Management:** Monthly/Annual subscriptions and Lifetime licenses powered by Helio Web3 payments, with automated permission guards (`ProGate`) and cancellation flows.
+- **Data Import/Export:** Robust multi-language CSV import/export compatible with Daily Budget (天天記帳) and cross-language column headers.
 
 ## Testing & Quality Assurance
 

@@ -44,6 +44,7 @@ app.use('/api', require('./routes/data'));
 app.use('/api/recurring', require('./routes/recurring'));
 app.use('/api/import', require('./routes/import'));
 app.use('/api/stocks', require('./routes/stocks'));
+app.use('/api/payment', require('./routes/payment'));
 
 // Serve static files from React app in production
 const clientDistPath = path.join(__dirname, '../client/dist');
@@ -55,7 +56,7 @@ app.use('/uploads', express.static(uploadsPath));
 
 // SPA Fallback only for standalone non-serverless mode
 if (require.main === module) {
-    app.get('(.*)', (req, res) => {
+    app.get('/{*splat}', (req, res) => {
         res.sendFile(path.join(clientDistPath, 'index.html'));
     });
 }
