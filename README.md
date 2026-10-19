@@ -34,9 +34,9 @@ The Money Tracker allows users to track their expenses and income, manage catego
     - **Trend Analysis:** Historical view with Year and Period (H1/H2) selection.
     - **AI Insights:** Local statistical engine for anomaly detection and burn rate warnings with actionable advice.
 - **Data Visualization:** Interactive charts (Pie/Bar) to visualize spending and income patterns.
-- **Dark Mode:** Built-in dark/light theme toggle.
-- **Internationalization (i18n):** Multi-language engine supporting Traditional Chinese (`zh-TW`), English (`en-US`), Japanese (`ja-JP`), and Korean (`ko-KR`) with automatic browser detection, zero hardcoding, and seamless fallback.
-- **Pro Edition & Subscription Management:** Monthly/Annual subscriptions and Lifetime licenses powered by Helio Web3 payments, with automated permission guards (`ProGate`) and cancellation flows.
+- **Dark Mode & Modern Design System:** Built-in dark/light theme with curated aesthetic tokens (Warm White `#F8F9FA`, Deep Charcoal `#0B0F17`, Surface `#121824`, and Double-Bezel cards) based on `taste-skill` & `minimalist-ui`.
+- **Internationalization (i18n):** Multi-language engine supporting Traditional Chinese (`zh-TW`), English (`en-US`), Japanese (`ja-JP`), and Korean (`ko-KR`). Language switcher is prominently accessible directly from the landing page/homepage before login as well as in the persistent top navigation bar.
+- **Bento Financial Dashboard:** Real-time remaining budget calculations, dynamic daily spending limits, micro progress bars, and rounded calendar grid with `tabular-nums` anti-jitter typography.
 - **Data Import/Export:** Robust multi-language CSV import/export compatible with Daily Budget (天天記帳) and cross-language column headers.
 
 ## Testing & Quality Assurance

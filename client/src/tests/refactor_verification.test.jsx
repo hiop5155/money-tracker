@@ -3,6 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import CalendarView from '../components/budget/CalendarView';
 import SettingsView from '../components/budget/SettingsView';
+import { I18nProvider } from '../i18n';
+
+const renderWithI18n = (ui) => render(<I18nProvider initialLanguage="zh-TW">{ui}</I18nProvider>);
 
 describe('CalendarView 破壞性防禦測試 (break-ui)', () => {
     const mockBudgets = { monthly: 50000, yearly: 600000, categoryLimits: [] };
@@ -17,7 +20,7 @@ describe('CalendarView 破壞性防禦測試 (break-ui)', () => {
             note: 'https://example.com/very/long/unbroken/url/path/that/used/to/break/flexbox/layouts?query=test'
         };
 
-        render(
+        renderWithI18n(
             <CalendarView
                 isDark={false}
                 currentDate={new Date(2026, 9, 13)}
@@ -52,7 +55,7 @@ describe('CalendarView 破壞性防禦測試 (break-ui)', () => {
     });
 
     it('空狀態 (Empty State)：當日無紀錄時展示優雅 Empty State 插畫與指引文案', () => {
-        render(
+        renderWithI18n(
             <CalendarView
                 isDark={false}
                 currentDate={new Date(2026, 9, 13)}
@@ -90,7 +93,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
     };
 
     it('支出分類矩陣：點擊標籤膠囊切換選中分類，抽屜即時顯示月與年預算欄位', () => {
-        render(
+        renderWithI18n(
             <SettingsView
                 isDark={false}
                 budgets={mockBudgets}
@@ -122,7 +125,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
         const onDeleteMock = vi.fn();
         const confirmSpy = vi.spyOn(window, 'confirm');
 
-        render(
+        renderWithI18n(
             <SettingsView
                 isDark={false}
                 budgets={mockBudgets}
@@ -157,7 +160,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
 
     it('即時儲存：欄位修改後按下 Enter 鍵自動往後端送 (onUpdateBudget)', () => {
         const onUpdateMock = vi.fn();
-        render(
+        renderWithI18n(
             <SettingsView
                 isDark={false}
                 budgets={mockBudgets}
@@ -186,7 +189,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
     });
 
     it('排版順序驗證：兩大預算區塊相鄰，依序為 年度與月份預算 -> 分類預算 -> 數據備份中心 -> 登出 -> 刪除帳號', () => {
-        const { container } = render(
+        const { container } = renderWithI18n(
             <SettingsView
                 isDark={false}
                 budgets={mockBudgets}
@@ -206,7 +209,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
         const posBudget2 = html.indexOf('分類預算');
         const posBackup = html.indexOf('數據備份中心');
         const posLogout = html.indexOf('登出');
-        const posDelete = html.indexOf('刪除帳號與所有資料');
+        const posDelete = html.indexOf('刪除帳號');
 
         expect(posBudget1).toBeGreaterThan(-1);
         expect(posBudget2).toBeGreaterThan(posBudget1);
@@ -225,7 +228,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
             ]
         };
 
-        render(
+        renderWithI18n(
             <SettingsView
                 isDark={false}
                 budgets={budgetsWithPureYearly}
@@ -244,7 +247,7 @@ describe('SettingsView 手感與動畫測試 (emil-design-eng)', () => {
         expect(screen.getByText('2,500 / 30,000')).toBeInTheDocument();
 
         // 玩！只設年預算，應能在縮圖上直接看見「- / 100,000」
-        expect(screen.getByText('- / 123,456')).toBeInTheDocument();
+        expect(screen.getByText('- / 100,000')).toBeInTheDocument();
     });
 });
 

@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ExpenseModal from '../components/budget/ExpenseModal';
 import TrendView from '../components/budget/TrendView';
 import InsightCard from '../components/budget/InsightCard';
+import { I18nProvider } from '../i18n';
+
+const render = (ui) => rtlRender(<I18nProvider initialLanguage="zh-TW">{ui}</I18nProvider>);
 
 // Mock Recharts to avoid compilation issues in test env
 vi.mock('recharts', () => {

@@ -17,6 +17,7 @@ import TrendView from '../components/budget/TrendView.jsx';
 // Modals
 import ExpenseModal from '../components/budget/ExpenseModal';
 import RecurringModal from '../components/budget/RecurringModal';
+import LanguageDropdown from '../components/LanguageDropdown';
 import { PlanProvider, usePlan } from '../context/PlanContext';
 import { useTranslation } from '../i18n';
 
@@ -89,10 +90,7 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
     const [isInsightVisible, setIsInsightVisible] = useState(true);
 
     useEffect(() => {
-        if (!ENABLE_INSIGHTS) {
-            setCurrentInsight(null);
-            return;
-        }
+        if (!ENABLE_INSIGHTS) return;
         if (data.expenses.length > 0) {
             const insights = generateInsights(data.expenses, data.budgets, data.categories, t);
             if (insights.length > 0) {
@@ -102,7 +100,7 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
                 setCurrentInsight(null);
             }
         }
-    }, [data.expenses, data.budgets, data.categories, t]);
+    }, [ENABLE_INSIGHTS, data.expenses, data.budgets, data.categories, t]);
 
     const insightStyles = {
         warning: {
@@ -204,18 +202,24 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
             <LoadingOverlay isVisible={data.isApiLoading} />
             {/* Main App Container - Dynamic Viewport Height Edge-to-Edge */}
             <div
-                className={`flex flex-col min-h-screen min-h-[100dvh] w-full font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-100 text-slate-800'}`}
+                className={`flex flex-col min-h-screen min-h-[100dvh] w-full font-sans transition-colors duration-250 ${isDarkMode ? 'bg-[#0B0F17] text-slate-100' : 'bg-[#F8F9FA] text-slate-900'}`}
             >
-                {/* 1. Header (Sticky Top with Notch Safe Area) */}
+                {/* 1. Header (Sticky Top with Notch Safe Area & Glassmorphism) */}
                 <header
-                    className={`sticky top-0 shadow-sm p-4 z-20 transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-white'}`}
+                    className={`sticky top-0 z-30 transition-colors duration-250 border-b backdrop-blur-md px-4 py-2.5 ${
+                        isDarkMode
+                            ? 'bg-[#0B0F17]/85 border-white/[0.08] text-slate-100'
+                            : 'bg-white/85 border-black/[0.05] text-slate-900 shadow-xs'
+                    }`}
                 >
-                    <div className="max-w-4xl mx-auto flex justify-between items-center gap-2 w-full min-w-0">
+                    <div className="max-w-4xl mx-auto flex justify-between items-center gap-3 w-full min-w-0">
                         {ENABLE_INSIGHTS && currentInsight && isInsightVisible ? (
                             <div
-                                className={`flex-1 min-w-0 flex items-center justify-between p-2 rounded-lg border animate-in slide-in-from-top-2 fade-in duration-300 ${insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
-                                    } ${insightStyles[currentInsight.type]?.border || insightStyles.warning.border} ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text
-                                    }`}
+                                className={`flex-1 min-w-0 flex items-center justify-between p-2 rounded-xl border animate-in slide-in-from-top-2 fade-in duration-300 ${
+                                    insightStyles[currentInsight.type]?.bg || insightStyles.warning.bg
+                                } ${insightStyles[currentInsight.type]?.border || insightStyles.warning.border} ${
+                                    insightStyles[currentInsight.type]?.text || insightStyles.warning.text
+                                }`}
                             >
                                 <div className="flex items-center gap-2 overflow-hidden min-w-0">
                                     {React.createElement(insightStyles[currentInsight.type]?.icon || AlertTriangle, { className: 'w-4 h-4 shrink-0' })}
@@ -225,8 +229,9 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
                                 </div>
                                 <button
                                     onClick={() => setIsInsightVisible(false)}
-                                    className={`p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ml-2 shrink-0 ${insightStyles[currentInsight.type]?.text || insightStyles.warning.text
-                                        }`}
+                                    className={`p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ml-2 shrink-0 ${
+                                        insightStyles[currentInsight.type]?.text || insightStyles.warning.text
+                                    }`}
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -237,18 +242,18 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
                                     <img
                                         src={avatar}
                                         alt={t('common.userAvatar')}
-                                        className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10"
+                                        className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0 shadow-xs ring-1 ring-black/5 dark:ring-white/10"
                                         referrerPolicy="no-referrer"
                                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                     />
                                 ) : (
-                                    <div className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-500/20 shadow-sm">
-                                        <Wallet className="w-5 h-5" />
+                                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-500/20 shadow-xs">
+                                        <Wallet className="w-4.5 h-4.5" />
                                     </div>
                                 )}
-                                <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 min-w-0 flex-1">
-                                    <span className="shrink-0 text-blue-600 dark:text-blue-400">{t('header.appName')}</span>
-                                    <span className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate min-w-0" title={username}>
+                                <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 min-w-0 flex-1 tracking-tight">
+                                    <span className="shrink-0 text-blue-600 dark:text-blue-400 font-extrabold">{t('header.appName')}</span>
+                                    <span className="text-xs font-normal text-slate-500 dark:text-slate-400 truncate min-w-0" title={username}>
                                         ({formatDisplayName(username)})
                                     </span>
                                     {/* 統一由 HeaderPlanStatus 處理方案徽章與升級彈窗觸發 */}
@@ -256,18 +261,23 @@ const BudgetApp = ({ token, onLogout, username, avatar }) => {
                                 </h1>
                             </div>
                         )}
-                        <button
-                            onClick={() => setIsDarkMode(!isDarkMode)}
-                            className={`w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 shadow-sm border ${
-                                isDarkMode
-                                    ? 'bg-slate-700/80 hover:bg-slate-700 text-yellow-400 border-slate-600'
-                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                            }`}
-                            aria-label={isDarkMode ? t('header.switchLight') : t('header.switchDark')}
-                            title={isDarkMode ? t('header.switchLight') : t('header.switchDark')}
-                        >
-                            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                        </button>
+
+                        {/* 右側工具操作群：快速 i18n 語言選單 + 深淺色切換 */}
+                        <div className="flex items-center gap-2 shrink-0">
+                            <LanguageDropdown isDark={isDarkMode} />
+                            <button
+                                onClick={() => setIsDarkMode(!isDarkMode)}
+                                className={`w-10 h-10 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl transition-all active:scale-90 shrink-0 shadow-xs border cursor-pointer ${
+                                    isDarkMode
+                                        ? 'bg-slate-800/90 hover:bg-slate-700/80 text-yellow-400 border-slate-700/80'
+                                        : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90'
+                                }`}
+                                aria-label={isDarkMode ? t('header.switchLight') : t('header.switchDark')}
+                                title={isDarkMode ? t('header.switchLight') : t('header.switchDark')}
+                            >
+                                {isDarkMode ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+                            </button>
+                        </div>
                     </div>
                 </header>
 
